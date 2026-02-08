@@ -2,14 +2,11 @@
     <!-- Brand / Title -->
     <div class="p-6 border-b border-gray-200">
         <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-                </svg>
+            <div class="w-10 h-10 flex items-center justify-center">
+                <img src="{{ asset('img/logo/logo-wq.png') }}" alt="AquaSense Logo" class="w-full h-full object-contain">
             </div>
             <div class="leading-tight">
-                <h1 class="text-base font-semibold text-gray-900 tracking-tight">IoT-based Water Quality</h1>
-                <p class="text-xs text-gray-500 font-medium tracking-wide">Monitoring System</p>
+                <h1 class="text-xl font-bold text-gray-900 tracking-tight break-words">{{ config('app.name', 'AquaSense') }}</h1>
             </div>
         </div>
     </div>
