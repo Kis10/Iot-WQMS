@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\GeminiController;
 
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('welcome');
 });
 
 Route::middleware('auth')->group(function () {
@@ -22,6 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/alerts', [WaterQualityController::class, 'alerts'])->name('alerts');
     Route::post('/ably/auth', [AblyController::class, 'auth'])->name('ably.auth');
     Route::post('/dashboard/refresh', [WaterQualityController::class, 'refresh'])->name('dashboard.refresh');
+
 
     Route::post('/devices/species', [DeviceController::class, 'updateSpecies'])->name('devices.species.update');
     
