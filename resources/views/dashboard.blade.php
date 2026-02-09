@@ -474,24 +474,29 @@
             }
 
             function refreshDashboard() {
-                // Call backend to set refresh flag
-                fetch('{{ route("dashboard.refresh") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Reload the page to get fresh data
-                        window.location.reload();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error refreshing dashboard:', error);
+                // Frontend-only Reset (Does not affect History/Alerts/AI Popup)
+                
+                // 1. Clear Chart Data
+                chart.data.labels = [];
+                chart.data.datasets.forEach(dataset => {
+                    dataset.data = [];
                 });
+                chart.update();
+
+                // 2. Reset Gauges to 0
+                const zeroReading = {
+                    turbidity: 0,
+                    tds: 0,
+                    ph: 0,
+                    temperature: 0,
+                    humidity: 0
+                };
+                updateGauges(zeroReading);
+
+                // 3. Reset Throttle timer so next reading updates gauges immediately
+                lastKnobUpdate = 0;
+
+                console.log('Dashboard cleared. Waiting for new real-time data...');
             }
         });
     </script>
