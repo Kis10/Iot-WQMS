@@ -416,7 +416,7 @@
                 chart.data.datasets[4].data.push(reading.humidity || 0);
 
                 // Limit points if too many (optional, keeping 50 for performance)
-                if (chart.data.labels.length > 50) {
+                if (chart.data.labels.length > 20) {
                     chart.data.labels.shift();
                     chart.data.datasets.forEach(ds => ds.data.shift());
                 }
