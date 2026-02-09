@@ -207,15 +207,32 @@
         document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('waterQualityChart').getContext('2d');
             
-            // Prepare data from backend
-            const chartData = @json($chartData);
-            const shouldAutoReload = @json($resetDashboard ?? false);
-            if (shouldAutoReload) {
-                setTimeout(() => window.location.reload(), 1000);
+            // --- PERSISTENCE LOGIC START ---
+            const STORAGE_KEY_CHART = 'dashboardChartData';
+            const STORAGE_KEY_LATEST = 'dashboardLatestReading';
+
+            function saveStateToStorage(labels, datasets) {
+                const state = {
+                    labels: labels,
+                    datasetsData: datasets.map(ds => ds.data)
+                };
+                localStorage.setItem(STORAGE_KEY_CHART, JSON.stringify(state));
             }
-            
-            // Format labels (times)
-            const labels = chartData.map(reading => {
+
+            function loadStateFromStorage() {
+                const raw = localStorage.getItem(STORAGE_KEY_CHART);
+                return raw ? JSON.parse(raw) : null;
+            }
+
+            function clearStorageState() {
+                localStorage.removeItem(STORAGE_KEY_CHART);
+                localStorage.removeItem(STORAGE_KEY_LATEST);
+            }
+            // --- PERSISTENCE LOGIC END ---
+
+            // Prepare data from backend
+            const backendData = @json($chartData);
+            let initialLabels = backendData.map(reading => {
                 const date = new Date(reading.created_at);
                 return date.toLocaleTimeString('en-US', {
                     hour: '2-digit',
@@ -224,21 +241,35 @@
                 });
             });
             
-            // Prepare datasets
-            const turbidityData = chartData.map(r => r.turbidity || 0);
-            const tdsData = chartData.map(r => r.tds || 0);
-            const phData = chartData.map(r => r.ph || 0);
-            const temperatureData = chartData.map(r => r.temperature || 0);
-            const humidityData = chartData.map(r => r.humidity || 0);
+            // Default Dataset Arrays
+            let initialData = {
+                turbidity: backendData.map(r => r.turbidity || 0),
+                tds: backendData.map(r => r.tds || 0),
+                ph: backendData.map(r => r.ph || 0),
+                temp: backendData.map(r => r.temperature || 0),
+                humid: backendData.map(r => r.humidity || 0)
+            };
+
+            // Check LocalStorage for "Continued" readings
+            const savedState = loadStateFromStorage();
+            if (savedState && savedState.labels && savedState.labels.length > 0) {
+                console.log('Restoring readings from previous session...');
+                initialLabels = savedState.labels;
+                initialData.turbidity = savedState.datasetsData[0] || [];
+                initialData.tds = savedState.datasetsData[1] || [];
+                initialData.ph = savedState.datasetsData[2] || [];
+                initialData.temp = savedState.datasetsData[3] || [];
+                initialData.humid = savedState.datasetsData[4] || [];
+            }
             
             const chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels: initialLabels,
                     datasets: [
                         {
                             label: 'Turbidity (NTU)',
-                            data: turbidityData,
+                            data: initialData.turbidity,
                             borderColor: '#3b82f6',
                             backgroundColor: 'rgba(59, 130, 246, 0.05)',
                             borderWidth: 2,
@@ -252,7 +283,7 @@
                         },
                         {
                             label: 'TDS (mg/L)',
-                            data: tdsData,
+                            data: initialData.tds,
                             borderColor: '#8b5cf6',
                             backgroundColor: 'rgba(139, 92, 246, 0.05)',
                             borderWidth: 2,
@@ -266,7 +297,7 @@
                         },
                         {
                             label: 'pH Level',
-                            data: phData,
+                            data: initialData.ph,
                             borderColor: '#10b981',
                             backgroundColor: 'rgba(16, 185, 129, 0.05)',
                             borderWidth: 2,
@@ -280,7 +311,7 @@
                         },
                         {
                             label: 'Temperature (Â°C)',
-                            data: temperatureData,
+                            data: initialData.temp,
                             borderColor: '#f59e0b',
                             backgroundColor: 'rgba(245, 158, 11, 0.05)',
                             borderWidth: 2,
@@ -294,7 +325,7 @@
                         },
                         {
                             label: 'Humidity (%)',
-                            data: humidityData,
+                            data: initialData.humid,
                             borderColor: '#0ea5e9',
                             backgroundColor: 'rgba(14, 165, 233, 0.05)',
                             borderWidth: 2,
@@ -384,15 +415,24 @@
                 chart.data.datasets[3].data.push(reading.temperature || 0);
                 chart.data.datasets[4].data.push(reading.humidity || 0);
 
-                if (chart.data.labels.length > 20) {
+                // Limit points if too many (optional, keeping 50 for performance)
+                if (chart.data.labels.length > 50) {
                     chart.data.labels.shift();
                     chart.data.datasets.forEach(ds => ds.data.shift());
                 }
 
                 chart.update('none');
+                
+                // SAVE TO STORAGE
+                saveStateToStorage(chart.data.labels, chart.data.datasets);
             }
 
             function updateGauges(reading) {
+                // Save latest reading for gauges
+                if (reading && reading.created_at) { // Basic check valid reading
+                     localStorage.setItem(STORAGE_KEY_LATEST, JSON.stringify(reading));
+                }
+
                 // Helper to update SVG dashes
                 const updateCircle = (id, val, max) => {
                     const circle = document.getElementById(id);
@@ -422,6 +462,14 @@
 
                 updateCircle('gauge-humid-circle', reading.humidity || 0, 100);
                 updateText('gauge-humid-text', reading.humidity || 0);
+            }
+
+            // Restore Gauges on Load
+            const savedLatest = localStorage.getItem(STORAGE_KEY_LATEST);
+            if (savedLatest) {
+                try {
+                    updateGauges(JSON.parse(savedLatest));
+                } catch(e) {}
             }
 
             let lastKnobUpdate = 0;
@@ -476,14 +524,17 @@
             function refreshDashboard() {
                 // Frontend-only Reset (Does not affect History/Alerts/AI Popup)
                 
-                // 1. Clear Chart Data
+                // 1. CLEAR STORAGE
+                clearStorageState();
+
+                // 2. Clear Chart Data
                 chart.data.labels = [];
                 chart.data.datasets.forEach(dataset => {
                     dataset.data = [];
                 });
                 chart.update();
 
-                // 2. Reset Gauges to 0
+                // 3. Reset Gauges to 0
                 const zeroReading = {
                     turbidity: 0,
                     tds: 0,
@@ -491,9 +542,12 @@
                     temperature: 0,
                     humidity: 0
                 };
+                // Pass false to avoid saving zero-reading to storage immediately
+                // Actually updateGauges saves to storage. We should manually clear storage AFTER calling it.
                 updateGauges(zeroReading);
+                clearStorageState(); // Ensure it's gone
 
-                // 3. Reset Throttle timer so next reading updates gauges immediately
+                // 4. Reset Throttle timer so next reading updates gauges immediately
                 lastKnobUpdate = 0;
 
                 console.log('Dashboard cleared. Waiting for new real-time data...');
