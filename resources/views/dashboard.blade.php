@@ -11,11 +11,11 @@
                             <!-- Background Circle -->
                             <circle cx="60" cy="60" r="50" fill="none" stroke="#e5e7eb" stroke-width="8"/>
                             <!-- Progress Circle -->
-                            <circle cx="60" cy="60" r="50" fill="none" stroke="#4f46e5" stroke-width="8" 
+                            <circle id="gauge-turbidity-circle" cx="60" cy="60" r="50" fill="none" stroke="#4f46e5" stroke-width="8" 
                                 stroke-dasharray="{{ ($latest?->turbidity ?? 0) / 100 * 314.1 }}, 314.1" stroke-dashoffset="0" stroke-linecap="round"
                                 transform="rotate(-90 60 60)"/>
                             <!-- Center Value -->
-                            <text x="60" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#374151">
+                            <text id="gauge-turbidity-text" x="60" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#374151">
                                 {{ round($latest?->turbidity ?? 0, 1) }}
                             </text>
                         </svg>
@@ -31,11 +31,11 @@
                             <!-- Background Circle -->
                             <circle cx="60" cy="60" r="50" fill="none" stroke="#e5e7eb" stroke-width="8"/>
                             <!-- Progress Circle -->
-                            <circle cx="60" cy="60" r="50" fill="none" stroke="#4f46e5" stroke-width="8" 
+                            <circle id="gauge-tds-circle" cx="60" cy="60" r="50" fill="none" stroke="#4f46e5" stroke-width="8" 
                                 stroke-dasharray="{{ ($latest?->tds ?? 0) / 1000 * 314.1 }}, 314.1" stroke-dashoffset="0" stroke-linecap="round"
                                 transform="rotate(-90 60 60)"/>
                             <!-- Center Value -->
-                            <text x="60" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#374151">
+                            <text id="gauge-tds-text" x="60" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#374151">
                                 {{ round($latest?->tds ?? 0, 1) }}
                             </text>
                         </svg>
@@ -51,11 +51,11 @@
                             <!-- Background Circle -->
                             <circle cx="60" cy="60" r="50" fill="none" stroke="#e5e7eb" stroke-width="8"/>
                             <!-- Progress Circle -->
-                            <circle cx="60" cy="60" r="50" fill="none" stroke="#4f46e5" stroke-width="8" 
+                            <circle id="gauge-ph-circle" cx="60" cy="60" r="50" fill="none" stroke="#4f46e5" stroke-width="8" 
                                 stroke-dasharray="{{ (($latest?->ph ?? 0) / 14) * 314.1 }}, 314.1" stroke-dashoffset="0" stroke-linecap="round"
                                 transform="rotate(-90 60 60)"/>
                             <!-- Center Value -->
-                            <text x="60" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#374151">
+                            <text id="gauge-ph-text" x="60" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#374151">
                                 {{ round($latest?->ph ?? 0, 1) }}
                             </text>
                         </svg>
@@ -71,11 +71,11 @@
                             <!-- Background Circle -->
                             <circle cx="60" cy="60" r="50" fill="none" stroke="#e5e7eb" stroke-width="8"/>
                             <!-- Progress Circle -->
-                            <circle cx="60" cy="60" r="50" fill="none" stroke="#4f46e5" stroke-width="8" 
+                            <circle id="gauge-temp-circle" cx="60" cy="60" r="50" fill="none" stroke="#4f46e5" stroke-width="8" 
                                 stroke-dasharray="{{ (($latest?->temperature ?? 0) / 50) * 314.1 }}, 314.1" stroke-dashoffset="0" stroke-linecap="round"
                                 transform="rotate(-90 60 60)"/>
                             <!-- Center Value -->
-                            <text x="60" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#374151">
+                            <text id="gauge-temp-text" x="60" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#374151">
                                 {{ round($latest?->temperature ?? 0, 1) }}
                             </text>
                         </svg>
@@ -91,11 +91,11 @@
                             <!-- Background Circle -->
                             <circle cx="60" cy="60" r="50" fill="none" stroke="#e5e7eb" stroke-width="8"/>
                             <!-- Progress Circle -->
-                            <circle cx="60" cy="60" r="50" fill="none" stroke="#0ea5e9" stroke-width="8" 
+                            <circle id="gauge-humid-circle" cx="60" cy="60" r="50" fill="none" stroke="#0ea5e9" stroke-width="8" 
                                 stroke-dasharray="{{ (($latest?->humidity ?? 0) / 100) * 314.1 }}, 314.1" stroke-dashoffset="0" stroke-linecap="round"
                                 transform="rotate(-90 60 60)"/>
                             <!-- Center Value -->
-                            <text x="60" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#374151">
+                            <text id="gauge-humid-text" x="60" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#374151">
                                 {{ round($latest?->humidity ?? 0, 1) }}
                             </text>
                         </svg>
@@ -392,6 +392,40 @@
                 chart.update('none');
             }
 
+            function updateGauges(reading) {
+                // Helper to update SVG dashes
+                const updateCircle = (id, val, max) => {
+                    const circle = document.getElementById(id);
+                    if (circle) {
+                        const circumference = 314.1; // 2 * pi * 50
+                        const percent = Math.min(Math.max(val / max, 0), 1);
+                        circle.setAttribute('stroke-dasharray', `${percent * circumference}, ${circumference}`);
+                    }
+                };
+                // Helper to update Text
+                const updateText = (id, val) => {
+                    const text = document.getElementById(id);
+                    if (text) text.textContent = Number(val).toFixed(1);
+                };
+
+                updateCircle('gauge-turbidity-circle', reading.turbidity || 0, 100);
+                updateText('gauge-turbidity-text', reading.turbidity || 0);
+
+                updateCircle('gauge-tds-circle', reading.tds || 0, 1000);
+                updateText('gauge-tds-text', reading.tds || 0);
+
+                updateCircle('gauge-ph-circle', reading.ph || 0, 14);
+                updateText('gauge-ph-text', reading.ph || 0);
+
+                updateCircle('gauge-temp-circle', reading.temperature || 0, 50);
+                updateText('gauge-temp-text', reading.temperature || 0);
+
+                updateCircle('gauge-humid-circle', reading.humidity || 0, 100);
+                updateText('gauge-humid-text', reading.humidity || 0);
+            }
+
+            let lastKnobUpdate = 0;
+
             if (window.Ably) {
                 const ably = new Ably.Realtime({
                     authUrl: '{{ route("ably.auth") }}',
@@ -401,8 +435,25 @@
                     }
                 });
                 const channel = ably.channels.get('{{ config('services.ably.channel', 'water-readings') }}');
+                
+                // 1. Listen for READINGS
                 channel.subscribe('reading', message => {
-                    appendReading(message.data || {});
+                    const reading = message.data || {};
+                    // Always update Chart (Real-time 5s)
+                    appendReading(reading);
+
+                    // Throttle Gauges (Every 30s)
+                    const now = Date.now();
+                    if (now - lastKnobUpdate > 30000) {
+                        updateGauges(reading);
+                        lastKnobUpdate = now;
+                    }
+                });
+
+                // 2. Listen for ANALYSIS (Every 5 mins)
+                channel.subscribe('analysis', message => {
+                    const analysis = message.data || {};
+                    showPopup(analysis); // This handles sound + 60s fade automatically
                 });
             }
 
