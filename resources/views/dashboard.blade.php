@@ -395,7 +395,10 @@
             if (window.Ably) {
                 const ably = new Ably.Realtime({
                     authUrl: '{{ route("ably.auth") }}',
-                    authMethod: 'POST'
+                    authMethod: 'POST',
+                    authHeaders: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
                 });
                 const channel = ably.channels.get('{{ config('services.ably.channel', 'water-readings') }}');
                 channel.subscribe('reading', message => {
