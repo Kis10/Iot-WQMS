@@ -1,6 +1,10 @@
 <x-guest-layout>
     <div class="mb-4 text-sm text-gray-600">
-        {{ __('Waiting for the Admin\'s approval. Please check back later or wait here for automatic update.') }}
+        {{ __('Waiting for the Admin\'s approval.') }}
+        <br><br>
+        <strong>Logged in as:</strong> {{ Auth::user()->email }}
+        <br>
+        <em class="text-xs">If this is not your Admin account, please <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="underline text-blue-600">Log Out</a>.</em>
     </div>
 
     <!-- Alert Container (Hidden by default) -->
