@@ -134,11 +134,15 @@ class WaterReadingController extends Controller
         $temp = $reading->temperature;
 
         // Custom Logic (Same as AnalysisController)
-        if ($turbidity > 50 || $tds > 800 || $ph < 5.5 || $ph > 9) {
+        // Custom Logic (updated for Clarity %)
+        // Critical: Clarity < 25 OR TDS > 800 OR pH < 5.0 OR pH > 9.0
+        if ($turbidity < 25 || $tds > 800 || $ph < 5.0 || $ph > 9.0) {
             $risk = 'critical';
             $insight = 'Critical water quality detected! Immediate action required.';
             $recommendations = ['Check aeration system', 'Perform partial water change', 'Verify sensor calibration'];
-        } elseif ($turbidity > 25 || $tds > 500 || $ph < 6.5 || $ph > 8.5) {
+        } 
+        // High Risk: Clarity < 50 OR TDS > 600 OR pH < 5.5 OR pH > 8.5
+        elseif ($turbidity < 50 || $tds > 600 || $ph < 5.5 || $ph > 8.5) {
             $risk = 'high';
             $insight = 'Water quality is degrading. Parameters deviating from optimal.';
             $recommendations = ['Inspect filtration system', 'Monitor feeding rates'];
