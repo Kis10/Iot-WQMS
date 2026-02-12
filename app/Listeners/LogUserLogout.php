@@ -34,7 +34,7 @@ class LogUserLogout
                 $now = now();
                 $activity->update([
                     'logout_at' => $now,
-                    'duration_minutes' => $activity->login_at->diffInMinutes($now),
+                    'duration_minutes' => (int) $activity->login_at->diffInMinutes($now),
                 ]);
             }
             
