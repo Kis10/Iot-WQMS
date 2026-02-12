@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
 
     // User Monitoring Route
     Route::get('/users', [\App\Http\Controllers\UserController::class, 'index'])->name('users.index');
+    Route::get('/users/{user}/activities', [\App\Http\Controllers\UserController::class, 'activities'])->name('users.activities');
     Route::post('/devices/species', [DeviceController::class, 'updateSpecies'])->name('devices.species.update');
     
     // AI Analysis routes

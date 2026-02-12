@@ -13,4 +13,9 @@ class UserController extends Controller
 
         return view('users.index', compact('users', 'logs'));
     }
+
+    public function activities(\App\Models\User $user)
+    {
+        return view('users.activities', compact('user'));
+    }
 }
