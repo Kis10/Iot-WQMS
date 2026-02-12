@@ -16,6 +16,10 @@ class UserController extends Controller
 
     public function activities(\App\Models\User $user)
     {
-        return view('users.activities', compact('user'));
+        $activities = \App\Models\UserActivity::where('user_id', $user->id)
+            ->latest()
+            ->paginate(50);
+
+        return view('users.activities', compact('user', 'activities'));
     }
 }
