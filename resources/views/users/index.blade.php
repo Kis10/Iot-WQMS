@@ -30,7 +30,14 @@
                                         $lastActivity = $user->loginActivities->last();
                                         $isOnline = $user->isOnline();
                                     @endphp
-                                    <tr onclick="window.location='{{ route('users.activities', $user) }}'" class="cursor-pointer hover:bg-gray-50 transition duration-150 ease-in-out">
+                                    <tr 
+                                        @if(Auth::user()->isAdmin()) 
+                                            onclick="window.location='{{ route('users.activities', $user) }}'" 
+                                            class="cursor-pointer hover:bg-gray-50 transition duration-150 ease-in-out"
+                                        @else
+                                            class="hover:bg-gray-50 transition duration-150 ease-in-out"
+                                        @endif
+                                    >
                                         <!-- Column 1: Status Dot + Name -->
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">

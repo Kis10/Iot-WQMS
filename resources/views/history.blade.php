@@ -3,8 +3,37 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Filter Section -->
             <div class="bg-white rounded-lg shadow p-6 mb-6">
-                
-            <!-- History Table -->
+                <form method="GET" action="{{ route('history') }}" class="flex flex-col sm:flex-row items-center gap-4">
+                    <label class="font-medium text-gray-700">Filter/Sort By:</label>
+                    <select name="sort_by" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                        <option value="created_at" {{ request('sort_by') == 'created_at' ? 'selected' : '' }}>Date & Time</option>
+                        <option value="ph" {{ request('sort_by') == 'ph' ? 'selected' : '' }}>pH Level</option>
+                        <option value="turbidity" {{ request('sort_by') == 'turbidity' ? 'selected' : '' }}>Turbidity</option>
+                        <option value="tds" {{ request('sort_by') == 'tds' ? 'selected' : '' }}>TDS</option>
+                        <option value="temperature" {{ request('sort_by') == 'temperature' ? 'selected' : '' }}>Temperature</option>
+                        <option value="humidity" {{ request('sort_by') == 'humidity' ? 'selected' : '' }}>Humidity</option>
+                    </select>
+                    
+                    <div class="flex items-center gap-2">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="order" value="desc" {{ request('order', 'desc') == 'desc' ? 'checked' : '' }} class="text-indigo-600">
+                            <span class="ml-1">Desc</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="order" value="asc" {{ request('order') == 'asc' ? 'checked' : '' }} class="text-indigo-600">
+                            <span class="ml-1">Asc</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                        Apply Filter
+                    </button>
+                    
+                    @if(request()->has('sort_by'))
+                        <a href="{{ route('history') }}" class="text-gray-500 hover:text-gray-700 underline text-sm">Clear</a>
+                    @endif
+                </form>
+            </div>
             <div class="">
                 <div class="overflow-x-auto">
                     <table class="w-full">

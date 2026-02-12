@@ -40,28 +40,44 @@ class WaterQualityController extends Controller
     }
 
     // History
-    public function history()
+    public function history(Request $request)
     {
-        $readings = WaterReading::orderBy('created_at', 'desc')->paginate(10);
+        $query = WaterReading::query();
+
+        // sort_by (sensor) and order
+        if ($request->has('sort_by') && in_array($request->sort_by, ['ph', 'turbidity', 'tds', 'temperature', 'humidity', 'created_at'])) {
+            $order = $request->get('order', 'desc');
+            $query->orderBy($request->sort_by, $order);
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $readings = $query->paginate(10);
         return view('history', compact('readings'));
     }
 
     // Alerts
-    public function alerts()
+    public function alerts(Request $request)
     {
         // Get all abnormal readings
-        $alerts = WaterReading::where(function($query) {
-            // Turbidity: anything > 25 is concerning
-            $query->where('turbidity', '>', 25)
-            // TDS: anything > 500 is concerning
+        $query = WaterReading::where(function($q) {
+            $q->where('turbidity', '>', 25)
             ->orWhere('tds', '>', 500)
-            // pH: anything < 6.0 or > 8.0 is concerning
             ->orWhere('ph', '<', 6.0)
             ->orWhere('ph', '>', 8.0)
-            // Temperature: < 15 or > 32 is concerning
             ->orWhere('temperature', '<', 15)
             ->orWhere('temperature', '>', 32);
-        })->orderBy('created_at', 'desc')->paginate(10);
+        });
+
+        // Sorting
+        if ($request->has('sort_by') && in_array($request->sort_by, ['ph', 'turbidity', 'tds', 'temperature', 'humidity', 'created_at'])) {
+            $order = $request->get('order', 'desc');
+            $query->orderBy($request->sort_by, $order);
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $alerts = $query->paginate(10);
 
         return view('alerts', compact('alerts'));
     }
