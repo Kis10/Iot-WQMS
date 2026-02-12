@@ -20,59 +20,7 @@
                         @endif
                     </span>
                 </div>
-            <!-- Notification Bell (Admin Only) -->
-            @if(Auth::user()->isAdmin())
-                <div class="flex items-center ml-4 relative" x-data="{ 
-                        notifOpen: false, 
-                        count: {{ \App\Models\User::where('is_approved', false)->count() }},
-                        check() {
-                            fetch('/admin/approval-check')
-                                .then(res => res.json())
-                                .then(data => {
-                                    if (data.count > this.count) {
-                                        this.playAlert();
-                                    }
-                                    this.count = data.count;
-                                });
-                        },
-                        playAlert() {
-                            let audio = new Audio('/sounds/alert.mp3');
-                            audio.play().catch(e => console.log('Audio error:', e));
-                        }
-                    }"
-                    x-init="setInterval(() => check(), 10000)">
-                    
-                    <button @click="notifOpen = !notifOpen" class="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none relative">
-                        <span class="sr-only">View notifications</span>
-                        <!-- Bell Icon -->
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                        </svg>
-                        
-                        <!-- Red Dot -->
-                        <div x-show="count > 0" class="absolute top-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-600"></div>
-                    </button>
 
-                    <!-- Dropdown -->
-                    <div x-show="notifOpen" @click.away="notifOpen = false" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50 transform translate-y-8" style="display: none;">
-                        <div class="px-4 py-2 border-b text-sm text-gray-700">
-                            Notifications
-                        </div>
-                        <template x-if="count > 0">
-                            <a href="{{ route('admin.users.approvals') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex justify-between items-center">
-                                <span><span x-text="count"></span> New User(s)</span>
-                                <!-- Expand Icon -->
-                                <svg class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                                </svg>
-                            </a>
-                        </template>
-                        <template x-if="count === 0">
-                            <div class="px-4 py-2 text-sm text-gray-500">No new notifications</div>
-                        </template>
-                    </div>
-                </div>
-            @endif
 
             </div><!-- End Flex -->
             
@@ -192,6 +140,16 @@
             </div>
 
             <div class="mt-3 space-y-1">
+                <!-- Admin Mobile Notifications -->
+                @if(Auth::user()->isAdmin())
+                    <div x-data="{ count: {{ \App\Models\User::where('is_approved', false)->count() }} }">
+                        <x-responsive-nav-link :href="route('admin.users.approvals')" class="flex justify-between items-center">
+                            {{ __('Notifications') }}
+                            <span x-show="count > 0" class="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full" x-text="count"></span>
+                        </x-responsive-nav-link>
+                    </div>
+                @endif
+
                 <!-- Refresh Button for Mobile -->
                 @if(request()->routeIs('dashboard'))
                     <button id="refreshDashboardMobile" class="flex items-center w-full px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition duration-150 ease-in-out">
