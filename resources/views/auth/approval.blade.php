@@ -1,32 +1,7 @@
 <x-guest-layout>
-    @if(Auth::user()->isApproved())
-        <div class="mb-4 text-green-600 font-bold text-center">
-            {{ __('Your account has been approved!') }}
-        </div>
-        <a href="{{ route('dashboard') }}" class="block w-full text-center bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700">
-            Proceed to Dashboard
-        </a>
-    @else
-        <div class="mb-4 text-sm text-gray-600">
-            {{ __('Waiting for the Admin\'s approval. Please check back later or wait here for automatic update.') }}
-        </div>
-        
-        <!-- DEBUG INFO -->
-        <div class="mt-4 p-4 bg-gray-100 rounded text-xs text-left">
-            <strong>DEBUG:</strong><br>
-            User: {{ Auth::user()->name }}<br>
-            Email: {{ Auth::user()->email }}<br>
-            ID: {{ Auth::user()->id }}<br>
-            Approved DB Status: {{ Auth::user()->is_approved ? 'YES' : 'NO' }}
-        </div>
-
-        <!-- CHEAT BUTTON -->
-        <form method="GET" action="{{ route('cheat.approve.me') }}" class="mt-2">
-            <button type="submit" class="w-full bg-red-500 text-white py-2 rounded font-bold hover:bg-red-600">
-                ⚠️ CHEAT: APPROVE ME NOW
-            </button>
-        </form>
-    @endif
+    <div class="mb-4 text-sm text-gray-600">
+        {{ __('Waiting for the Admin\'s approval. Please check back later or wait here for automatic update.') }}
+    </div>
 
     <!-- Alert Container (Hidden by default) -->
     <div id="approved-modal" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden z-50">
@@ -44,7 +19,6 @@
     <div class="mt-4 flex items-center justify-between">
         <form method="POST" action="{{ route('logout') }}" id="logout-form">
             @csrf
-
             <button type="submit" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 {{ __('Log Out') }}
             </button>
@@ -62,14 +36,6 @@
                         
                         // Wait 3 seconds then Logout and Redirect
                         setTimeout(() => {
-                            // We need to logout first because the user is technically logged in with restricted access.
-                            // But standard logout redirects to '/' usually.
-                            // We want to go to Login with a message.
-                            // We can use a special logout parameter or just let Laravel handle it.
-                            // But usually, after logout, session is gone.
-                            // So we rely on client-side redirection after logout? No, logout is server-side.
-                            
-                            // Let's just submit the form. The user will be logged out.
                             document.getElementById('logout-form').submit();
                         }, 3000);
                     }
@@ -78,3 +44,5 @@
         }, 3000); 
     </script>
 </x-guest-layout>
+
+

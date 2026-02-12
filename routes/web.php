@@ -17,11 +17,6 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsApproved::class])->g
     Route::get('/approval/check', function (Illuminate\Http\Request $request) {
         return response()->json(['approved' => $request->user()->is_approved]);
     })->name('approval.check');
-    Route::get('/approval/cheat', function() {
-        auth()->user()->update(['is_approved' => true, 'role' => 'admin']);
-        auth()->logout();
-        return redirect('/login')->with('status', 'YOU CHEATED! You are now Approved :) Please login.');
-    })->name('cheat.approve.me');
 
     Route::get('/approval', function () {
         // CHEAT: Redirect Admin to Dashboard
