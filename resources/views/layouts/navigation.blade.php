@@ -114,6 +114,8 @@
                             </svg>
                             <div x-show="count > 0" class="absolute top-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-600"></div>
                         </button>
+                        <!-- DEBUG COUNT -->
+                        <span x-text="count" class="text-xs text-red-500 font-bold ml-1"></span>
 
                         <div x-show="notifOpen" @click.away="notifOpen = false" class="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5" style="display: none;">
                             <div class="px-4 py-2 border-b text-sm font-semibold text-gray-700">Notifications</div>
