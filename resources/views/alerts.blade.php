@@ -43,8 +43,8 @@
                                         }
                                     }
                                     
-                                    if ($alert->ph < 6.0 || $alert->ph > 8.0) {
-                                        if ($alert->ph < 6.0) {
+                                    if ($alert->ph < 5.0 || $alert->ph > 9.0) {
+                                        if ($alert->ph < 5.0) {
                                             $alertTypes[] = ['param' => 'pH Level', 'value' => $alert->ph, 'status' => 'Acidic', 'effect' => 'Growth may slow, risk of death', 'severity' => 'warning'];
                                         } else {
                                             $alertTypes[] = ['param' => 'pH Level', 'value' => $alert->ph, 'status' => 'Alkaline', 'effect' => 'Stress, ammonia toxicity rises', 'severity' => 'warning'];

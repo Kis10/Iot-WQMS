@@ -5,7 +5,7 @@ return [
     'species' => [
         'tilapia' => [
             'label' => 'Tilapia',
-            'ph' => ['optimal' => [6.5, 7.8], 'safe' => [6.0, 8.5]],
+            'ph' => ['optimal' => [5.5, 8.5], 'safe' => [5.0, 9.0]],
             'temperature' => ['optimal' => [26, 30], 'safe' => [22, 34]],
             'tds' => ['optimal' => [100, 400], 'safe' => [0, 600]],
             'turbidity' => ['optimal' => [0, 15], 'safe' => [0, 25]],

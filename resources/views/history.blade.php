@@ -51,7 +51,7 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->turbidity ?? 'N/A' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->tds ?? 'N/A' }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        <span class="px-3 py-1 rounded-full {{ ($reading->ph >= 6.5 && $reading->ph <= 8.5) ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                        <span class="px-3 py-1 rounded-full {{ ($reading->ph >= 5.0 && $reading->ph <= 9.0) ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                             {{ $reading->ph ?? 'N/A' }}
                                         </span>
                                     </td>
