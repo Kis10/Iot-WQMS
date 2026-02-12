@@ -38,12 +38,12 @@
                 @endif
                 
                 <!-- Admin Notification Bell -->
-                @if(Auth::user()->isAdmin())
-                    <div class="relative mr-4" x-data="{ 
-                            notifOpen: false, 
-                            count: {{ \App\Models\User::where('is_approved', false)->count() }},
-                            check() {
-                                fetch('{{ route('admin.approval.check-count') }}')
+                <!-- FORCE SHOW FOR DEBUG -->
+                <div class="relative mr-4 border-2 border-blue-500 p-1" x-data="{ 
+                        notifOpen: false, 
+                        count: {{ \App\Models\User::where('is_approved', false)->count() }},
+                        check() {
+                            fetch('{{ route('admin.approval.check-count') }}')
                                     .then(res => res.json())
                                     .then(data => {
                                         if (data.count > this.count) {
@@ -78,8 +78,12 @@
                             </template>
                         </div>
                     </div>
-                @endif
-
+                
+                <!-- DEBUG ROLE -->
+                <span class="text-xs bg-gray-200 px-1 rounded mr-2">
+                    Role: {{ Auth::user()->role }} Admin?: {{ Auth::user()->isAdmin() ? 'Yes' : 'No' }}
+                </span>
+                
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
