@@ -319,7 +319,8 @@ void loop() {
     digitalWrite(turbidityPowerPin, LOW); // Turn OFF immediately
     
     int turbidityRaw = turbSum / 5;
-    int clarityValue = map(turbidityRaw, 0, 4095, 0, 100);
+    // Calibrated for your sensor: Max Raw ~2100 = 100% Clarity
+    int clarityValue = map(turbidityRaw, 0, 2100, 0, 100); 
     clarityValue = constrain(clarityValue, 0, 100);
 
     // --- STEP 4: READ TDS (Turn ON -> Read -> Turn OFF) ---

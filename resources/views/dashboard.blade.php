@@ -20,7 +20,7 @@
                             </text>
                         </svg>
                     </div>
-                    <p class="text-center text-gray-500 text-[11px] mt-2">NTU</p>
+                    <p class="text-center text-gray-500 text-[11px] mt-2">%</p>
                 </div>
 
                 <!-- TDS Card -->
@@ -80,7 +80,7 @@
                             </text>
                         </svg>
                     </div>
-                    <p class="text-center text-gray-500 text-[11px] mt-2">Â°C</p>
+                    <p class="text-center text-gray-500 text-[11px] mt-2">°C</p>
                 </div>
 
                 <!-- Humidity Card -->
@@ -268,7 +268,7 @@
                     labels: initialLabels,
                     datasets: [
                         {
-                            label: 'Turbidity (NTU)',
+                            label: 'Turbidity (%)',
                             data: initialData.turbidity,
                             borderColor: '#3b82f6',
                             backgroundColor: 'rgba(59, 130, 246, 0.05)',
