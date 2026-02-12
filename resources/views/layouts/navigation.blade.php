@@ -38,12 +38,12 @@
                 @endif
                 
                 <!-- Admin Notification Bell -->
-                <!-- FORCE SHOW FOR DEBUG -->
-                <div class="relative mr-4 border-2 border-blue-500 p-1" x-data="{ 
-                        notifOpen: false, 
-                        count: {{ \App\Models\User::where('is_approved', false)->count() }},
-                        check() {
-                            fetch('{{ route('admin.approval.check-count') }}')
+                @if(Auth::user()->isAdmin())
+                    <div class="relative mr-4" x-data="{ 
+                            notifOpen: false, 
+                            count: {{ \App\Models\User::where('is_approved', false)->count() }},
+                            check() {
+                                fetch('{{ route('admin.approval.check-count') }}')
                                     .then(res => res.json())
                                     .then(data => {
                                         if (data.count > this.count) {
@@ -62,8 +62,6 @@
                             </svg>
                             <div x-show="count > 0" class="absolute top-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-600"></div>
                         </button>
-                        <!-- DEBUG COUNT -->
-                        <span x-text="count" class="text-xs text-red-500 font-bold ml-1"></span>
 
                         <div x-show="notifOpen" @click.away="notifOpen = false" class="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5" style="display: none;">
                             <div class="px-4 py-2 border-b text-sm font-semibold text-gray-700">Notifications</div>
@@ -78,11 +76,7 @@
                             </template>
                         </div>
                     </div>
-                
-                <!-- DEBUG ROLE -->
-                <span class="text-xs bg-gray-200 px-1 rounded mr-2">
-                    Role: {{ Auth::user()->role }} Admin?: {{ Auth::user()->isAdmin() ? 'Yes' : 'No' }}
-                </span>
+                @endif
                 
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
