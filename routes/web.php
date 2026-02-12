@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\GeminiController;
 
 Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
     return view('welcome');
 });
 
