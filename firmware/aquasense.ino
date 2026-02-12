@@ -336,6 +336,12 @@ void loop() {
     float tdsVoltage = (tdsAvg / (float)numSamples) * (3.3 / 4095.0);
     digitalWrite(tdsPowerPin, LOW); // Turn OFF immediately 
 
+    // DEBUG: Print Raw TDS
+    Serial.print("RAW TDS ANALOG: ");
+    Serial.println(tdsAvg / numSamples);
+    Serial.print("TDS VOLTAGE: ");
+    Serial.println(tdsVoltage); 
+
     // Calculate TDS
     float compensationCoefficient = 1.0 + 0.02 * (temperature - 25.0);
     float compensatedVoltage = tdsVoltage / compensationCoefficient;

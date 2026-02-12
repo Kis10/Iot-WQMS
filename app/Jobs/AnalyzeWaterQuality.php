@@ -115,11 +115,11 @@ class AnalyzeWaterQuality implements ShouldQueue
         // Analyze turbidity as Clarity % (100 = Clear, 0 = Dirty)
         $clarity = $reading->turbidity;
         
-        if ($clarity >= 95) {
+        if ($clarity >= 85) {
             $positiveNotes[] = "Water is Crystal Clear (Like tap water) 💎 ({$clarity}%)";
-        } elseif ($clarity >= 75) {
-             $positiveNotes[] = "Water is Okay / Normal (Typical pond water) 🧼 ({$clarity}%)";
         } elseif ($clarity >= 50) {
+             $positiveNotes[] = "Water is Good / Clear Enough (Typical pond water) 🧼 ({$clarity}%)";
+        } elseif ($clarity >= 25) {
             $riskFactors[] = "Water is Cloudy / Murky (Hard to see the bottom) ☁️ ({$clarity}%)";
             $recommendations[] = "Clean the filter or stop feeding for a few hours.";
             $riskScore += 20;
