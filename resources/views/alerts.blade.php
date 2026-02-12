@@ -22,15 +22,14 @@
                                     $severityLevel = 'info';
                                     
                                     // Check each parameter
-                                    if ($alert->turbidity > 25) {
-                                        if ($alert->turbidity > 100) {
-                                            $alertTypes[] = ['param' => 'Turbidity', 'value' => $alert->turbidity . ' NTU', 'status' => 'Dangerous', 'effect' => 'Possible fish death', 'severity' => 'critical'];
-                                            $severityLevel = 'critical';
-                                        } elseif ($alert->turbidity > 50) {
-                                            $alertTypes[] = ['param' => 'Turbidity', 'value' => $alert->turbidity . ' NTU', 'status' => 'Poor Growth', 'effect' => 'Gill damage, poor growth', 'severity' => 'critical'];
+                                    // Clarity % Logic (100 = Clear, 0 = Dirty)
+                                    // Alert if Clarity is LOW (below 50%)
+                                    if ($alert->turbidity < 50) {
+                                        if ($alert->turbidity < 20) {
+                                            $alertTypes[] = ['param' => 'Turbidity', 'value' => $alert->turbidity . '%', 'status' => 'Data Critical', 'effect' => 'Extremely Muddy - Fish death likely', 'severity' => 'critical'];
                                             $severityLevel = 'critical';
                                         } else {
-                                            $alertTypes[] = ['param' => 'Turbidity', 'value' => $alert->turbidity . ' NTU', 'status' => 'Stress', 'effect' => 'Slower growth', 'severity' => 'warning'];
+                                            $alertTypes[] = ['param' => 'Turbidity', 'value' => $alert->turbidity . '%', 'status' => 'Poor Clarity', 'effect' => 'Slower growth, gill stress', 'severity' => 'warning'];
                                         }
                                     }
                                     

@@ -26,12 +26,14 @@ const int tdsPin       = 35; // Analog Input
 const int turbidityPin = 32; // Analog Input
 const int buzzerPin    = 25; // Digital Output
 const int dhtPin       = 4;  // Digital I/O
-const int powerLedPin  = 27; // Digital Output
+const int powerLedPin  = 27; // Digital Output (PN2222A 6E)
 const int wifiLedPin   = 13; // Digital Output
 
-// ★★★ NEW: TDS POWER CONTROL PIN (GPIO 26) ★★★
-// Connect TDS Red Wire here!
+// ★★★ NEW: TDS POWER CONTROL (GPIO 26) ★★★
 const int tdsPowerPin  = 26; 
+
+// ★★★ NEW: TURBIDITY POWER CONTROL (GPIO 14) ★★★
+const int turbidityPowerPin = 14; 
 
 /************ DHT22 SETUP ************/
 #define DHTTYPE DHT22
@@ -191,9 +193,12 @@ void setup() {
   pinMode(powerLedPin, OUTPUT);
   pinMode(wifiLedPin, OUTPUT);
   
-  // ★★★ TDS POWER SETUP Check ★★★
+  // ★★★ SENSOR POWER CONTROL ★★★
   pinMode(tdsPowerPin, OUTPUT);
-  digitalWrite(tdsPowerPin, LOW); // Start OFF (Clean Water)
+  digitalWrite(tdsPowerPin, LOW); // Start OFF
+  
+  pinMode(turbidityPowerPin, OUTPUT);
+  digitalWrite(turbidityPowerPin, LOW); // Start OFF
 
   // Default states
   digitalWrite(buzzerPin, LOW);
@@ -280,9 +285,10 @@ void loop() {
     // ★★★ NEW SENSOR READING LOGIC ★★★
     // ===========================================
 
-    // --- STEP 1: FORCE TDS OFF! ---
+    // --- STEP 1: FORCE TDS & TURBIDITY OFF! ---
     // This removes the electrical noise so pH can be read.
     digitalWrite(tdsPowerPin, LOW); 
+    digitalWrite(turbidityPowerPin, LOW);
     delay(200); // Wait for water voltage to stabilize
     
     // Read DHT first
@@ -293,7 +299,7 @@ void loop() {
       humidity = newHum;
     }
 
-    // --- STEP 2: READ pH (CLEAN) ---
+    // --- STEP 2: READ pH (CLEANEST STATE) ---
     long pHAvg = 0;
     for(int i = 0; i < numSamples; i++) { 
       pHAvg += analogRead(pHPin); 
@@ -302,19 +308,23 @@ void loop() {
     float pHVoltage = (pHAvg / (float)numSamples) * (3.3 / 4095.0);
     float pHValue = slope * pHVoltage + offset;
     
-    // Read Turbidity (Light based, ignored by noise)
+    // --- STEP 3: READ TURBIDITY (Turn ON -> Read -> Turn OFF) ---
+    digitalWrite(turbidityPowerPin, HIGH);
+    delay(800); // Increased warmup for stability
     long turbSum = 0;
     for(int i = 0; i < 5; i++) { 
       turbSum += analogRead(turbidityPin); 
       delay(10); 
     }
+    digitalWrite(turbidityPowerPin, LOW); // Turn OFF immediately
+    
     int turbidityRaw = turbSum / 5;
     int clarityValue = map(turbidityRaw, 0, 4095, 0, 100);
     clarityValue = constrain(clarityValue, 0, 100);
 
-    // --- STEP 3: TURN TDS ON! ---
+    // --- STEP 4: READ TDS (Turn ON -> Read -> Turn OFF) ---
     digitalWrite(tdsPowerPin, HIGH);
-    delay(300); // Warmup sensor
+    delay(800); // Increased warmup for stability
     
     // Read TDS
     long tdsAvg = 0;
@@ -323,9 +333,7 @@ void loop() {
       delay(10); 
     }
     float tdsVoltage = (tdsAvg / (float)numSamples) * (3.3 / 4095.0);
-    
-    // --- STEP 4: TURN TDS OFF IMMEDIATELY! ---
-    digitalWrite(tdsPowerPin, LOW); 
+    digitalWrite(tdsPowerPin, LOW); // Turn OFF immediately 
 
     // Calculate TDS
     float compensationCoefficient = 1.0 + 0.02 * (temperature - 25.0);
