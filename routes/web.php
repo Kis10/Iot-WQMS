@@ -23,7 +23,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/ably/auth', [AblyController::class, 'auth'])->name('ably.auth');
     Route::post('/dashboard/refresh', [WaterQualityController::class, 'refresh'])->name('dashboard.refresh');
 
-
+    // User Monitoring Route
+    Route::get('/users', [\App\Http\Controllers\UserController::class, 'index'])->name('users.index');
     Route::post('/devices/species', [DeviceController::class, 'updateSpecies'])->name('devices.species.update');
     
     // AI Analysis routes

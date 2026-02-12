@@ -45,4 +45,14 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    
+    public function loginActivities()
+    {
+        return $this->hasMany(\App\Models\LoginActivity::class);
+    }
+
+    public function isOnline()
+    {
+        return cache()->has('user-is-online-' . $this->id);
+    }
 }
