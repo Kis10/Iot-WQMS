@@ -115,63 +115,61 @@ class AnalyzeWaterQuality implements ShouldQueue
         [$turbidityOptimalMin, $turbidityOptimalMax] = $species['turbidity']['optimal'];
         [$turbiditySafeMin, $turbiditySafeMax] = $species['turbidity']['safe'];
         if ($reading->turbidity < $turbiditySafeMin || $reading->turbidity > $turbiditySafeMax) {
-            $riskFactors[] = "Turbidity outside safe range ({$reading->turbidity} NTU)";
-            $recommendations[] = "Backwash or clean filters and remove settled waste to protect gills";
-            $recommendations[] = "Reduce feeding temporarily to lower suspended solids and ammonia spikes";
+            $riskFactors[] = "The water is too cloudy! ({$reading->turbidity} NTU)";
+            $recommendations[] = "Clean the filter or remove dirty poop from the bottom.";
+            $recommendations[] = "Stop feeding for a bit so the water clears up.";
             $riskScore += 30;
         } elseif ($reading->turbidity < $turbidityOptimalMin || $reading->turbidity > $turbidityOptimalMax) {
-            $riskFactors[] = "Turbidity outside optimal range ({$reading->turbidity} NTU)";
-            $recommendations[] = "Inspect filtration and improve water circulation to stabilize oxygen levels";
+            $riskFactors[] = "Water is a bit murky ({$reading->turbidity} NTU)";
+            $recommendations[] = "Check if the pump is running well to move the water.";
             $riskScore += 15;
         } else {
-            $positiveNotes[] = "Turbidity is stable and clear for good gill health";
+            $positiveNotes[] = "Water is crystal clear! ✨";
         }
 
         // Analyze TDS
         [$tdsOptimalMin, $tdsOptimalMax] = $species['tds']['optimal'];
         [$tdsSafeMin, $tdsSafeMax] = $species['tds']['safe'];
         if ($reading->tds < $tdsSafeMin || $reading->tds > $tdsSafeMax) {
-            $riskFactors[] = "TDS outside safe range ({$reading->tds} mg/L)";
-            $recommendations[] = "Perform partial water change to reduce dissolved solids that stress fish";
-            $recommendations[] = "Review source water and mineral buildup to prevent chronic stress";
+            $riskFactors[] = "Too much stuff dissolved in water! ({$reading->tds})";
+            $recommendations[] = "Change some of the water (about 20%) with fresh water.";
             $riskScore += 25;
         } elseif ($reading->tds < $tdsOptimalMin || $reading->tds > $tdsOptimalMax) {
-            $riskFactors[] = "TDS outside optimal range ({$reading->tds} mg/L)";
-            $recommendations[] = "Monitor TDS and plan gradual dilution to avoid osmotic stress";
+            $riskFactors[] = "Water has a bit too much minerals ({$reading->tds})";
+            $recommendations[] = "Just add a little fresh water slowly.";
             $riskScore += 10;
         } else {
-            $positiveNotes[] = "Dissolved solids are within a stable range";
+            $positiveNotes[] = "Water purity is perfect! 💧";
         }
 
         // Analyze pH
         [$phOptimalMin, $phOptimalMax] = $species['ph']['optimal'];
         [$phSafeMin, $phSafeMax] = $species['ph']['safe'];
         if ($reading->ph < $phSafeMin || $reading->ph > $phSafeMax) {
-            $riskFactors[] = "pH outside safe range ({$reading->ph})";
-            $recommendations[] = "Use approved buffers to bring pH back to 6.5-7.5 to protect gill function";
-            $recommendations[] = "Check alkalinity and stabilize gradual pH swings to prevent shock";
+            $riskFactors[] = "pH is dangerous! ({$reading->ph})";
+            $recommendations[] = "The water is too acidic or basic! Ask an adult to help adjust it.";
             $riskScore += 35;
         } elseif ($reading->ph < $phOptimalMin || $reading->ph > $phOptimalMax) {
-            $riskFactors[] = "pH outside optimal range ({$reading->ph})";
-            $recommendations[] = "Monitor pH closely and avoid abrupt corrections to reduce stress";
+            $riskFactors[] = "pH is slightly off ({$reading->ph})";
+            $recommendations[] = "Keep an eye on the pH level today.";
             $riskScore += 15;
         } else {
-            $positiveNotes[] = "pH is within the optimal growth band";
+            $positiveNotes[] = "pH level is just right! 👍";
         }
 
         // Analyze temperature
         [$tempOptimalMin, $tempOptimalMax] = $species['temperature']['optimal'];
         [$tempSafeMin, $tempSafeMax] = $species['temperature']['safe'];
         if ($reading->temperature < $tempSafeMin || $reading->temperature > $tempSafeMax) {
-            $riskFactors[] = "Temperature outside safe range ({$reading->temperature} C)";
-            $recommendations[] = "Adjust heater/cooler and improve insulation or shading to keep metabolism stable";
+            $riskFactors[] = "Water is too hot or cold! ({$reading->temperature} C)";
+            $recommendations[] = "Check the heater or add some shade/ice to help the fish.";
             $riskScore += 20;
         } elseif ($reading->temperature < $tempOptimalMin || $reading->temperature > $tempOptimalMax) {
-            $riskFactors[] = "Temperature outside optimal range ({$reading->temperature} C)";
-            $recommendations[] = "Stabilize temperature for consistent growth and feeding behavior";
+            $riskFactors[] = "Temp is not quite right ({$reading->temperature} C)";
+            $recommendations[] = "Make sure the water stays steady, fish hate sudden changes!";
             $riskScore += 10;
         } else {
-            $positiveNotes[] = "Temperature is in a comfortable range for growth";
+            $positiveNotes[] = "Temperature is comfy! 🌡️";
         }
 
         $this->applyTrendSignals($trendData, $riskFactors, $recommendations, $positiveNotes, $riskScore);
@@ -218,30 +216,29 @@ class AnalyzeWaterQuality implements ShouldQueue
     private function generateInsight(object $reading, array $riskFactors, array $positiveNotes, string $riskLevel, string $speciesLabel): string
     {
         $sampleCount = $reading->sample_count ?? 1;
-        $insight = "AI analysis of the last 5 minutes ({$sampleCount} readings) for {$speciesLabel} indicates {$riskLevel} risk for fish growth. ";
-
-        if (empty($riskFactors)) {
-            $insight .= "Parameters are stable and within target ranges, supporting healthy growth and feed conversion.";
+        
+        // Friendly Start
+        $insight = "";
+        
+        if ($riskLevel === 'safe') {
+            $insight = "Everything looks great! The water is perfect for your {$speciesLabel}. ";
+            $insight .= "Your fish are happy and healthy! 🐟✨";
+        } elseif ($riskLevel === 'medium') {
+            $insight = "Heads up! The water is okay, but could be better. ";
+            $insight .= "Your {$speciesLabel} might be a little uncomfy. Let's fix a few things.";
         } else {
-            $insight .= "Identified concerns: " . implode(', ', $riskFactors) . ". ";
-
-            switch ($riskLevel) {
-                case 'critical':
-                    $insight .= "Immediate action required to prevent stress and potential losses.";
-                    break;
-                case 'high':
-                    $insight .= "Prompt corrective action recommended to protect growth and survival.";
-                    break;
-                case 'medium':
-                    $insight .= "Monitor closely and apply preventive measures.";
-                    break;
-                default:
-                    $insight .= "Regular monitoring advised to maintain stable conditions.";
-            }
+            $insight = "Oh no! The water needs help right now! 🚨 ";
+            $insight .= "Your {$speciesLabel} are in danger. Please check the pond immediately.";
         }
 
-        if (!empty($positiveNotes)) {
-            $insight .= " Positive signs: " . implode('; ', $positiveNotes) . ".";
+        // Add details simply
+        if (!empty($riskFactors)) {
+            $insight .= " Problem: " . implode(', ', $riskFactors) . ".";
+        }
+
+        // Add positive notes if any
+        if (!empty($positiveNotes) && $riskLevel !== 'critical') {
+            $insight .= " On the bright side: " . implode(', ', $positiveNotes) . ".";
         }
 
         return $insight;
