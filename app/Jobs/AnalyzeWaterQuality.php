@@ -112,19 +112,21 @@ class AnalyzeWaterQuality implements ShouldQueue
         $speciesLabel = $species['label'] ?? ucfirst($speciesKey);
 
         // Analyze turbidity
-        [$turbidityOptimalMin, $turbidityOptimalMax] = $species['turbidity']['optimal'];
-        [$turbiditySafeMin, $turbiditySafeMax] = $species['turbidity']['safe'];
-        if ($reading->turbidity < $turbiditySafeMin || $reading->turbidity > $turbiditySafeMax) {
-            $riskFactors[] = "The water is too cloudy! ({$reading->turbidity} NTU)";
-            $recommendations[] = "Clean the filter or remove dirty poop from the bottom.";
-            $recommendations[] = "Stop feeding for a bit so the water clears up.";
-            $riskScore += 30;
-        } elseif ($reading->turbidity < $turbidityOptimalMin || $reading->turbidity > $turbidityOptimalMax) {
-            $riskFactors[] = "Water is a bit murky ({$reading->turbidity} NTU)";
-            $recommendations[] = "Check if the pump is running well to move the water.";
-            $riskScore += 15;
+        // Analyze turbidity (Custom Friendly Scale)
+        $turb = $reading->turbidity;
+        
+        if ($turb > 100) {
+            $riskFactors[] = "Water is Muddy / Dirty (Like chocolate milk) 🍫 ({$turb} NTU)";
+            $recommendations[] = "This is too dirty! Please change the water immediately.";
+            $riskScore += 40;
+        } elseif ($turb > 25) {
+            $riskFactors[] = "Water is Cloudy / Murky (Hard to see the bottom) ☁️ ({$turb} NTU)";
+            $recommendations[] = "Clean the filter or stop feeding for a few hours.";
+            $riskScore += 20;
+        } elseif ($turb > 5) {
+             $positiveNotes[] = "Water is Okay / Normal (Typical pond water) 🧼";
         } else {
-            $positiveNotes[] = "Water is crystal clear! ✨";
+            $positiveNotes[] = "Water is Crystal Clear (Like tap water) 💎";
         }
 
         // Analyze TDS
