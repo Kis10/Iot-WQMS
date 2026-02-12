@@ -13,7 +13,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsApproved::class])->group(function () {
+    Route::get('/approval/check', function (Illuminate\Http\Request $request) {
+        return response()->json(['approved' => $request->user()->is_approved]);
+    })->name('approval.check');
+    Route::get('/approval', function () {
+        return view('auth.approval');
+    })->name('approval.wait');
     Route::get('/dashboard', [WaterQualityController::class, 'dashboard'])->middleware('verified')->name('dashboard');
     Route::get('/dashboard/chart-data', [WaterQualityController::class, 'chartData'])->name('dashboard.chart');
     Route::get('/history', [WaterQualityController::class, 'history'])->name('history');
@@ -23,7 +29,16 @@ Route::middleware('auth')->group(function () {
     Route::post('/ably/auth', [AblyController::class, 'auth'])->name('ably.auth');
     Route::post('/dashboard/refresh', [WaterQualityController::class, 'refresh'])->name('dashboard.refresh');
 
-    // User Monitoring Route
+    // Admin Approval Routes
+    Route::get('/admin/approvals', [\App\Http\Controllers\UserController::class, 'approvals'])->name('admin.users.approvals');
+    Route::get('/admin/approval-check-count', function() {
+        if (!auth()->user()->isAdmin()) return response()->json(['count' => 0]);
+        return response()->json(['count' => \App\Models\User::where('is_approved', false)->count()]);
+    })->name('admin.approval.check-count');
+    Route::get('/admin/approve/{user}', [\App\Http\Controllers\UserController::class, 'approve'])->name('admin.approve');
+    Route::get('/admin/deny/{user}', [\App\Http\Controllers\UserController::class, 'deny'])->name('admin.deny');
+
+    // Default User Monitoring Route
     Route::get('/users', [\App\Http\Controllers\UserController::class, 'index'])->name('users.index');
     Route::get('/users/{user}/activities', [\App\Http\Controllers\UserController::class, 'activities'])->name('users.activities');
     Route::post('/devices/species', [DeviceController::class, 'updateSpecies'])->name('devices.species.update');
@@ -38,7 +53,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::middleware(["auth"])->group(function () {
+    Route::middleware(["auth", \App\Http\Middleware\EnsureUserIsApproved::class])->group(function () {
 
     Route::get("/chat", [GeminiController::class, "index"])
         ->name("chat.page");
