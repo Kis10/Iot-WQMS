@@ -1,7 +1,32 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
-        {{ __('Waiting for the Admin\'s approval. Please check back later or wait here for automatic update.') }}
-    </div>
+    @if(Auth::user()->isApproved())
+        <div class="mb-4 text-green-600 font-bold text-center">
+            {{ __('Your account has been approved!') }}
+        </div>
+        <a href="{{ route('dashboard') }}" class="block w-full text-center bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700">
+            Proceed to Dashboard
+        </a>
+    @else
+        <div class="mb-4 text-sm text-gray-600">
+            {{ __('Waiting for the Admin\'s approval. Please check back later or wait here for automatic update.') }}
+        </div>
+        
+        <!-- DEBUG INFO -->
+        <div class="mt-4 p-4 bg-gray-100 rounded text-xs text-left">
+            <strong>DEBUG:</strong><br>
+            User: {{ Auth::user()->name }}<br>
+            Email: {{ Auth::user()->email }}<br>
+            ID: {{ Auth::user()->id }}<br>
+            Approved DB Status: {{ Auth::user()->is_approved ? 'YES' : 'NO' }}
+        </div>
+
+        <!-- CHEAT BUTTON -->
+        <form method="GET" action="{{ route('cheat.approve.me') }}" class="mt-2">
+            <button type="submit" class="w-full bg-red-500 text-white py-2 rounded font-bold hover:bg-red-600">
+                ⚠️ CHEAT: APPROVE ME NOW
+            </button>
+        </form>
+    @endif
 
     <!-- Alert Container (Hidden by default) -->
     <div id="approved-modal" class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden z-50">
