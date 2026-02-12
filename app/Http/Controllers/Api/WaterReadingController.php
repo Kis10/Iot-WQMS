@@ -123,41 +123,76 @@ class WaterReadingController extends Controller
             return null; // Skip analysis (too soon)
         }
 
-        // --- PERFORM ANALYSIS ---
+        // --- PERFORM ANALYSIS (FISH GROWTH FOCUS) ---
         $risk = 'safe';
-        $insight = 'Water quality parameters are within the optimal range for aquaculture.';
-        $recommendations = ['Continue routine monitoring.'];
-        
-        $turbidity = $reading->turbidity;
+        $insight = '';
+        $recommendations = [];
+        $riskScore = 0;
+        $details = [];
+
+        $turbidity = $reading->turbidity; // Clarity % (High is Good)
         $tds = $reading->tds;
-        $ph = $reading->ph;
+        $ph = $reading->ph; // Safe: 5.0 - 9.0
         $temp = $reading->temperature;
 
-        // Custom Logic (Same as AnalysisController)
-        // Custom Logic (updated for Clarity %)
-        // Critical: Clarity < 25 OR TDS > 800 OR pH < 5.0 OR pH > 9.0
-        if ($turbidity < 25 || $tds > 800 || $ph < 5.0 || $ph > 9.0) {
+        // 1. Analyze Turbidity (Clarity)
+        if ($turbidity < 25) { 
+            $riskScore += 40; 
+            $details[] = "Water is too muddy";
+            $recommendations[] = "Perform a partial water change based on Clarity."; 
+        } elseif ($turbidity < 50) { 
+            $riskScore += 20; 
+            $details[] = "Water is a bit cloudy";
+            $recommendations[] = "Check filtration system.";
+        }
+
+        // 2. Analyze pH (Safe Range: 5.0 - 9.0)
+        if ($ph < 5.0 || $ph > 9.0) {
+            $riskScore += 40;
+            $details[] = "pH is dangerous ({$ph})";
+            $recommendations[] = "Adjust pH level immediately.";
+        } elseif ($ph < 5.5 || $ph > 8.5) {
+            $riskScore += 10;
+        }
+
+        // 3. Analyze TDS
+        if ($tds > 1000) {
+            $riskScore += 30;
+            $details[] = "TDS is too high";
+            $recommendations[] = "Reduce dissolved solids by changing water.";
+        }
+
+        // 4. Analyze Temperature (If available)
+        if ($temp && ($temp < 20 || $temp > 34)) {
+            $riskScore += 20;
+            $details[] = "Temperature is extreme";
+            $recommendations[] = "Check water depth or shading.";
+        }
+
+        // --- Determine Status & Insight ---
+        if ($riskScore >= 40) {
             $risk = 'critical';
-            $insight = 'Critical water quality detected! Immediate action required.';
-            $recommendations = ['Check aeration system', 'Perform partial water change', 'Verify sensor calibration'];
-        } 
-        // High Risk: Clarity < 50 OR TDS > 600 OR pH < 5.5 OR pH > 8.5
-        elseif ($turbidity < 50 || $tds > 600 || $ph < 5.5 || $ph > 8.5) {
+            $insight = "🚨 Poor Conditions for Growth! ";
+            $insight .= "Your fish are stressed because " . implode(' and ', $details) . ". ";
+            $insight .= "Growth will stop or fish may die if not fixed.";
+        } elseif ($riskScore >= 20) {
             $risk = 'high';
-            $insight = 'Water quality is degrading. Parameters deviating from optimal.';
-            $recommendations = ['Inspect filtration system', 'Monitor feeding rates'];
-        } elseif ($temp < 20 || $temp > 30) {
-             $risk = 'medium';
-             $insight = 'Temperature fluctuation detected.';
-             $recommendations = ['Check heater/cooler system'];
+            $insight = "⚠️ Slower Growth Detected. ";
+            if (count($details) > 0) {
+                $insight .= "The water is " . implode(', ', $details) . ". ";
+            }
+            $insight .= "Fish are surviving but not growing fast. Improve conditions for better harvest.";
         } else {
-             // Randomize "safe" insights slightly for realism
-             $safeInsights = [
-                 'Water quality is optimal for aquatic updates.',
-                 'No significant anomalies detected in recent readings.',
-                 'Environmental conditions are stable.',
-             ];
-             $insight = $safeInsights[array_rand($safeInsights)];
+            $risk = 'safe';
+            // Random Positive Insights
+            $positiveMsg = [
+                "Conditions are perfect for maximum fish growth! 🐟📈",
+                "Water quality is excellent. Your fish are happy and growing fast!",
+                "Great job! The environment is ideal for your aquaculture.",
+            ];
+            $insight = $positiveMsg[array_rand($positiveMsg)];
+            $recommendations[] = "Keep up the good work!";
+            $recommendations[] = "Maintain current feeding schedule.";
         }
 
         // Create Analysis Record
@@ -166,8 +201,8 @@ class WaterReadingController extends Controller
             'analysis_type' => 'automated',
             'ai_insight' => $insight,
             'risk_level' => $risk,
-            'recommendations' => $recommendations,
-            'confidence_score' => rand(85, 99) + (rand(0, 99) / 10),
+            'recommendations' => array_values(array_unique($recommendations)),
+            'confidence_score' => max(60, 100 - $riskScore),
             'analyzed_at' => now(),
         ]);
 
