@@ -105,11 +105,15 @@
                         
                         <!-- Background Image -->
                         <div class="absolute inset-0 z-0">
+                            <!-- Preview (New Upload/URL) -->
                             <template x-if="heroBgPreview">
                                 <img :src="heroBgPreview" class="w-full h-full object-cover opacity-40">
                             </template>
-                            <template x-if="!heroBgPreview && data.hero_bg.image">
-                                 <img :src="'/' + data.hero_bg.image" class="w-full h-full object-cover opacity-40">
+                            <!-- Saved Background (From DB) -->
+                            <template x-if="!heroBgPreview && data.hero_bg && data.hero_bg.value">
+                                <img :src="data.hero_bg.value.startsWith('http') ? data.hero_bg.value : '/storage/' + data.hero_bg.value" 
+                                     class="w-full h-full object-cover opacity-40"
+                                     onerror="this.style.display='none'">
                             </template>
                         </div>
                         <div class="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-slate-900/40 to-slate-950/40 z-0"></div>
@@ -274,7 +278,7 @@
             const defaults = {
                 hero_title: { value: "IoT-Based Water Quality <br> <span class='gradient-text'>Monitoring System</span>" },
                 hero_subtitle: { value: "Ensuring a sustainable aquaculture environment through high-precision IoT sensors and real-time data analytics." },
-                hero_bg: { image: null }, // Handle missing image gracefully
+                hero_bg: { value: null }, // Handle missing image gracefully
                 
                 mission_badge: { value: "OUR MISSION" },
                 mission_title: { value: "The Future of Aquaculture Management" },
@@ -307,8 +311,8 @@
                 }
             }
             
-            // Ensure hero_bg exists specifically because we access .image
-            if (!mergedData.hero_bg) mergedData.hero_bg = { image: null };
+            // Ensure hero_bg exists specifically because we access .value
+            if (!mergedData.hero_bg) mergedData.hero_bg = { value: null };
 
             return {
                 data: mergedData,
@@ -336,7 +340,7 @@
                         // Ensure object exists
                         if (!this.data.hero_bg) this.data.hero_bg = {};
                         
-                        this.data.hero_bg.image = this.tempUrl;
+                        this.data.hero_bg.value = this.tempUrl;
                         this.heroBgPreview = this.tempUrl;
                         this.heroBgFile = null;
                     }
