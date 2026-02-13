@@ -109,10 +109,14 @@
                             <template x-if="heroBgPreview">
                                 <img :src="heroBgPreview" class="w-full h-full object-cover opacity-40">
                             </template>
-                            <!-- Saved Background (From DB) -->
+                            <!-- Saved Background (From DB or Default) -->
                             <template x-if="!heroBgPreview && data.hero_bg && data.hero_bg.value">
-                                <img :src="data.hero_bg.value.startsWith('http') ? data.hero_bg.value : '/storage/' + data.hero_bg.value" 
-                                     class="w-full h-full object-cover opacity-40"
+                                <img :src="data.hero_bg.value.startsWith('http') ? data.hero_bg.value : (
+                                    data.hero_bg.value.startsWith('/') ? data.hero_bg.value : (
+                                    data.hero_bg.value.startsWith('img/') ? '/' + data.hero_bg.value : 
+                                    '/storage/' + data.hero_bg.value
+                                ))" 
+                                     class="w-full h-full object-cover opacity-40 ml-0 transition-opacity duration-300"
                                      onerror="this.style.display='none'">
                             </template>
                         </div>
@@ -278,7 +282,7 @@
             const defaults = {
                 hero_title: { value: "IoT-Based Water Quality <br> <span class='gradient-text'>Monitoring System</span>" },
                 hero_subtitle: { value: "Ensuring a sustainable aquaculture environment through high-precision IoT sensors and real-time data analytics." },
-                hero_bg: { value: null }, // Handle missing image gracefully
+                hero_bg: { value: "img/logo/hero-bg.jpg" }, // Default local image
                 
                 mission_badge: { value: "OUR MISSION" },
                 mission_title: { value: "The Future of Aquaculture Management" },
@@ -312,7 +316,8 @@
             }
             
             // Ensure hero_bg exists specifically because we access .value
-            if (!mergedData.hero_bg) mergedData.hero_bg = { value: null };
+            if (!mergedData.hero_bg) mergedData.hero_bg = { value: "img/logo/hero-bg.jpg" };
+            if (!mergedData.hero_bg.value) mergedData.hero_bg.value = "img/logo/hero-bg.jpg";
 
             return {
                 data: mergedData,
