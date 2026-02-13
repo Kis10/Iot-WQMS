@@ -15,6 +15,8 @@
                             Alerts
                         @elseif(request()->routeIs('analysis.index'))
                             AI Analysis
+                        @elseif(request()->routeIs('users.index'))
+                            User Monitoring
                         @else
                             Dashboard
                         @endif

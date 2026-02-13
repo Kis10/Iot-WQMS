@@ -15,16 +15,13 @@ class WaterQualityController extends Controller
     {
         $resetDashboard = (bool) $request->session()->pull('reset_dashboard', false);
 
-        // Fetch users for User Monitoring (exclude admins)
-        $users = \App\Models\User::where('role', '!=', 'admin')->get();
-
         if ($resetDashboard) {
             $latest = null;
             $chartData = collect();
             $devices = Device::orderBy('device_id')->get();
             $latestAnalysis = null;
 
-            return view('dashboard', compact('latest', 'chartData', 'latestAnalysis', 'devices', 'resetDashboard', 'users'));
+            return view('dashboard', compact('latest', 'chartData', 'latestAnalysis', 'devices', 'resetDashboard'));
         }
 
         $latest = WaterReading::with('device')->latest()->first();
@@ -39,7 +36,7 @@ class WaterQualityController extends Controller
 
         $resetDashboard = false;
         
-        return view('dashboard', compact('latest', 'chartData', 'latestAnalysis', 'devices', 'resetDashboard', 'users'));
+        return view('dashboard', compact('latest', 'chartData', 'latestAnalysis', 'devices', 'resetDashboard'));
     }
 
     // History
