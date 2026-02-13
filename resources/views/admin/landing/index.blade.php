@@ -26,11 +26,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col">
             
             <!-- Header / Toolbar -->
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Landing Page Editor
-                </h2>
-                
+            <!-- Header / Toolbar -->
+            <div class="flex justify-end items-center mb-4">
                 <div class="flex items-center gap-3">
                     <span x-show="showSuccess" x-transition class="text-green-600 font-bold text-sm">Saved Successfully!</span>
                     <button @click="saveChanges" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md font-bold transition flex items-center gap-2 text-sm">
@@ -238,8 +235,48 @@
 
     <script>
         function landingEditor(initialData) {
+            // Default content matching the Landing Page Seeder/Welcome View
+            const defaults = {
+                hero_title: { value: "IoT-Based Water Quality <br> <span class='gradient-text'>Monitoring System</span>" },
+                hero_subtitle: { value: "Ensuring a sustainable aquaculture environment through high-precision IoT sensors and real-time data analytics." },
+                hero_bg: { image: null }, // Handle missing image gracefully
+                
+                mission_badge: { value: "OUR MISSION" },
+                mission_title: { value: "The Future of Aquaculture Management" },
+                mission_text: { value: "Our system is designed to provide farmers with a robust, reliable, and user-friendly platform for monitoring vital aquatic conditions. By leveraging the power of IoT, we help eliminate the guesswork, reduce risks, and maximize productivity in aquaculture operations." },
+                
+                sensors_title: { value: "Integrated Sensor Technology" },
+                sensors_subtitle: { value: "Our system utilizes five high-precision sensors to capture every critical metric." },
+                
+                services_title: { value: "Our Services" },
+                services_subtitle: { value: "We provide end-to-end solutions for aquaculture technology integration." },
+                
+                contact_title: { value: "Contact Us" },
+                contact_subtitle: { value: "Have questions? We're here to help you optimize your aquaculture operations." },
+                
+                footer_devs: { value: "Developed by: Kirstine A. Sanchez, Dannica J. Besinio and Joy Mae A. Samra" }
+            };
+
+            // Merge defaults with initialData (DB data overrides defaults)
+            // We use a deep merge approach for specific keys to ensure structure exists
+            let mergedData = { ...defaults };
+            
+            // If initialData is array (empty DB), it might come as [], we need object
+            if (Array.isArray(initialData)) {
+                initialData = {};
+            }
+
+            for (const key in defaults) {
+                if (initialData[key]) {
+                    mergedData[key] = initialData[key];
+                }
+            }
+            
+            // Ensure hero_bg exists specifically because we access .image
+            if (!mergedData.hero_bg) mergedData.hero_bg = { image: null };
+
             return {
-                data: initialData,
+                data: mergedData,
                 heroBgPreview: null,
                 heroBgFile: null,
                 showUrlModal: false,
@@ -261,6 +298,9 @@
 
                 applyUrl() {
                     if (this.tempUrl) {
+                        // Ensure object exists
+                        if (!this.data.hero_bg) this.data.hero_bg = {};
+                        
                         this.data.hero_bg.image = this.tempUrl;
                         this.heroBgPreview = this.tempUrl;
                         this.heroBgFile = null;
@@ -285,6 +325,7 @@
                         formData.append('hero_bg_url', this.tempUrl);
                     }
 
+                    // CSRF
                     formData.append('_method', 'PUT');
 
                     fetch('{{ route('admin.landing.update') }}', {
@@ -297,7 +338,7 @@
                     .then(res => {
                         if (res.ok) {
                             this.showSuccess = true;
-                            setTimeout(() => this.showSuccess = false, 3000);
+                            setTimeout(() => this.showSuccess = false, 2000);
                         } else {
                             alert('Failed to save changes.');
                         }
