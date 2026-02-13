@@ -58,6 +58,7 @@ class User extends Authenticatable
 
     public function isOnline()
     {
-        return cache()->has('user-is-online-' . $this->id);
+        $lastActivity = $this->loginActivities()->latest('login_at')->first();
+        return $lastActivity && is_null($lastActivity->logout_at);
     }
 }
