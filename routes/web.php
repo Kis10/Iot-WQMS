@@ -14,7 +14,7 @@ Route::get('/', function () {
         return redirect()->route('dashboard');
     }
     return view('welcome');
-});
+})->name('welcome');
 
 Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsApproved::class])->group(function () {
     // FIX: Promote current user to Admin
