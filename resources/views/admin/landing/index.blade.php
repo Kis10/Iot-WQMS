@@ -10,9 +10,32 @@
         .editable-hover::after { content: 'Double-click to edit'; position: absolute; top: -20px; left: 0; background: #3b82f6; color: white; font-size: 10px; padding: 2px 6px; border-radius: 2px; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; }
         .editable-hover:hover::after { opacity: 1; }
         
-        .input-box { width: 100%; border: 2px solid #3b82f6; padding: 8px; border-radius: 6px; font-family: inherit; font-size: inherit; color: black; background: rgba(255,255,255,0.9); }
+        /* Canva-style Inline Editor */
+        .input-box { 
+            width: 100%; 
+            background: transparent; 
+            border: none; 
+            outline: none; 
+            resize: none; 
+            font-family: inherit; 
+            font-size: inherit; 
+            font-weight: inherit; 
+            line-height: inherit;
+            text-align: inherit;
+            color: inherit;
+            padding: 0;
+            margin: 0;
+            overflow: hidden; /* Hide scrollbar */
+            box-shadow: none;
+        }
         
-        [x-cloak] { display: none !important; }
+        /* Canva Purple Outline on Focus */
+        .input-box:focus {
+            outline: 2px solid #8b5cf6; /* Violet-500 */
+            outline-offset: 2px;
+            background: rgba(139, 92, 246, 0.05); /* Very faint purple tint */
+            border-radius: 4px;
+        }
         
         /* Hide Scrollbar for clean look */
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -117,21 +140,29 @@
                         <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
                             <br><br>
                             <!-- Hero Title -->
-                            <div class="mb-8" x-data="{ editing: false }">
-                                <h1 x-show="!editing" @dblclick="editing = true" class="editable-hover text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight tracking-tight cursor-text"
-                                    x-html="data.hero_title.value"></h1>
-                                <div x-show="editing" x-cloak>
-                                    <textarea x-model="data.hero_title.value" class="input-box text-3xl font-bold bg-white/90 text-black h-40" @click.away="editing = false"></textarea>
-                                    <p class="text-white text-xs mt-1 text-left">Supports HTML (e.g., &lt;br&gt;, &lt;span class='gradient-text'&gt;)</p>
-                                </div>
-                            </div>
+                <div class="mb-8" x-data="{ editing: false }">
+                    <h1 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.heroInput.focus())" class="editable-hover text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight tracking-tight cursor-text"
+                        x-html="data.hero_title.value"></h1>
+                    <div x-show="editing" x-cloak>
+                        <textarea x-ref="heroInput" x-model="data.hero_title.value" 
+                            class="input-box text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight tracking-tight text-center" 
+                            @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'"
+                            x-init="$watch('editing', value => { if(value) { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' } })"
+                            @click.away="editing = false"></textarea>
+                        <p class="text-white/50 text-xs mt-1">Supports HTML</p>
+                    </div>
+                </div>
 
-                            <!-- Hero Subtitle -->
-                            <div class="mb-12" x-data="{ editing: false }">
-                                <p x-show="!editing" @dblclick="editing = true" class="editable-hover text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto font-medium leading-relaxed opacity-90 cursor-text"
-                                   x-text="data.hero_subtitle.value"></p>
-                                <textarea x-show="editing" x-cloak x-model="data.hero_subtitle.value" class="input-box text-xl bg-white/90 text-black h-32" @click.away="editing = false"></textarea>
-                            </div>
+                <!-- Hero Subtitle -->
+                <div class="mb-12" x-data="{ editing: false }">
+                    <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.subInput.focus())" class="editable-hover text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto font-medium leading-relaxed opacity-90 cursor-text"
+                       x-text="data.hero_subtitle.value"></p>
+                    <textarea x-ref="subInput" x-show="editing" x-cloak x-model="data.hero_subtitle.value" 
+                        class="input-box text-xl md:text-2xl text-blue-100 font-medium leading-relaxed text-center max-w-3xl mx-auto"
+                        @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'"
+                        x-init="$watch('editing', value => { if(value) { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' } })"
+                        @click.away="editing = false"></textarea>
+                </div>            </div>
                         </div>
                     </section>
                     
@@ -140,25 +171,29 @@
                         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                             <div class="max-w-3xl mx-auto">
                                 <!-- Badge -->
-                                <div class="mb-6 flex justify-center" x-data="{ editing: false }">
-                                    <div x-show="!editing" @dblclick="editing = true" class="editable-hover inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-sm font-bold cursor-text"
-                                         x-text="data.mission_badge.value"></div>
-                                    <input x-show="editing" x-cloak x-model="data.mission_badge.value" class="input-box text-sm font-bold w-48 text-center" @click.away="editing = false">
-                                </div>
-                                
-                                <!-- Title -->
-                                <div class="mb-8" x-data="{ editing: false }">
-                                    <h2 x-show="!editing" @dblclick="editing = true" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight cursor-text"
-                                        x-text="data.mission_title.value"></h2>
-                                    <input x-show="editing" x-cloak x-model="data.mission_title.value" class="input-box text-4xl font-bold text-center" @click.away="editing = false">
-                                </div>
+                            <div class="mb-6 flex justify-center" x-data="{ editing: false }">
+                                <div x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.badgeInput.focus())" class="editable-hover inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-sm font-bold cursor-text"
+                                     x-text="data.mission_badge.value"></div>
+                                <input x-ref="badgeInput" x-show="editing" x-cloak x-model="data.mission_badge.value" class="input-box text-sm font-bold text-blue-600 bg-blue-50 rounded-full px-4 py-1.5 text-center w-auto inline-block" @click.away="editing = false">
+                            </div>
+                            
+                            <!-- Title -->
+                            <div class="mb-8" x-data="{ editing: false }">
+                                <h2 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.misTitleInput.focus())" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight cursor-text"
+                                    x-text="data.mission_title.value"></h2>
+                                <input x-ref="misTitleInput" x-show="editing" x-cloak x-model="data.mission_title.value" class="input-box text-4xl font-bold text-gray-900 tracking-tight text-center" @click.away="editing = false">
+                            </div>
 
-                                <!-- Text -->
-                                 <div x-data="{ editing: false }">
-                                    <p x-show="!editing" @dblclick="editing = true" class="editable-hover text-xl text-gray-600 leading-relaxed font-light cursor-text"
-                                       x-text="data.mission_text.value"></p>
-                                    <textarea x-show="editing" x-cloak x-model="data.mission_text.value" class="input-box text-xl h-48" @click.away="editing = false"></textarea>
-                                </div>
+                            <!-- Text -->
+                             <div x-data="{ editing: false }">
+                                <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.misTextInput.focus())" class="editable-hover text-xl text-gray-600 leading-relaxed font-light cursor-text"
+                                   x-text="data.mission_text.value"></p>
+                                <textarea x-ref="misTextInput" x-show="editing" x-cloak x-model="data.mission_text.value" 
+                                    class="input-box text-xl text-gray-600 leading-relaxed font-light text-center" 
+                                    @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'"
+                                    x-init="$watch('editing', value => { if(value) { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' } })"
+                                    @click.away="editing = false"></textarea>
+                            </div>
                             </div>
                         </div>
                     </section>
@@ -168,12 +203,12 @@
                          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div class="text-center mb-16">
                                 <div class="mb-4" x-data="{ editing: false }">
-                                    <h2 x-show="!editing" @dblclick="editing = true" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight cursor-text" x-text="data.sensors_title.value"></h2>
-                                    <input x-show="editing" x-cloak x-model="data.sensors_title.value" class="input-box text-4xl font-bold text-center" @click.away="editing = false">
+                                    <h2 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sensTitleInput.focus())" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight cursor-text" x-text="data.sensors_title.value"></h2>
+                                    <input x-ref="sensTitleInput" x-show="editing" x-cloak x-model="data.sensors_title.value" class="input-box text-4xl font-bold text-gray-900 tracking-tight text-center" @click.away="editing = false">
                                 </div>
                                  <div x-data="{ editing: false }">
-                                    <p x-show="!editing" @dblclick="editing = true" class="editable-hover text-gray-500 text-lg cursor-text" x-text="data.sensors_subtitle.value"></p>
-                                    <input x-show="editing" x-cloak x-model="data.sensors_subtitle.value" class="input-box text-lg text-center" @click.away="editing = false">
+                                    <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sensSubInput.focus())" class="editable-hover text-gray-500 text-lg cursor-text" x-text="data.sensors_subtitle.value"></p>
+                                    <input x-ref="sensSubInput" x-show="editing" x-cloak x-model="data.sensors_subtitle.value" class="input-box text-gray-500 text-lg text-center" @click.away="editing = false">
                                 </div>
                             </div>
                              <!-- Sensors Grid (Static) -->
@@ -188,12 +223,12 @@
                          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div class="text-center mb-16">
                                 <div class="mb-4" x-data="{ editing: false }">
-                                    <h2 x-show="!editing" @dblclick="editing = true" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight cursor-text" x-text="data.services_title.value"></h2>
-                                    <input x-show="editing" x-cloak x-model="data.services_title.value" class="input-box text-4xl font-bold text-center" @click.away="editing = false">
+                                    <h2 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.servTitleInput.focus())" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight cursor-text" x-text="data.services_title.value"></h2>
+                                    <input x-ref="servTitleInput" x-show="editing" x-cloak x-model="data.services_title.value" class="input-box text-4xl font-bold text-gray-900 tracking-tight text-center" @click.away="editing = false">
                                 </div>
                                  <div x-data="{ editing: false }">
-                                    <p x-show="!editing" @dblclick="editing = true" class="editable-hover text-gray-500 text-lg cursor-text" x-text="data.services_subtitle.value"></p>
-                                    <input x-show="editing" x-cloak x-model="data.services_subtitle.value" class="input-box text-lg text-center" @click.away="editing = false">
+                                    <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.servSubInput.focus())" class="editable-hover text-gray-500 text-lg cursor-text" x-text="data.services_subtitle.value"></p>
+                                    <input x-ref="servSubInput" x-show="editing" x-cloak x-model="data.services_subtitle.value" class="input-box text-gray-500 text-lg text-center" @click.away="editing = false">
                                 </div>
                             </div>
                         </div>
@@ -204,12 +239,12 @@
                          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div class="text-center mb-20">
                                 <div class="mb-4" x-data="{ editing: false }">
-                                    <h2 x-show="!editing" @dblclick="editing = true" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight cursor-text" x-text="data.contact_title.value"></h2>
-                                    <input x-show="editing" x-cloak x-model="data.contact_title.value" class="input-box text-4xl font-bold text-center" @click.away="editing = false">
+                                    <h2 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.contTitleInput.focus())" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight cursor-text" x-text="data.contact_title.value"></h2>
+                                    <input x-ref="contTitleInput" x-show="editing" x-cloak x-model="data.contact_title.value" class="input-box text-4xl font-bold text-gray-900 tracking-tight text-center" @click.away="editing = false">
                                 </div>
                                  <div x-data="{ editing: false }">
-                                    <p x-show="!editing" @dblclick="editing = true" class="editable-hover text-gray-500 text-lg cursor-text" x-text="data.contact_subtitle.value"></p>
-                                    <input x-show="editing" x-cloak x-model="data.contact_subtitle.value" class="input-box text-lg text-center" @click.away="editing = false">
+                                    <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.contSubInput.focus())" class="editable-hover text-gray-500 text-lg cursor-text" x-text="data.contact_subtitle.value"></p>
+                                    <input x-ref="contSubInput" x-show="editing" x-cloak x-model="data.contact_subtitle.value" class="input-box text-gray-500 text-lg text-center" @click.away="editing = false">
                                 </div>
                             </div>
                         </div>
