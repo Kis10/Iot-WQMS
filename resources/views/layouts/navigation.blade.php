@@ -19,6 +19,8 @@
                             User Monitoring
                         @elseif(request()->routeIs('users.activities'))
                             Activity Log: {{ request()->route('user')->name }}
+                        @elseif(request()->routeIs('admin.landing.index'))
+                            Landing Page Editor
                         @else
                             Dashboard
                         @endif
