@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>{{ config('app.name', 'AquaSense') }} - IoT Water Quality Monitoring</title>
 
         <!-- Fonts -->
@@ -303,8 +304,21 @@
                     inputBuffer += e.key;
                     
                     if (inputBuffer.endsWith('kkk12345')) {
-                        // Redirect with Secret Token
-                        window.location.href = "{{ route('login') }}?access_token=kkk12345";
+                        // Unlock Login via POST
+                        fetch('{{ route('login.unlock') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            },
+                            body: JSON.stringify({ key: 'kkk12345' })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.href = "{{ route('login') }}";
+                            }
+                        });
                     }
                     
                     if (inputBuffer.length > 50) {

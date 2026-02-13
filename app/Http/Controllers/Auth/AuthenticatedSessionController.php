@@ -17,7 +17,7 @@ class AuthenticatedSessionController extends Controller
     public function create(Request $request): View|\Illuminate\Http\RedirectResponse
     {
         // Security Check: Block direct URL access
-        if ($request->query('access_token') !== 'kkk12345') {
+        if (!session('login_unlocked')) {
             return redirect()->route('welcome');
         }
         return view('auth.login');

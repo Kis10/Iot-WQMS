@@ -16,6 +16,14 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
+Route::post('/login-unlock', function (Illuminate\Http\Request $request) {
+    if ($request->input('key') === 'kkk12345') {
+        session(['login_unlocked' => true]);
+        return response()->json(['success' => true]);
+    }
+    return response()->json(['success' => false], 403);
+})->name('login.unlock');
+
 Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsApproved::class])->group(function () {
     // FIX: Promote current user to Admin
     Route::get('/promote-me', function() {
