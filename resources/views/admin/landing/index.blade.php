@@ -282,7 +282,7 @@
             const defaults = {
                 hero_title: { value: "IoT-Based Water Quality <br> <span class='gradient-text'>Monitoring System</span>" },
                 hero_subtitle: { value: "Ensuring a sustainable aquaculture environment through high-precision IoT sensors and real-time data analytics." },
-                hero_bg: { value: "img/logo/hero-bg.jpg" }, // Default local image
+                hero_bg: { value: null }, // Default local image
                 
                 mission_badge: { value: "OUR MISSION" },
                 mission_title: { value: "The Future of Aquaculture Management" },
@@ -316,8 +316,8 @@
             }
             
             // Ensure hero_bg exists specifically because we access .value
-            if (!mergedData.hero_bg) mergedData.hero_bg = { value: "img/logo/hero-bg.jpg" };
-            if (!mergedData.hero_bg.value) mergedData.hero_bg.value = "img/logo/hero-bg.jpg";
+            if (!mergedData.hero_bg) mergedData.hero_bg = { value: null };
+            if (!mergedData.hero_bg.value) mergedData.hero_bg.value = null;
 
             return {
                 data: mergedData,
