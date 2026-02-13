@@ -10,7 +10,7 @@
         .editable-hover::after { content: 'Double-click to edit'; position: absolute; top: -20px; left: 0; background: #3b82f6; color: white; font-size: 10px; padding: 2px 6px; border-radius: 2px; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; }
         .editable-hover:hover::after { opacity: 1; }
         
-        /* Transparent Input Box that mimics text */
+        /* Transparent Input Box that mimics text EXACTLY */
         .input-box { 
             width: 100%; 
             background: transparent; 
@@ -24,12 +24,14 @@
             text-align: inherit;
             color: inherit;
             padding: 0;
+            margin: 0;
             overflow: hidden;
             box-shadow: none;
         }
         .input-box:focus {
-            outline: 2px dashed rgba(59, 130, 246, 0.5); /* Subtle focus ring */
-            background: rgba(255, 255, 255, 0.1); /* Slight highlight */
+            outline: none;
+            background: transparent;
+            box-shadow: none;
         }
         
         [x-cloak] { display: none !important; }
