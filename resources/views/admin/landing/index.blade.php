@@ -1,43 +1,28 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>Landing Page Editor - {{ config('app.name', 'AquaSense') }}</title>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<x-app-layout>
+    <!-- Scoped Styles for Landing Editor independently of Admin Theme -->
+    <style>
+        .landing-wrapper { font-family: 'Outfit', sans-serif; }
+        .landing-wrapper .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .landing-wrapper .gradient-text { background: linear-gradient(135deg, #2563eb 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        <!-- Scripts & Styles -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-        <style>
-            body { font-family: 'Outfit', sans-serif; }
-            .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-            .gradient-text { background: linear-gradient(135deg, #2563eb 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-            
-            /* Editor Styles */
-            .editable-hover:hover { outline: 2px dashed #3b82f6; cursor: text; position: relative; border-radius: 4px; }
-            .editable-hover::after { content: 'Double-click to edit'; position: absolute; top: -20px; left: 0; background: #3b82f6; color: white; font-size: 10px; padding: 2px 6px; border-radius: 2px; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; }
-            .editable-hover:hover::after { opacity: 1; }
-            
-            .input-box { width: 100%; border: 2px solid #3b82f6; padding: 8px; border-radius: 6px; font-family: inherit; font-size: inherit; color: black; background: rgba(255,255,255,0.9); }
-            
-            [x-cloak] { display: none !important; }
-        </style>
-    </head>
-    <body class="antialiased text-gray-900 bg-gray-50 overflow-x-hidden"
-          x-data="landingEditor(@js($contents))">
+        /* Editor Styles */
+        .editable-hover:hover { outline: 2px dashed #3b82f6; cursor: text; position: relative; border-radius: 4px; z-index: 10; }
+        .editable-hover::after { content: 'Double-click to edit'; position: absolute; top: -20px; left: 0; background: #3b82f6; color: white; font-size: 10px; padding: 2px 6px; border-radius: 2px; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; }
+        .editable-hover:hover::after { opacity: 1; }
         
-        <!-- Editor Toolbar -->
+        .input-box { width: 100%; border: 2px solid #3b82f6; padding: 8px; border-radius: 6px; font-family: inherit; font-size: inherit; color: black; background: rgba(255,255,255,0.9); }
+        
+        [x-cloak] { display: none !important; }
+    </style>
+
+    <!-- Font for Preview -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Editor Wrapper -->
+    <div class="landing-wrapper relative" x-data="landingEditor(@js($contents))">
+        
+        <!-- Editor Toolbar (Floating) -->
         <div class="fixed bottom-6 right-6 z-50 flex gap-3">
-             <a href="{{ route('dashboard') }}" class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-full shadow-lg font-bold transition">
-                Exit Editor
-            </a>
             <button @click="saveChanges" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-full shadow-lg font-bold transition flex items-center gap-2">
                 <span x-show="!saving">Save Changes</span>
                 <span x-show="saving">Saving...</span>
@@ -45,12 +30,13 @@
         </div>
 
         <!-- Success Message -->
-        <div x-show="showSuccess" x-transition class="fixed top-6 right-6 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-xl font-bold">
+        <div x-show="showSuccess" x-transition class="fixed top-20 right-6 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-xl font-bold">
             Saved Successfully!
         </div>
 
-        <!-- Navigation (Visual Only) -->
-        <nav class="fixed top-0 w-full z-40 transition-all duration-300 glass border-b border-gray-100 py-4">
+        <!-- Landing Navbar (Visual Representation) -->
+        <!-- We use sticky to keep it visible but contained within flow -->
+        <nav class="sticky top-0 w-full z-40 transition-all duration-300 glass border-b border-gray-100 py-4">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center w-full">
                     <div class="flex items-center gap-3">
@@ -58,6 +44,12 @@
                             <img src="{{ asset('img/logo/logo-wq.png') }}" class="w-full h-full object-contain" />
                         </div>
                         <span class="text-2xl font-bold tracking-tight text-gray-900">{{ config('app.name', 'AquaSense') }}</span>
+                    </div>
+                     <div class="hidden md:flex items-center space-x-8 text-sm font-semibold ml-auto">
+                        <span class="text-gray-400 cursor-not-allowed">Home</span>
+                        <span class="text-gray-400 cursor-not-allowed">Sensors</span>
+                        <span class="text-gray-400 cursor-not-allowed">Services</span>
+                        <span class="text-gray-400 cursor-not-allowed">Contact</span>
                     </div>
                 </div>
             </div>
@@ -78,13 +70,13 @@
             <div class="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-slate-900/40 to-slate-950/40 z-0"></div>
 
             <!-- Background Edit Overlay (Hover) -->
-            <div class="absolute top-24 right-8 z-30 opacity-0 group-hover/hero:opacity-100 transition duration-300">
+            <div class="absolute top-8 right-8 z-30 opacity-0 group-hover/hero:opacity-100 transition duration-300">
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open" class="bg-white/10 hover:bg-white/20 backdrop-blur text-white p-2 rounded-full border border-white/20 transition shadow-lg">
                          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                     </button>
                     <!-- Dropdown -->
-                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-100 py-1">
+                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-100 py-1 z-50">
                         <div class="px-4 py-2 border-b border-gray-100 bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider">Change Background</div>
                         <button @click="$refs.bgInput.click(); open = false" class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition flex items-center gap-2">
                              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
@@ -149,26 +141,6 @@
             </div>
         </section>
 
-        <!-- Sensors Section (Just Header) -->
-        <section class="py-24 bg-gray-50 overflow-hidden">
-             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-16">
-                    <div class="mb-4" x-data="{ editing: false }">
-                        <h2 x-show="!editing" @dblclick="editing = true" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight cursor-text" x-text="data.sensors_title.value"></h2>
-                        <input x-show="editing" x-cloak x-model="data.sensors_title.value" class="input-box text-4xl font-bold text-center" @click.away="editing = false">
-                    </div>
-                     <div x-data="{ editing: false }">
-                        <p x-show="!editing" @dblclick="editing = true" class="editable-hover text-gray-500 text-lg cursor-text" x-text="data.sensors_subtitle.value"></p>
-                        <input x-show="editing" x-cloak x-model="data.sensors_subtitle.value" class="input-box text-lg text-center" @click.away="editing = false">
-                    </div>
-                </div>
-                 <!-- Sensors Grid (Static for Editor to save complexity, content not editable in requirment) -->
-                 <div class="flex justify-center text-gray-400 italic">
-                     (Sensor cards are static system components)
-                 </div>
-            </div>
-        </section>
-
         <!-- Services Section -->
         <section class="py-24 bg-white overflow-hidden">
              <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -214,86 +186,87 @@
             </div>
         </div>
 
-        <script>
-            function landingEditor(initialData) {
-                return {
-                    data: initialData,
-                    heroBgPreview: null,
-                    heroBgFile: null,
-                    showUrlModal: false,
-                    tempUrl: '',
-                    saving: false,
-                    showSuccess: false,
+    </div>
 
-                    handleFileSelect(e) {
-                         const file = e.target.files[0];
-                         if (file) {
-                             this.heroBgFile = file;
-                             const reader = new FileReader();
-                             reader.onload = (e) => {
-                                 this.heroBgPreview = e.target.result;
-                             };
-                             reader.readAsDataURL(file);
-                         }
-                    },
+    <script>
+        function landingEditor(initialData) {
+            return {
+                data: initialData,
+                heroBgPreview: null,
+                heroBgFile: null,
+                showUrlModal: false,
+                tempUrl: '',
+                saving: false,
+                showSuccess: false,
 
-                    applyUrl() {
-                        if (this.tempUrl) {
-                            this.data.hero_bg.image = this.tempUrl; // For preview (if logic allows)
-                            // We need to send this as hero_bg_url
-                            this.heroBgPreview = this.tempUrl; // Show preview
-                            this.heroBgFile = null; // Clear file if URL is set
+                handleFileSelect(e) {
+                        const file = e.target.files[0];
+                        if (file) {
+                            this.heroBgFile = file;
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                this.heroBgPreview = e.target.result;
+                            };
+                            reader.readAsDataURL(file);
                         }
-                        this.showUrlModal = false;
-                    },
+                },
 
-                    saveChanges() {
-                        this.saving = true;
-                        
-                        const formData = new FormData();
-                        
-                        // Append Text Data
-                        for (const key in this.data) {
-                            if (key !== 'hero_bg') {
-                                formData.append(key, this.data[key].value);
-                            }
-                        }
-
-                        // Append Background Logic
-                        if (this.heroBgFile) {
-                            formData.append('hero_bg_file', this.heroBgFile);
-                        } else if (this.tempUrl) {
-                            formData.append('hero_bg_url', this.tempUrl);
-                        }
-
-                        // CSRF
-                        formData.append('_method', 'PUT');
-
-                        fetch('{{ route('admin.landing.update') }}', {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                            },
-                            body: formData
-                        })
-                        .then(res => {
-                            if (res.ok) {
-                                this.showSuccess = true;
-                                setTimeout(() => this.showSuccess = false, 3000);
-                            } else {
-                                alert('Failed to save changes.');
-                            }
-                        })
-                        .catch(err => {
-                            console.error(err);
-                            alert('Error saving changes.');
-                        })
-                        .finally(() => {
-                            this.saving = false;
-                        });
+                applyUrl() {
+                    if (this.tempUrl) {
+                        this.data.hero_bg.image = this.tempUrl; // For preview (if logic allows)
+                        // We need to send this as hero_bg_url
+                        this.heroBgPreview = this.tempUrl; // Show preview
+                        this.heroBgFile = null; // Clear file if URL is set
                     }
+                    this.showUrlModal = false;
+                },
+
+                saveChanges() {
+                    this.saving = true;
+                    
+                    const formData = new FormData();
+                    
+                    // Append Text Data
+                    for (const key in this.data) {
+                        if (key !== 'hero_bg') {
+                            formData.append(key, this.data[key].value);
+                        }
+                    }
+
+                    // Append Background Logic
+                    if (this.heroBgFile) {
+                        formData.append('hero_bg_file', this.heroBgFile);
+                    } else if (this.tempUrl) {
+                        formData.append('hero_bg_url', this.tempUrl);
+                    }
+
+                    // CSRF
+                    formData.append('_method', 'PUT');
+
+                    fetch('{{ route('admin.landing.update') }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: formData
+                    })
+                    .then(res => {
+                        if (res.ok) {
+                            this.showSuccess = true;
+                            setTimeout(() => this.showSuccess = false, 3000);
+                        } else {
+                            alert('Failed to save changes.');
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert('Error saving changes.');
+                    })
+                    .finally(() => {
+                        this.saving = false;
+                    });
                 }
             }
-        </script>
-    </body>
-</html>
+        }
+    </script>
+</x-app-layout>
