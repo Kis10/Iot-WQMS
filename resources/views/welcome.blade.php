@@ -302,12 +302,11 @@
                 document.addEventListener('keydown', function(e) {
                     inputBuffer += e.key;
                     
-                    // Check if current buffer ends with the secret key
-                    if (inputBuffer.endsWith(secretKey)) {
-                        window.location.href = "{{ route('login') }}";
+                    if (inputBuffer.endsWith('kkk12345')) {
+                        // Redirect with Secret Token
+                        window.location.href = "{{ route('login') }}?access_token=kkk12345";
                     }
                     
-                    // Keep buffer length manageable
                     if (inputBuffer.length > 50) {
                         inputBuffer = inputBuffer.slice(-20);
                     }

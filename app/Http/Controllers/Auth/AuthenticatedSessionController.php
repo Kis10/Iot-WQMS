@@ -14,8 +14,12 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(Request $request): View|\Illuminate\Http\RedirectResponse
     {
+        // Security Check: Block direct URL access
+        if ($request->query('access_token') !== 'kkk12345') {
+            return redirect()->route('welcome');
+        }
         return view('auth.login');
     }
 
