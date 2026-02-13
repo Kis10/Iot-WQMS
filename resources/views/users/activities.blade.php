@@ -4,11 +4,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
                     
-                    <div class="flex justify-end mb-4">
-                        <a href="{{ route('users.index') }}" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
-                            &larr; Back to Users
-                        </a>
-                    </div>
+
 
                     @if($activities->count() > 0)
                         <div class="overflow-x-auto">
@@ -69,24 +65,30 @@
                         </div>
 
                         <!-- Pagination -->
-                        <div class="mt-4 flex items-center justify-center space-x-4">
-                            <!-- Previous -->
+                        <!-- Pagination -->
+                        <div class="mt-6 flex items-center justify-center gap-2 text-sm text-gray-700">
                             @if ($activities->onFirstPage())
-                                <span class="text-gray-400 font-bold">&lt;</span>
+                                <span class="px-2 py-1 rounded border border-gray-200 text-gray-400 bg-gray-50 cursor-not-allowed">
+                                    &lt;
+                                </span>
                             @else
-                                <a href="{{ $activities->previousPageUrl() }}" class="text-gray-700 hover:text-black font-bold decoration-0">&lt;</a>
+                                <a href="{{ $activities->previousPageUrl() }}" class="px-2 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-50">
+                                    &lt;
+                                </a>
                             @endif
 
-                            <!-- Page Info -->
-                            <span class="text-sm text-gray-700 font-medium whitespace-nowrap">
+                            <span class="px-2 py-1 text-gray-700">
                                 {{ $activities->currentPage() }} out of {{ $activities->lastPage() }}
                             </span>
 
-                            <!-- Next -->
                             @if ($activities->hasMorePages())
-                                <a href="{{ $activities->nextPageUrl() }}" class="text-gray-700 hover:text-black font-bold decoration-0">&gt;</a>
+                                <a href="{{ $activities->nextPageUrl() }}" class="px-2 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-50">
+                                    &gt;
+                                </a>
                             @else
-                                <span class="text-gray-400 font-bold">&gt;</span>
+                                <span class="px-2 py-1 rounded border border-gray-200 text-gray-400 bg-gray-50 cursor-not-allowed">
+                                    &gt;
+                                </span>
                             @endif
                         </div>
                     @else

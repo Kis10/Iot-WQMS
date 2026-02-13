@@ -2,31 +2,7 @@
     <div class="py-12">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Sorting Section -->
-            <div class="mb-4 flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-lg shadow">
-                <h2 class="text-lg font-semibold text-gray-800 mb-2 sm:mb-0">Alert Log</h2>
-                <form method="GET" action="{{ route('alerts') }}" class="flex flex-col sm:flex-row items-center gap-4">
-                    <label class="text-sm font-medium text-gray-700">Sort By:</label>
-                    <div class="flex items-center gap-2">
-                         <select name="sort_by" class="border-gray-300 text-sm focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm">
-                            <option value="created_at" {{ request('sort_by') == 'created_at' ? 'selected' : '' }}>Date & Time</option>
-                            <option value="ph" {{ request('sort_by') == 'ph' ? 'selected' : '' }}>pH Level</option>
-                            <option value="turbidity" {{ request('sort_by') == 'turbidity' ? 'selected' : '' }}>Turbidity</option>
-                            <option value="tds" {{ request('sort_by') == 'tds' ? 'selected' : '' }}>TDS</option>
-                            <option value="temperature" {{ request('sort_by') == 'temperature' ? 'selected' : '' }}>Temperature</option>
-                        </select>
-                        <select name="order" class="border-gray-300 text-sm focus:border-red-500 focus:ring-red-500 rounded-md shadow-sm">
-                            <option value="desc" {{ request('order', 'desc') == 'desc' ? 'selected' : '' }}>Desc</option>
-                            <option value="asc" {{ request('order') == 'asc' ? 'selected' : '' }}>Asc</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="bg-red-600 text-white text-sm px-3 py-2 rounded hover:bg-red-700">
-                        Sort
-                    </button>
-                    @if(request()->has('sort_by'))
-                        <a href="{{ route('alerts') }}" class="text-sm text-gray-500 hover:text-gray-700 underline">Clear</a>
-                    @endif
-                </form>
-            </div>
+
             
             <div class="grid grid-cols-1 gap-6 mb-8">
             <div class="bg-white rounded-lg shadow overflow-hidden">
