@@ -1,137 +1,299 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Edit Landing Page Content') }}
-        </h2>
-    </x-slot>
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <title>Landing Page Editor - {{ config('app.name', 'AquaSense') }}</title>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+        
+        <!-- Scripts & Styles -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+        <style>
+            body { font-family: 'Outfit', sans-serif; }
+            .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+            .gradient-text { background: linear-gradient(135deg, #2563eb 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+            
+            /* Editor Styles */
+            .editable-hover:hover { outline: 2px dashed #3b82f6; cursor: text; position: relative; border-radius: 4px; }
+            .editable-hover::after { content: 'Double-click to edit'; position: absolute; top: -20px; left: 0; background: #3b82f6; color: white; font-size: 10px; padding: 2px 6px; border-radius: 2px; opacity: 0; transition: opacity 0.2s; pointer-events: none; white-space: nowrap; }
+            .editable-hover:hover::after { opacity: 1; }
+            
+            .input-box { width: 100%; border: 2px solid #3b82f6; padding: 8px; border-radius: 6px; font-family: inherit; font-size: inherit; color: black; background: rgba(255,255,255,0.9); }
+            
+            [x-cloak] { display: none !important; }
+        </style>
+    </head>
+    <body class="antialiased text-gray-900 bg-gray-50 overflow-x-hidden"
+          x-data="landingEditor(@js($contents))">
+        
+        <!-- Editor Toolbar -->
+        <div class="fixed bottom-6 right-6 z-50 flex gap-3">
+             <a href="{{ route('dashboard') }}" class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-full shadow-lg font-bold transition">
+                Exit Editor
+            </a>
+            <button @click="saveChanges" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-full shadow-lg font-bold transition flex items-center gap-2">
+                <span x-show="!saving">Save Changes</span>
+                <span x-show="saving">Saving...</span>
+            </button>
+        </div>
+
+        <!-- Success Message -->
+        <div x-show="showSuccess" x-transition class="fixed top-6 right-6 z-50 bg-green-500 text-white px-6 py-3 rounded-lg shadow-xl font-bold">
+            Saved Successfully!
+        </div>
+
+        <!-- Navigation (Visual Only) -->
+        <nav class="fixed top-0 w-full z-40 transition-all duration-300 glass border-b border-gray-100 py-4">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center w-full">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl overflow-hidden shadow-sm bg-white p-1">
+                            <img src="{{ asset('img/logo/logo-wq.png') }}" class="w-full h-full object-contain" />
+                        </div>
+                        <span class="text-2xl font-bold tracking-tight text-gray-900">{{ config('app.name', 'AquaSense') }}</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section id="home" class="relative min-h-[85vh] flex items-center justify-center bg-slate-900 overflow-hidden pt-32 pb-20 group/hero">
+            
+            <!-- Background Image -->
+            <div class="absolute inset-0 z-0">
+                <template x-if="heroBgPreview">
+                    <img :src="heroBgPreview" class="w-full h-full object-cover opacity-40">
+                </template>
+                <template x-if="!heroBgPreview && data.hero_bg.image">
+                     <img :src="'/' + data.hero_bg.image" class="w-full h-full object-cover opacity-40">
+                </template>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-slate-900/40 to-slate-950/40 z-0"></div>
+
+            <!-- Background Edit Overlay (Hover) -->
+            <div class="absolute top-24 right-8 z-30 opacity-0 group-hover/hero:opacity-100 transition duration-300">
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" class="bg-white/10 hover:bg-white/20 backdrop-blur text-white p-2 rounded-full border border-white/20 transition shadow-lg">
+                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                    </button>
+                    <!-- Dropdown -->
+                    <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-100 py-1">
+                        <div class="px-4 py-2 border-b border-gray-100 bg-gray-50 text-xs font-bold text-gray-500 uppercase tracking-wider">Change Background</div>
+                        <button @click="$refs.bgInput.click(); open = false" class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition flex items-center gap-2">
+                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                             Open Local File
+                        </button>
+                        <button @click="showUrlModal = true; open = false" class="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition flex items-center gap-2">
+                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                             Paste URL
+                        </button>
+                    </div>
+                </div>
+                <input type="file" x-ref="bgInput" class="hidden" accept="image/*" @change="handleFileSelect">
+            </div>
+
+            <!-- Content -->
+            <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
+                <br><br>
+                <!-- Hero Title -->
+                <div class="mb-8" x-data="{ editing: false }">
+                    <h1 x-show="!editing" @dblclick="editing = true" class="editable-hover text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight tracking-tight cursor-text"
+                        x-html="data.hero_title.value"></h1>
+                    <div x-show="editing" x-cloak>
+                        <textarea x-model="data.hero_title.value" class="input-box text-3xl font-bold bg-white/90 text-black h-40" @click.away="editing = false"></textarea>
+                        <p class="text-white text-xs mt-1 text-left">Supports HTML (e.g., &lt;br&gt;, &lt;span class='gradient-text'&gt;)</p>
+                    </div>
+                </div>
+
+                <!-- Hero Subtitle -->
+                <div class="mb-12" x-data="{ editing: false }">
+                    <p x-show="!editing" @dblclick="editing = true" class="editable-hover text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto font-medium leading-relaxed opacity-90 cursor-text"
+                       x-text="data.hero_subtitle.value"></p>
+                    <textarea x-show="editing" x-cloak x-model="data.hero_subtitle.value" class="input-box text-xl bg-white/90 text-black h-32" @click.away="editing = false"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mission Section -->
+        <section class="py-24 bg-white overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div class="max-w-3xl mx-auto">
+                    <!-- Badge -->
+                    <div class="mb-6 flex justify-center" x-data="{ editing: false }">
+                        <div x-show="!editing" @dblclick="editing = true" class="editable-hover inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-sm font-bold cursor-text"
+                             x-text="data.mission_badge.value"></div>
+                        <input x-show="editing" x-cloak x-model="data.mission_badge.value" class="input-box text-sm font-bold w-48 text-center" @click.away="editing = false">
+                    </div>
                     
-                    @if (session('status'))
-                        <div class="mb-4 font-medium text-sm text-green-600">
-                            {{ session('status') }}
-                        </div>
-                    @endif
+                    <!-- Title -->
+                    <div class="mb-8" x-data="{ editing: false }">
+                        <h2 x-show="!editing" @dblclick="editing = true" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight cursor-text"
+                            x-text="data.mission_title.value"></h2>
+                        <input x-show="editing" x-cloak x-model="data.mission_title.value" class="input-box text-4xl font-bold text-center" @click.away="editing = false">
+                    </div>
 
-                    <form method="POST" action="{{ route('admin.landing.update') }}" enctype="multipart/form-data" class="space-y-8">
-                        @csrf
-                        @method('PUT')
+                    <!-- Text -->
+                     <div x-data="{ editing: false }">
+                        <p x-show="!editing" @dblclick="editing = true" class="editable-hover text-xl text-gray-600 leading-relaxed font-light cursor-text"
+                           x-text="data.mission_text.value"></p>
+                        <textarea x-show="editing" x-cloak x-model="data.mission_text.value" class="input-box text-xl h-48" @click.away="editing = false"></textarea>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                        <!-- Hero Section -->
-                        <div class="border-b pb-8">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Hero Section (Top Area)</h3>
-                            
-                            <div class="grid grid-cols-1 gap-6">
-                                <!-- Hero Title -->
-                                <div>
-                                    <x-input-label for="hero_title" :value="__('Main Title (Supports HTML)')" />
-                                    <textarea id="hero_title" name="hero_title" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('hero_title', $contents['hero_title']->value ?? '') }}</textarea>
-                                    <p class="text-xs text-gray-500 mt-1">Use &lt;br&gt; for line breaks. Use &lt;span class="gradient-text"&gt;Text&lt;/span&gt; for blue color.</p>
-                                </div>
+        <!-- Sensors Section (Just Header) -->
+        <section class="py-24 bg-gray-50 overflow-hidden">
+             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <div class="mb-4" x-data="{ editing: false }">
+                        <h2 x-show="!editing" @dblclick="editing = true" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight cursor-text" x-text="data.sensors_title.value"></h2>
+                        <input x-show="editing" x-cloak x-model="data.sensors_title.value" class="input-box text-4xl font-bold text-center" @click.away="editing = false">
+                    </div>
+                     <div x-data="{ editing: false }">
+                        <p x-show="!editing" @dblclick="editing = true" class="editable-hover text-gray-500 text-lg cursor-text" x-text="data.sensors_subtitle.value"></p>
+                        <input x-show="editing" x-cloak x-model="data.sensors_subtitle.value" class="input-box text-lg text-center" @click.away="editing = false">
+                    </div>
+                </div>
+                 <!-- Sensors Grid (Static for Editor to save complexity, content not editable in requirment) -->
+                 <div class="flex justify-center text-gray-400 italic">
+                     (Sensor cards are static system components)
+                 </div>
+            </div>
+        </section>
 
-                                <!-- Hero Subtitle -->
-                                <div>
-                                    <x-input-label for="hero_subtitle" :value="__('Subtitle')" />
-                                    <textarea id="hero_subtitle" name="hero_subtitle" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('hero_subtitle', $contents['hero_subtitle']->value ?? '') }}</textarea>
-                                </div>
+        <!-- Services Section -->
+        <section class="py-24 bg-white overflow-hidden">
+             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <div class="mb-4" x-data="{ editing: false }">
+                        <h2 x-show="!editing" @dblclick="editing = true" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight cursor-text" x-text="data.services_title.value"></h2>
+                        <input x-show="editing" x-cloak x-model="data.services_title.value" class="input-box text-4xl font-bold text-center" @click.away="editing = false">
+                    </div>
+                     <div x-data="{ editing: false }">
+                        <p x-show="!editing" @dblclick="editing = true" class="editable-hover text-gray-500 text-lg cursor-text" x-text="data.services_subtitle.value"></p>
+                        <input x-show="editing" x-cloak x-model="data.services_subtitle.value" class="input-box text-lg text-center" @click.away="editing = false">
+                    </div>
+                </div>
+                <!-- Service List Preview (Static) -->
+            </div>
+        </section>
 
-                                <!-- Background Image -->
-                                <div>
-                                    <x-input-label :value="__('Background Image')" />
-                                    
-                                    <div class="mt-2 flex items-center gap-4">
-                                        @if(isset($contents['hero_bg']->image) && $contents['hero_bg']->image)
-                                            <div class="w-32 h-20 bg-gray-200 rounded overflow-hidden">
-                                                <img src="{{ asset($contents['hero_bg']->image) }}" class="w-full h-full object-cover">
-                                            </div>
-                                        @else
-                                            <div class="w-32 h-20 bg-gray-100 rounded flex items-center justify-center text-xs text-gray-400 border">No Image</div>
-                                        @endif
-                                        
-                                        <div class="flex-1">
-                                            <label class="block text-sm font-medium text-gray-700">Upload New File</label>
-                                            <input type="file" name="hero_bg_file" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                                            
-                                            <div class="mt-2">
-                                                <span class="text-xs text-gray-500 uppercase font-bold tracking-wider">OR</span>
-                                            </div>
+         <!-- Contact Section -->
+        <section class="py-24 bg-gray-50 overflow-hidden">
+             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-20">
+                    <div class="mb-4" x-data="{ editing: false }">
+                        <h2 x-show="!editing" @dblclick="editing = true" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight cursor-text" x-text="data.contact_title.value"></h2>
+                        <input x-show="editing" x-cloak x-model="data.contact_title.value" class="input-box text-4xl font-bold text-center" @click.away="editing = false">
+                    </div>
+                     <div x-data="{ editing: false }">
+                        <p x-show="!editing" @dblclick="editing = true" class="editable-hover text-gray-500 text-lg cursor-text" x-text="data.contact_subtitle.value"></p>
+                        <input x-show="editing" x-cloak x-model="data.contact_subtitle.value" class="input-box text-lg text-center" @click.away="editing = false">
+                    </div>
+                </div>
+            </div>
+        </section>
 
-                                            <label class="block text-sm font-medium text-gray-700 mt-2">Use Image URL</label>
-                                            <input type="text" name="hero_bg_url" placeholder="https://example.com/image.jpg" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Mission Section -->
-                        <div class="border-b pb-8">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Mission Section</h3>
-                            
-                            <div class="grid grid-cols-1 gap-6">
-                                <div>
-                                    <x-input-label for="mission_badge" :value="__('Badge Text')" />
-                                    <x-text-input id="mission_badge" name="mission_badge" type="text" class="mt-1 block w-full" :value="old('mission_badge', $contents['mission_badge']->value ?? 'OUR MISSION')" />
-                                </div>
-                                <div>
-                                    <x-input-label for="mission_title" :value="__('Title')" />
-                                    <x-text-input id="mission_title" name="mission_title" type="text" class="mt-1 block w-full" :value="old('mission_title', $contents['mission_title']->value ?? '')" />
-                                </div>
-                                <div>
-                                    <x-input-label for="mission_text" :value="__('Description')" />
-                                    <textarea id="mission_text" name="mission_text" rows="4" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('mission_text', $contents['mission_text']->value ?? '') }}</textarea>
-                                </div>
-                            </div>
-                        </div>
-
-                         <!-- Services Section -->
-                        <div class="border-b pb-8">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Services Section</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <x-input-label for="services_title" :value="__('Title')" />
-                                    <x-text-input id="services_title" name="services_title" class="mt-1 block w-full" :value="$contents['services_title']->value ?? ''" />
-                                </div>
-                                <div>
-                                    <x-input-label for="services_subtitle" :value="__('Subtitle')" />
-                                    <x-text-input id="services_subtitle" name="services_subtitle" class="mt-1 block w-full" :value="$contents['services_subtitle']->value ?? ''" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Contact Section -->
-                        <div class="border-b pb-8">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Contact Section</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <x-input-label for="contact_title" :value="__('Title')" />
-                                    <x-text-input id="contact_title" name="contact_title" class="mt-1 block w-full" :value="$contents['contact_title']->value ?? ''" />
-                                </div>
-                                <div>
-                                    <x-input-label for="contact_subtitle" :value="__('Subtitle')" />
-                                    <x-text-input id="contact_subtitle" name="contact_subtitle" class="mt-1 block w-full" :value="$contents['contact_subtitle']->value ?? ''" />
-                                </div>
-                            </div>
-                        </div>
-
-                         <!-- Footer -->
-                        <div class="">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Footer</h3>
-                            <div>
-                                <x-input-label for="footer_devs" :value="__('Developer Credit')" />
-                                <x-text-input id="footer_devs" name="footer_devs" class="mt-1 block w-full" :value="$contents['footer_devs']->value ?? ''" />
-                            </div>
-                        </div>
-
-                        <div class="flex items-center gap-4">
-                            <x-primary-button>{{ __('Save Changes') }}</x-primary-button>
-                        </div>
-                    </form>
+        <!-- URL Modal -->
+        <div x-show="showUrlModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" x-transition>
+            <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Paste Image URL</h3>
+                <input type="text" x-model="tempUrl" placeholder="https://example.com/image.jpg" class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 mb-4">
+                <div class="flex justify-end gap-3">
+                    <button @click="showUrlModal = false" class="text-gray-500 hover:text-gray-700 font-medium px-4">Cancel</button>
+                    <button @click="applyUrl" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700">Apply</button>
                 </div>
             </div>
         </div>
-    </div>
-</x-app-layout>
+
+        <script>
+            function landingEditor(initialData) {
+                return {
+                    data: initialData,
+                    heroBgPreview: null,
+                    heroBgFile: null,
+                    showUrlModal: false,
+                    tempUrl: '',
+                    saving: false,
+                    showSuccess: false,
+
+                    handleFileSelect(e) {
+                         const file = e.target.files[0];
+                         if (file) {
+                             this.heroBgFile = file;
+                             const reader = new FileReader();
+                             reader.onload = (e) => {
+                                 this.heroBgPreview = e.target.result;
+                             };
+                             reader.readAsDataURL(file);
+                         }
+                    },
+
+                    applyUrl() {
+                        if (this.tempUrl) {
+                            this.data.hero_bg.image = this.tempUrl; // For preview (if logic allows)
+                            // We need to send this as hero_bg_url
+                            this.heroBgPreview = this.tempUrl; // Show preview
+                            this.heroBgFile = null; // Clear file if URL is set
+                        }
+                        this.showUrlModal = false;
+                    },
+
+                    saveChanges() {
+                        this.saving = true;
+                        
+                        const formData = new FormData();
+                        
+                        // Append Text Data
+                        for (const key in this.data) {
+                            if (key !== 'hero_bg') {
+                                formData.append(key, this.data[key].value);
+                            }
+                        }
+
+                        // Append Background Logic
+                        if (this.heroBgFile) {
+                            formData.append('hero_bg_file', this.heroBgFile);
+                        } else if (this.tempUrl) {
+                            formData.append('hero_bg_url', this.tempUrl);
+                        }
+
+                        // CSRF
+                        formData.append('_method', 'PUT');
+
+                        fetch('{{ route('admin.landing.update') }}', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            },
+                            body: formData
+                        })
+                        .then(res => {
+                            if (res.ok) {
+                                this.showSuccess = true;
+                                setTimeout(() => this.showSuccess = false, 3000);
+                            } else {
+                                alert('Failed to save changes.');
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            alert('Error saving changes.');
+                        })
+                        .finally(() => {
+                            this.saving = false;
+                        });
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>

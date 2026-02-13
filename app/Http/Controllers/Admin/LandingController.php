@@ -18,7 +18,7 @@ class LandingController extends Controller
     public function update(Request $request)
     {
         // Handle Text Inputs
-        $inputs = $request->except(['_token', 'hero_bg_file']);
+        $inputs = $request->except(['_token', 'hero_bg_file', 'hero_bg_url', '_method']);
         
         foreach ($inputs as $key => $value) {
             LandingContent::updateOrCreate(
