@@ -77,17 +77,22 @@
         <!-- Dynamic Hero Section (Refined Visibility) -->
         <!-- Dynamic Hero Section (Refined Visibility) -->
         <section id="home" class="relative min-h-[85vh] flex items-center justify-center bg-slate-900 overflow-hidden pt-32 pb-20">
-            <div class="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-slate-900/40 to-slate-950/40"></div>
+            <!-- Dynamic Background Image -->
+            @if(isset($contents['hero_bg']) && $contents['hero_bg']->image)
+                 <div class="absolute inset-0 z-0">
+                    <img src="{{ asset($contents['hero_bg']->image) }}" class="w-full h-full object-cover opacity-40">
+                 </div>
+            @endif
+            <div class="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-slate-900/40 to-slate-950/40 z-0"></div>
             
             <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
                 <div class="fade-in-up visible">
                     <br><br>
                     <h1 class="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-8 leading-tight tracking-tight">
-                        IoT-Based Water Quality <br>
-                        <span class="gradient-text">Monitoring System</span>
+                        {!! $contents['hero_title']->value ?? 'IoT-Based Water Quality <br> <span class="gradient-text">Monitoring System</span>' !!}
                     </h1>
                     <p class="text-xl md:text-2xl text-blue-100 mb-12 max-w-3xl mx-auto font-medium leading-relaxed opacity-90">
-                        Ensuring a sustainable aquaculture environment through high-precision IoT sensors and real-time data analytics.
+                        {{ $contents['hero_subtitle']->value ?? 'Ensuring a sustainable aquaculture environment through high-precision IoT sensors and real-time data analytics.' }}
                     </p>
                 </div>
             </div>
@@ -98,11 +103,11 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <div class="max-w-3xl mx-auto fade-in-up">
                     <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-sm font-bold mb-6">
-                        OUR MISSION
+                        {{ $contents['mission_badge']->value ?? 'OUR MISSION' }}
                     </div>
-                    <h2 class="text-4xl font-bold text-gray-900 mb-8 tracking-tight">The Future of Aquaculture Management</h2>
+                    <h2 class="text-4xl font-bold text-gray-900 mb-8 tracking-tight">{{ $contents['mission_title']->value ?? 'The Future of Aquaculture Management' }}</h2>
                     <p class="text-xl text-gray-600 leading-relaxed font-light">
-                        Our system is designed to provide farmers with a robust, reliable, and user-friendly platform for monitoring vital aquatic conditions. By leveraging the power of IoT, we help eliminate the guesswork, reduce risks, and maximize productivity in aquaculture operations.
+                        {{ $contents['mission_text']->value ?? 'Our system is designed to provide farmers with a robust, reliable, and user-friendly platform for monitoring vital aquatic conditions. By leveraging the power of IoT, we help eliminate the guesswork, reduce risks, and maximize productivity in aquaculture operations.' }}
                     </p>
                 </div>
             </div>
@@ -112,8 +117,8 @@
         <section id="features" class="py-24 bg-gray-50 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16 fade-in-up">
-                    <h2 class="text-4xl font-bold text-gray-900 mb-4 tracking-tight">Integrated Sensor Technology</h2>
-                    <p class="text-gray-500 text-lg">Our system utilizes five high-precision sensors to capture every critical metric.</p>
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['sensors_title']->value ?? 'Integrated Sensor Technology' }}</h2>
+                    <p class="text-gray-500 text-lg">{{ $contents['sensors_subtitle']->value ?? 'Our system utilizes five high-precision sensors to capture every critical metric.' }}</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-12">
@@ -188,8 +193,8 @@
         <section id="services" class="py-24 bg-white overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16 fade-in-up">
-                    <h2 class="text-4xl font-bold text-gray-900 mb-4 tracking-tight">Our Services</h2>
-                    <p class="text-gray-500 text-lg">We provide end-to-end solutions for aquaculture technology integration.</p>
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['services_title']->value ?? 'Our Services' }}</h2>
+                    <p class="text-gray-500 text-lg">{{ $contents['services_subtitle']->value ?? 'We provide end-to-end solutions for aquaculture technology integration.' }}</p>
                 </div>
 
                 <div class="max-w-4xl mx-auto space-y-12 fade-in-up">
@@ -222,8 +227,8 @@
         <section id="contact" class="py-24 bg-gray-50 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-20 fade-in-up">
-                    <h2 class="text-4xl font-bold text-gray-900 mb-4 tracking-tight">Contact Us</h2>
-                    <p class="text-gray-500 text-lg">Have questions? We're here to help you optimize your aquaculture operations.</p>
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['contact_title']->value ?? 'Contact Us' }}</h2>
+                    <p class="text-gray-500 text-lg">{{ $contents['contact_subtitle']->value ?? 'Have questions? We\'re here to help you optimize your aquaculture operations.' }}</p>
                 </div>
 
                 <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center fade-in-up">
@@ -269,7 +274,7 @@
                     </div>
                     <p class="text-gray-500 text-sm mb-4">&copy; {{ date('Y') }} {{ config('app.name', 'AquaSense') }}. All rights reserved.</p>
                     <p class="text-sm font-medium text-gray-500 mt-2">
-                        Developed by: Kirstine A. Sanchez, Dannica J. Besinio and Joy Mae A. Samra
+                        {{ $contents['footer_devs']->value ?? 'Developed by: Kirstine A. Sanchez, Dannica J. Besinio and Joy Mae A. Samra' }}
                     </p>
                 </div>
             </div>

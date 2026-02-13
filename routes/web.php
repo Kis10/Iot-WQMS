@@ -13,7 +13,9 @@ Route::get('/', function () {
     if (auth()->check()) {
         return redirect()->route('dashboard');
     }
-    return view('welcome');
+    return view('welcome', [
+        'contents' => \App\Models\LandingContent::all()->keyBy('key')
+    ]);
 })->name('welcome');
 
 Route::post('/login-unlock', function (Illuminate\Http\Request $request) {
@@ -25,6 +27,20 @@ Route::post('/login-unlock', function (Illuminate\Http\Request $request) {
 })->name('login.unlock');
 
 Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsApproved::class])->group(function () {
+    // Admin Landing Page CMS
+    Route::prefix('admin/landing')->name('admin.landing.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\LandingController::class, 'index'])->name('index')
+            ->middleware(function ($request, $next) {
+                if ($request->user()->role !== 'admin') abort(403);
+                return $next($request);
+            });
+        Route::put('/', [\App\Http\Controllers\Admin\LandingController::class, 'update'])->name('update')
+             ->middleware(function ($request, $next) {
+                if ($request->user()->role !== 'admin') abort(403);
+                return $next($request);
+            });
+    });
+
     // FIX: Promote current user to Admin
     Route::get('/promote-me', function() {
         auth()->user()->update(['role' => 'admin', 'is_approved' => true]);
