@@ -17,6 +17,8 @@
                             AI Analysis
                         @elseif(request()->routeIs('users.index'))
                             User Monitoring
+                        @elseif(request()->routeIs('users.activities'))
+                            Activity Log: {{ request()->route('user')->name }}
                         @else
                             Dashboard
                         @endif

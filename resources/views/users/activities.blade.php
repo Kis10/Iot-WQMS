@@ -1,20 +1,15 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Activity Log: {{ $user->name }}
-            </h2>
-            <a href="{{ route('users.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition text-sm">
-                ← Back to Users
-            </a>
-        </div>
-    </x-slot>
-
     <div class="py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
                     
+                    <div class="flex justify-end mb-4">
+                        <a href="{{ route('users.index') }}" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
+                            &larr; Back to Users
+                        </a>
+                    </div>
+
                     @if($activities->count() > 0)
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-gray-200">
@@ -74,8 +69,25 @@
                         </div>
 
                         <!-- Pagination -->
-                        <div class="mt-4">
-                            {{ $activities->links() }}
+                        <div class="mt-4 flex items-center justify-center space-x-4">
+                            <!-- Previous -->
+                            @if ($activities->onFirstPage())
+                                <span class="text-gray-400 font-bold">&lt;</span>
+                            @else
+                                <a href="{{ $activities->previousPageUrl() }}" class="text-gray-700 hover:text-black font-bold decoration-0">&lt;</a>
+                            @endif
+
+                            <!-- Page Info -->
+                            <span class="text-sm text-gray-700 font-medium whitespace-nowrap">
+                                {{ $activities->currentPage() }} out of {{ $activities->lastPage() }}
+                            </span>
+
+                            <!-- Next -->
+                            @if ($activities->hasMorePages())
+                                <a href="{{ $activities->nextPageUrl() }}" class="text-gray-700 hover:text-black font-bold decoration-0">&gt;</a>
+                            @else
+                                <span class="text-gray-400 font-bold">&gt;</span>
+                            @endif
                         </div>
                     @else
                         <div class="text-center py-10">
