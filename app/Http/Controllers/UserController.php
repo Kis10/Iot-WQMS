@@ -8,8 +8,10 @@ class UserController extends Controller
 {
     public function index()
     {
-        // Exclude Admins from the list
-        $users = \App\Models\User::where('role', '!=', 'admin')->get();
+        // Exclude Admins and Removed users from the list
+        $users = \App\Models\User::where('role', '!=', 'admin')
+                                 ->whereNull('removed_at')
+                                 ->get();
         // Also exclude logs for admins
         $logs = \App\Models\LoginActivity::with('user')->whereHas('user', function($q) {
             $q->where('role', '!=', 'admin');
