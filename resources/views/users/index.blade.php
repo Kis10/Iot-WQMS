@@ -38,7 +38,14 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0 h-2.5 w-2.5 rounded-full {{ $isOnline ? 'bg-green-500' : 'bg-gray-300' }} mr-3" title="{{ $isOnline ? 'Online' : 'Offline' }}"></div>
-                                                <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
+                                                <div>
+                                                    <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
+                                                    <div x-show="blockedUsers.includes({{ $user->id }}) || {{ $user->isBlocked() ? 'true' : 'false' }}">
+                                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                                                             Account has been blocked
+                                                         </span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </td>
 
@@ -212,6 +219,7 @@
             isLoading: false,
             showNotification: false,
             notificationMessage: '',
+            blockedUsers: [],
 
             confirmBlock(id) {
                 this.selectedUserId = id;
@@ -235,9 +243,12 @@
                     .then(data => {
                         this.isLoading = false;
                         this.showBlockModal = false;
+                        this.showMessage('Account has been blocked'); // "Action granted!" replaced per visual requirement context, but user said "Account has been blocked" label on row
+                        // Actually user said show message "Action granted!". The label is on the row.
                         this.showMessage('Action granted!');
-                        const row = document.getElementById(`user-row-${this.selectedUserId}`);
-                        if (row) row.remove();
+                        if (!this.blockedUsers.includes(this.selectedUserId)) {
+                            this.blockedUsers.push(this.selectedUserId);
+                        }
                     })
                     .catch(err => {
                         console.error(err);

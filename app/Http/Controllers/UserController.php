@@ -59,7 +59,11 @@ class UserController extends Controller
     public function remove(\App\Models\User $user)
     {
         if (!auth()->user()->isAdmin()) abort(403);
-        $user->update(['is_approved' => false]);
+        $user->update([
+            'is_approved' => false,
+            'is_blocked' => false, // Reset block status so they can see the 'removed' message
+            'removed_at' => now(),
+        ]);
         return response()->json(['message' => 'User removed successfully']);
     }
 }

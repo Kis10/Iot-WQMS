@@ -53,7 +53,13 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsApproved::class])->g
              request()->session()->regenerateToken();
              return redirect('/login')->with('status', 'Account approved! Please login to continue.');
         }
-        return view('auth.approval');
+
+        $message = null;
+        if (auth()->user()->isRemoved()) {
+            $message = "Your account has been removed. Please wait for the Admin's approval.";
+        }
+
+        return view('auth.approval', compact('message'));
     })->name('approval.wait');
     Route::get('/dashboard', [WaterQualityController::class, 'dashboard'])->middleware('verified')->name('dashboard');
     Route::get('/dashboard/chart-data', [WaterQualityController::class, 'chartData'])->name('dashboard.chart');

@@ -23,10 +23,12 @@ class User extends Authenticatable
         'password',
         'is_approved',
         'is_blocked',
+        'removed_at',
         'role',
     ];
 
     public function isBlocked() { return $this->is_blocked; }
+    public function isRemoved() { return !is_null($this->removed_at); }
 
     public function isAdmin() { return $this->role === 'admin'; }
     public function isApproved() { return $this->is_approved; }

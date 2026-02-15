@@ -1,6 +1,12 @@
 <x-guest-layout>
     <div class="mb-4 text-sm text-gray-600">
-        {{ __('Waiting for the Admin\'s approval.') }}
+        @if(isset($message) && $message)
+            <div class="p-3 bg-red-100 text-red-700 rounded mb-4 font-bold">
+                {{ $message }}
+            </div>
+        @else
+            {{ __('Waiting for the Admin\'s approval.') }}
+        @endif
         <br><br>
         <strong>Logged in as:</strong> {{ Auth::user()->email }}
         <br>
