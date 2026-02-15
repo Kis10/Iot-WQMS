@@ -90,13 +90,13 @@
                                             <div class="flex items-center justify-between">
                                                 <span>{{ $lastActivity ? $lastActivity->ip_address : '-' }}</span>
                                                 @if(Auth::user()->isAdmin())
-                                                    <div class="relative" x-data="{ open: false }" @click.stop @click.outside="open = false">
-                                                        <button @click="open = !open" class="text-gray-400 hover:text-gray-600 focus:outline-none p-1 bg-gray-100 rounded-full">
+                                                    <div class="relative" @click.stop @click.outside="openMenuId = null">
+                                                        <button @click="openMenuId = (openMenuId === {{ $user->id }} ? null : {{ $user->id }})" class="text-gray-400 hover:text-gray-600 focus:outline-none p-1 bg-gray-100 rounded-full">
                                                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                                                 <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                                                             </svg>
                                                         </button>
-                                                        <div x-show="open" 
+                                                        <div x-show="openMenuId === {{ $user->id }}" 
                                                              x-transition:enter="transition ease-out duration-100"
                                                              x-transition:enter-start="transform opacity-0 scale-95"
                                                              x-transition:enter-end="transform opacity-100 scale-100"
@@ -105,8 +105,8 @@
                                                              x-transition:leave-end="transform opacity-0 scale-95"
                                                              class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 py-1 border border-gray-100" 
                                                              style="display: none;">
-                                                             <a href="#" @click.prevent.stop="open = false; confirmBlock({{ $user->id }})" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700">Block</a>
-                                                             <a href="#" @click.prevent.stop="open = false; confirmRemove({{ $user->id }})" class="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-50 hover:text-yellow-700">Remove Account</a>
+                                                             <a href="#" @click.prevent.stop="openMenuId = null; confirmBlock({{ $user->id }})" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700">Block</a>
+                                                             <a href="#" @click.prevent.stop="openMenuId = null; confirmRemove({{ $user->id }})" class="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-50 hover:text-yellow-700">Remove Account</a>
                                                         </div>
                                                     </div>
                                                 @endif
@@ -226,7 +226,9 @@
     function userManagement() {
         return {
             showBlockModal: false,
+            showBlockModal: false,
             showRemoveModal: false,
+            openMenuId: null,
             selectedUserId: null,
             isLoading: false,
             showNotification: false,
