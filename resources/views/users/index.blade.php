@@ -14,7 +14,10 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Login Time</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logout Time</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logout Time</th>
+                                    @if(!Auth::user()->isAdmin())
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
+                                    @endif
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
                                 </tr>
@@ -38,8 +41,19 @@
                                         <!-- Column 1: Status Dot + Name -->
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
-                                                <div class="flex-shrink-0 h-2.5 w-2.5 rounded-full {{ $isOnline ? 'bg-green-500' : 'bg-gray-300' }} mr-3" title="{{ $isOnline ? 'Online' : 'Offline' }}"></div>
-                                                <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
+                                                <div class="flex-shrink-0 h-2.5 w-2.5 rounded-full mr-3" 
+                                                     :class="(blockedUsers.includes({{ $user->id }}) || {{ $user->isBlocked() ? 'true' : 'false' }}) ? 'bg-gray-300' : ({{ $isOnline ? 'true' : 'false' }} ? 'bg-green-500' : 'bg-gray-300')" 
+                                                     title="{{ $isOnline ? 'Online' : 'Offline' }}"></div>
+                                                <div>
+                                                    <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
+                                                    @if(Auth::user()->isAdmin())
+                                                        <div x-show="blockedUsers.includes({{ $user->id }}) || {{ $user->isBlocked() ? 'true' : 'false' }}">
+                                                             <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
+                                                                 Account has been blocked
+                                                             </span>
+                                                        </div>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </td>
 
@@ -55,27 +69,34 @@
 
                                         <!-- Column 4: Logout Time -->
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {{ ($lastActivity && $lastActivity->logout_at) ? $lastActivity->logout_at->format('M d, Y h:i A') : ($isOnline ? 'Active Now' : '-') }}
+                                            <span x-show="blockedUsers.includes({{ $user->id }}) || {{ $user->isBlocked() ? 'true' : 'false' }}">-</span>
+                                            <span x-show="!(blockedUsers.includes({{ $user->id }}) || {{ $user->isBlocked() ? 'true' : 'false' }})">
+                                                {{ ($lastActivity && $lastActivity->logout_at) ? $lastActivity->logout_at->format('M d, Y h:i A') : ($isOnline ? 'Active Now' : '-') }}
+                                            </span>
                                         </td>
 
-                                        <!-- Column Status: Blocked Label -->
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <div x-show="blockedUsers.includes({{ $user->id }}) || {{ $user->isBlocked() ? 'true' : 'false' }}">
-                                                 <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium text-gray-500 border border-gray-300">
-                                                     Account has been blocked
-                                                 </span>
-                                            </div>
-                                        </td>
+                                        <!-- Column Status (Non-Admin only) -->
+                                        @if(!Auth::user()->isAdmin())
+                                            <td class="px-6 py-4 whitespace-nowrap text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <div x-show="blockedUsers.includes({{ $user->id }}) || {{ $user->isBlocked() ? 'true' : 'false' }}">
+                                                     ACCOUNT HAS BEEN BLOCKED
+                                                </div>
+                                            </td>
+                                        @endif
 
                                         <!-- Column 5: Duration -->
+                                        <!-- Column 5: Duration -->
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            @if($lastActivity && $lastActivity->duration_minutes)
-                                                {{ $lastActivity->duration_minutes }} mins
-                                            @elseif($isOnline)
-                                                <span class="text-green-600 font-semibold">Monitoring...</span>
-                                            @else
-                                                -
-                                            @endif
+                                            <span x-show="blockedUsers.includes({{ $user->id }}) || {{ $user->isBlocked() ? 'true' : 'false' }}">-</span>
+                                            <span x-show="!(blockedUsers.includes({{ $user->id }}) || {{ $user->isBlocked() ? 'true' : 'false' }})">
+                                                @if($lastActivity && $lastActivity->duration_minutes)
+                                                    {{ $lastActivity->duration_minutes }} mins
+                                                @elseif($isOnline)
+                                                    <span class="text-green-600 font-semibold">Monitoring...</span>
+                                                @else
+                                                    -
+                                                @endif
+                                            </span>
                                         </td>
 
                                         <!-- Column 6: IP Address -->
