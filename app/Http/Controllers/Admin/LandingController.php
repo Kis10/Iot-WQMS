@@ -17,9 +17,10 @@ class LandingController extends Controller
 
     public function update(Request $request)
     {
-        // Handle Text Inputs
-        $inputs = $request->except(['_token', 'hero_bg_file', 'hero_bg_url', '_method']);
-        
+        // Gather all text inputs (exclude special fields)
+        $exclude = ['_token', '_method', 'hero_bg_file', 'hero_bg_url'];
+        $inputs = $request->except($exclude);
+
         foreach ($inputs as $key => $value) {
             LandingContent::updateOrCreate(
                 ['key' => $key],
@@ -31,18 +32,23 @@ class LandingController extends Controller
         if ($request->hasFile('hero_bg_file')) {
             $file = $request->file('hero_bg_file');
             $path = $file->store('landing', 'public');
-            
+
             LandingContent::updateOrCreate(
                 ['key' => 'hero_bg'],
-                ['image' => 'storage/' . $path] // Store relative path
+                ['image' => 'storage/' . $path]
             );
-        } 
+        }
         // Handle URL Input for Image (if provided and no file)
         elseif ($request->input('hero_bg_url')) {
              LandingContent::updateOrCreate(
                 ['key' => 'hero_bg'],
                 ['image' => $request->input('hero_bg_url')]
             );
+        }
+
+        // For AJAX requests, return JSON
+        if ($request->wantsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json(['status' => 'success']);
         }
 
         return redirect()->route('admin.landing.index')->with('status', 'Landing Page Updated Successfully!');

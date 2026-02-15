@@ -129,8 +129,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.691.383a4 4 0 01-2.573.344l-2.387-.477a2 2 0 00-1.022.547l-.736.736a2 2 0 000 2.828l.736.736a2 2 0 001.022.547l2.387.477a6 6 0 003.86-.517l.691-.383a4 4 0 012.573-.344l2.387.477a2 2 0 001.022-.547l.736-.736a2 2 0 000-2.828l-.736-.736z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4 tracking-tight">pH Sensor</h3>
-                        <p class="text-gray-600 text-sm leading-relaxed">Measures the acidity or alkalinity of the water to ensure a healthy environment for aquatic life.</p>
+                        <h3 class="text-xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['sensor1_title']->value ?? 'pH Sensor' }}</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">{{ $contents['sensor1_desc']->value ?? 'Measures the acidity or alkalinity of the water to ensure a healthy environment for aquatic life.' }}</p>
                     </div>
 
                     <!-- Sensor 2: Turbidity -->
@@ -144,8 +144,8 @@
                                 <circle cx="9" cy="13" r="0.5" fill="currentColor"></circle>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4 tracking-tight">Turbidity</h3>
-                        <p class="text-gray-600 text-sm leading-relaxed">Detects water clarity by measuring suspended particles, crucial for accurate quality assessment.</p>
+                        <h3 class="text-xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['sensor2_title']->value ?? 'Turbidity' }}</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">{{ $contents['sensor2_desc']->value ?? 'Detects water clarity by measuring suspended particles, crucial for accurate quality assessment.' }}</p>
                     </div>
 
                     <!-- Sensor 3: TDS -->
@@ -159,8 +159,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v6"></path>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4 tracking-tight">TDS Sensor</h3>
-                        <p class="text-gray-600 text-sm leading-relaxed">Monitors the concentration of dissolved substances, indicating the overall purity of the water.</p>
+                        <h3 class="text-xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['sensor3_title']->value ?? 'TDS Sensor' }}</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">{{ $contents['sensor3_desc']->value ?? 'Monitors the concentration of dissolved substances, indicating the overall purity of the water.' }}</p>
                     </div>
 
                     <!-- Sensor 4: Temperature -->
@@ -171,8 +171,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9h4m-4 4h4"></path>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4 tracking-tight">Temperature</h3>
-                        <p class="text-gray-600 text-sm leading-relaxed">Tracks water temperature to prevent thermal stress and maintain optimal growth rates for fish.</p>
+                        <h3 class="text-xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['sensor4_title']->value ?? 'Temperature' }}</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">{{ $contents['sensor4_desc']->value ?? 'Tracks water temperature to prevent thermal stress and maintain optimal growth rates for fish.' }}</p>
                     </div>
 
                     <!-- Sensor 5: Humidity -->
@@ -182,8 +182,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a7 7 0 007-7c0-3.866-7-11-7-11s-7 7.134-7 11a7 7 0 007 7z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4 tracking-tight">Humidity</h3>
-                        <p class="text-gray-600 text-sm leading-relaxed">Monitors air moisture levels around the pond, affecting evaporation and equipment safety.</p>
+                        <h3 class="text-xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['sensor5_title']->value ?? 'Humidity' }}</h3>
+                        <p class="text-gray-600 text-sm leading-relaxed">{{ $contents['sensor5_desc']->value ?? 'Monitors air moisture levels around the pond, affecting evaporation and equipment safety.' }}</p>
                     </div>
                 </div>
             </div>
@@ -201,22 +201,22 @@
                     <div class="flex gap-8 items-start">
                         <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">01</div>
                         <div>
-                            <h4 class="text-2xl font-bold text-gray-900 mb-3 tracking-tight">Automated Data Collection</h4>
-                            <p class="text-gray-600 leading-relaxed text-lg">Continuous background data harvesting from a pond,  simultaneously without manual intervention.</p>
+                            <h4 class="text-2xl font-bold text-gray-900 mb-3 tracking-tight">{{ $contents['service1_title']->value ?? 'Automated Data Collection' }}</h4>
+                            <p class="text-gray-600 leading-relaxed text-lg">{{ $contents['service1_desc']->value ?? 'Continuous background data harvesting from a pond, simultaneously without manual intervention.' }}</p>
                         </div>
                     </div>
                     <div class="flex gap-8 items-start">
                         <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">02</div>
                         <div>
-                            <h4 class="text-2xl font-bold text-gray-900 mb-3 tracking-tight">Smart Alert Notifications</h4>
-                            <p class="text-gray-600 leading-relaxed text-lg">Instant Alert notifications when water parameters exceed safe threshold limits for your specific fish species.</p>
+                            <h4 class="text-2xl font-bold text-gray-900 mb-3 tracking-tight">{{ $contents['service2_title']->value ?? 'Smart Alert Notifications' }}</h4>
+                            <p class="text-gray-600 leading-relaxed text-lg">{{ $contents['service2_desc']->value ?? 'Instant Alert notifications when water parameters exceed safe threshold limits for your specific fish species.' }}</p>
                         </div>
                     </div>
                     <div class="flex gap-8 items-start">
                         <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">03</div>
                         <div>
-                            <h4 class="text-2xl font-bold text-gray-900 mb-3 tracking-tight">AI Condition Analysis</h4>
-                            <p class="text-gray-600 leading-relaxed text-lg">Advanced algorithms that analyze patterns to predict water quality health and recommend corrective actions.</p>
+                            <h4 class="text-2xl font-bold text-gray-900 mb-3 tracking-tight">{{ $contents['service3_title']->value ?? 'AI Condition Analysis' }}</h4>
+                            <p class="text-gray-600 leading-relaxed text-lg">{{ $contents['service3_desc']->value ?? 'Advanced algorithms that analyze patterns to predict water quality health and recommend corrective actions.' }}</p>
                         </div>
                     </div>
                 </div>
@@ -237,8 +237,9 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         </div>
                         <h4 class="text-xl font-bold text-gray-900 mb-2">Email Address</h4>
-                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=kirstinesanchez9@gmail.com" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition font-medium block">
-                            kirstinesanchez9@gmail.com
+                        @php $email = $contents['contact_email']->value ?? 'kirstinesanchez9@gmail.com'; @endphp
+                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ $email }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition font-medium block">
+                            {{ $email }}
                         </a>
                     </div>
                     
@@ -247,8 +248,10 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                         </div>
                         <h4 class="text-xl font-bold text-gray-900 mb-2">Mobile Number</h4>
-                        <a href="tel:09207327946" class="text-blue-600 hover:text-blue-800 transition font-medium block">09207327946</a>
-                          <a href="tel:09151003714" class="text-blue-600 hover:text-blue-800 transition font-medium block">09151003714</a>
+                        @php $phones = explode("\n", $contents['contact_phone']->value ?? "09207327946\n09151003714"); @endphp
+                        @foreach($phones as $phone)
+                            <a href="tel:{{ trim($phone) }}" class="text-blue-600 hover:text-blue-800 transition font-medium block">{{ trim($phone) }}</a>
+                        @endforeach
                     </div>
                     
                     <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm">
@@ -256,8 +259,9 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         </div>
                         <h4 class="text-xl font-bold text-gray-900 mb-2">Our Location</h4>
-                        <a id="dynamic-location" href="https://www.google.com/maps/search/?api=1&query=Po-Ok%2C+Hinoba-an%2C+Negros+Occidental" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition font-medium block">
-                            Po-Ok, Hinoba-an, Negros Occidental
+                        @php $location = $contents['contact_location']->value ?? 'Po-Ok, Hinoba-an, Negros Occidental'; @endphp
+                        <a id="dynamic-location" href="https://www.google.com/maps/search/?api=1&query={{ urlencode($location) }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition font-medium block">
+                            {{ $location }}
                         </a>
                     </div>
                 </div>
