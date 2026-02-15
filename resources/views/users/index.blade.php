@@ -258,16 +258,17 @@
                         this.isLoading = false;
                         this.showBlockModal = false;
                         this.showMessage('Account has been blocked');
-                        // Remove the row from the DOM since blocked users are hidden
-                        const row = document.getElementById(`user-row-${this.selectedUserId}`);
-                        if (row) row.remove();
+                        // Mark user as blocked so the label shows
+                        if (!this.blockedUsers.includes(this.selectedUserId)) {
+                            this.blockedUsers.push(this.selectedUserId);
+                        }
                     })
                     .catch(err => {
                         console.error(err);
                         this.isLoading = false;
                         this.showBlockModal = false;
                     });
-                }, 2000); // 2s loading
+                }, 2000);
             },
 
             confirmRemove(id) {

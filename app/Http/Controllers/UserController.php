@@ -8,11 +8,10 @@ class UserController extends Controller
 {
     public function index()
     {
-        // Show only approved, non-blocked, non-removed users (excludes admins)
+        // Show approved, non-removed users (blocked users stay visible with label)
         $users = \App\Models\User::where('role', '!=', 'admin')
                                  ->where('is_approved', true)
                                  ->whereNull('removed_at')
-                                 ->where('is_blocked', false)
                                  ->get();
         // Also exclude logs for admins
         $logs = \App\Models\LoginActivity::with('user')->whereHas('user', function($q) {
