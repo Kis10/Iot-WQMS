@@ -8,8 +8,9 @@ class UserController extends Controller
 {
     public function index()
     {
-        // Exclude Admins, Removed, and Blocked users from the list
+        // Show only approved, non-blocked, non-removed users (excludes admins)
         $users = \App\Models\User::where('role', '!=', 'admin')
+                                 ->where('is_approved', true)
                                  ->whereNull('removed_at')
                                  ->where('is_blocked', false)
                                  ->get();
