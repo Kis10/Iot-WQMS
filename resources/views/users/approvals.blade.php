@@ -25,6 +25,7 @@
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registered At</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Modified</th>
                                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                                     </tr>
                                 </thead>
@@ -45,6 +46,9 @@
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {{ $user->created_at->diffForHumans() }}
                                             </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {{ $user->updated_at->format('M d, Y h:i A') }}
+                                            </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                                 <div class="relative inline-block text-left" @click.outside="openMenuId = null">
                                                     <button @click="openMenuId = (openMenuId === {{ $user->id }} ? null : {{ $user->id }})" type="button" class="inline-flex justify-center w-full rounded-full border border-gray-300 shadow-sm px-2 py-1 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none" id="menu-button" aria-expanded="true" aria-haspopup="true">
@@ -62,7 +66,6 @@
                                                          x-transition:leave-end="transform opacity-0 scale-95"
                                                          class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1" style="display: none;">
                                                         <div class="py-1" role="none">
-                                                            <a href="#" @click.prevent="openMenuId = null; showDetails('{{ $user->name }}', '{{ $user->email }}', '{{ $user->created_at->format('M d, Y h:i A') }}')" class="text-gray-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem" tabindex="-1">Details</a>
                                                             <a href="#" @click.prevent="openMenuId = null; processApprove({{ $user->id }})" class="text-green-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem" tabindex="-1">Approve</a>
                                                             <a href="#" @click.prevent="openMenuId = null; processDeny({{ $user->id }})" class="text-red-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem" tabindex="-1">Deny</a>
                                                         </div>
