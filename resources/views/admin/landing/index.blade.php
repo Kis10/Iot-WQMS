@@ -363,9 +363,15 @@
                 <div class="text-center">
                     <div class="flex justify-center items-center gap-3 mb-6">
                         <img src="{{ asset('img/logo/logo-wq.png') }}" alt="Logo" class="h-8 w-auto grayscale opacity-50" />
-                        <span class="text-gray-400 font-bold tracking-tight text-xl uppercase">{{ config('app.name', 'AquaSense') }}</span>
+                        <div x-data="{ editing: false }">
+                            <span x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.footerBrand.focus())" class="editable-hover text-gray-400 font-bold tracking-tight text-xl uppercase" x-text="data.footer_brand.value"></span>
+                            <input x-ref="footerBrand" x-show="editing" x-cloak x-model="data.footer_brand.value" class="input-box text-gray-400 font-bold tracking-tight text-xl uppercase text-center w-48" @click.away="editing = false">
+                        </div>
                     </div>
-                    <p class="text-gray-500 text-sm mb-4">&copy; {{ date('Y') }} {{ config('app.name', 'AquaSense') }}. All rights reserved.</p>
+                    <div x-data="{ editing: false }" class="mb-4">
+                        <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.footerCopy.focus())" class="editable-hover text-gray-500 text-sm" x-text="data.footer_copyright.value"></p>
+                        <input x-ref="footerCopy" x-show="editing" x-cloak x-model="data.footer_copyright.value" class="input-box text-gray-500 text-sm text-center" @click.away="editing = false">
+                    </div>
                     <div x-data="{ editing: false }">
                         <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.footerDevs.focus())" class="editable-hover text-sm font-medium text-gray-500 mt-2"
                             x-text="data.footer_devs.value"></p>
@@ -467,6 +473,8 @@
                 contact_phone: { value: "09207327946\n09151003714" },
                 contact_location: { value: "Po-Ok, Hinoba-an, Negros Occidental" },
 
+                footer_brand: { value: "AQUASENSE" },
+                footer_copyright: { value: "\u00a9 2026 AquaSense. All rights reserved." },
                 footer_devs: { value: "Developed by: Kirstine A. Sanchez, Dannica J. Besinio and Joy Mae A. Samra" }
             };
 
