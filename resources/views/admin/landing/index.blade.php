@@ -11,7 +11,12 @@
         .editable-hover:hover { outline: 2px dashed #8b5cf6; }
         .editable-hover:hover::after { content: 'Double-click to edit'; position: absolute; top: -22px; left: 0; background: #8b5cf6; color: white; font-size: 10px; padding: 2px 8px; border-radius: 4px; white-space: nowrap; z-index: 20; pointer-events: none; }
 
-        /* Inline Textarea */
+        /* Active editing state */
+        .editable-hover[contenteditable="true"] { outline: 2px solid #8b5cf6; outline-offset: 2px; background: rgba(139, 92, 246, 0.05); }
+        .editable-hover[contenteditable="true"]:hover::after { display: none; }
+        .editable-hover[contenteditable="true"]:focus { outline: 2px solid #8b5cf6; outline-offset: 2px; }
+
+        /* Inline Textarea - keep for hero title HTML editing */
         .input-box { width: 100%; background: transparent; border: none; outline: none; resize: none; font-family: inherit; font-size: inherit; font-weight: inherit; line-height: inherit; text-align: inherit; color: inherit; padding: 0; margin: 0; overflow: hidden; box-shadow: none; }
         .input-box:focus { outline: 2px solid #8b5cf6; outline-offset: 2px; background: rgba(139, 92, 246, 0.05); border-radius: 4px; }
 
@@ -96,7 +101,7 @@
             <!-- Hero Content -->
             <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
                 <br><br>
-                <!-- Hero Title -->
+                <!-- Hero Title (HTML - uses textarea for raw HTML editing) -->
                 <div class="mb-8" x-data="{ editing: false }">
                     <h1 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.heroTitle.focus())" class="editable-hover text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight tracking-tight"
                         x-html="data.hero_title.value"></h1>
@@ -111,15 +116,9 @@
                 </div>
 
                 <!-- Hero Subtitle -->
-                <div class="mb-12" x-data="{ editing: false }">
-                    <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.heroSub.focus())" class="editable-hover text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto font-medium leading-relaxed opacity-90"
-                       x-text="data.hero_subtitle.value"></p>
-                    <textarea x-ref="heroSub" x-show="editing" x-cloak x-model="data.hero_subtitle.value"
-                        class="input-box text-xl md:text-2xl text-blue-100 font-medium leading-relaxed text-center max-w-3xl mx-auto"
-                        @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'"
-                        x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })"
-                        @click.away="editing = false"></textarea>
-                </div>
+                <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'hero_subtitle')" @input="syncContent($event, 'hero_subtitle')"
+                   class="editable-hover text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto font-medium leading-relaxed opacity-90 mb-12"
+                   x-text="data.hero_subtitle.value"></p>
             </div>
         </section>
 
@@ -128,29 +127,21 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <div class="max-w-3xl mx-auto">
                     <!-- Badge -->
-                    <div class="mb-6 flex justify-center" x-data="{ editing: false }">
-                        <div x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.badge.focus())" class="editable-hover inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-sm font-bold"
+                    <div class="mb-6 flex justify-center">
+                        <div @dblclick="makeEditable($event)" @blur="stopEditing($event, 'mission_badge')" @input="syncContent($event, 'mission_badge')"
+                             class="editable-hover inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-sm font-bold"
                              x-text="data.mission_badge.value"></div>
-                        <input x-ref="badge" x-show="editing" x-cloak x-model="data.mission_badge.value" class="input-box text-sm font-bold text-blue-600 bg-blue-50 rounded-full px-4 py-1.5 text-center w-auto inline-block" @click.away="editing = false">
                     </div>
 
                     <!-- Title -->
-                    <div class="mb-8" x-data="{ editing: false }">
-                        <h2 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.misTitle.focus())" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight"
-                            x-text="data.mission_title.value"></h2>
-                        <textarea x-ref="misTitle" x-show="editing" x-cloak x-model="data.mission_title.value" rows="1" class="input-box text-4xl font-bold text-gray-900 tracking-tight text-center" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })" @click.away="editing = false"></textarea>
-                    </div>
+                    <h2 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'mission_title')" @input="syncContent($event, 'mission_title')"
+                        class="editable-hover text-4xl font-bold text-gray-900 tracking-tight mb-8"
+                        x-text="data.mission_title.value"></h2>
 
                     <!-- Text -->
-                    <div x-data="{ editing: false }">
-                        <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.misText.focus())" class="editable-hover text-xl text-gray-600 leading-relaxed font-light"
-                           x-text="data.mission_text.value"></p>
-                        <textarea x-ref="misText" x-show="editing" x-cloak x-model="data.mission_text.value"
-                            class="input-box text-xl text-gray-600 leading-relaxed font-light text-center"
-                            @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'"
-                            x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })"
-                            @click.away="editing = false"></textarea>
-                    </div>
+                    <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'mission_text')" @input="syncContent($event, 'mission_text')"
+                       class="editable-hover text-xl text-gray-600 leading-relaxed font-light"
+                       x-text="data.mission_text.value"></p>
                 </div>
             </div>
         </section>
@@ -159,31 +150,25 @@
         <section class="py-24 bg-gray-50 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
-                    <div class="mb-4" x-data="{ editing: false }">
-                        <h2 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sensTitle.focus())" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight" x-text="data.sensors_title.value"></h2>
-                        <textarea x-ref="sensTitle" x-show="editing" x-cloak x-model="data.sensors_title.value" rows="1" class="input-box text-4xl font-bold text-gray-900 tracking-tight text-center" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })" @click.away="editing = false"></textarea>
-                    </div>
-                    <div x-data="{ editing: false }">
-                        <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sensSub.focus())" class="editable-hover text-gray-500 text-lg" x-text="data.sensors_subtitle.value"></p>
-                        <textarea x-ref="sensSub" x-show="editing" x-cloak x-model="data.sensors_subtitle.value" rows="1" class="input-box text-gray-500 text-lg text-center" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })" @click.away="editing = false"></textarea>
-                    </div>
+                    <h2 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensors_title')" @input="syncContent($event, 'sensors_title')"
+                        class="editable-hover text-4xl font-bold text-gray-900 tracking-tight mb-4"
+                        x-text="data.sensors_title.value"></h2>
+                    <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensors_subtitle')" @input="syncContent($event, 'sensors_subtitle')"
+                       class="editable-hover text-gray-500 text-lg"
+                       x-text="data.sensors_subtitle.value"></p>
                 </div>
 
-                <!-- Sensor Cards (Full size, editable titles & descriptions) -->
+                <!-- Sensor Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-12">
                     <!-- pH -->
                     <div class="sensor-card bg-white p-8 rounded-2xl border border-gray-100 transition-all duration-300 group mb-8">
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-gray-900 group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.691.383a4 4 0 01-2.573.344l-2.387-.477a2 2 0 00-1.022.547l-.736.736a2 2 0 000 2.828l.736.736a2 2 0 001.022.547l2.387.477a6 6 0 003.86-.517l.691-.383a4 4 0 012.573-.344l2.387.477a2 2 0 001.022-.547l.736-.736a2 2 0 000-2.828l-.736-.736z"></path></svg>
                         </div>
-                        <div x-data="{ editing: false }">
-                            <h3 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.s1t.focus())" class="editable-hover text-xl font-bold text-gray-900 mb-4 tracking-tight" x-text="data.sensor1_title.value"></h3>
-                            <input x-ref="s1t" x-show="editing" x-cloak x-model="data.sensor1_title.value" class="input-box text-xl font-bold text-gray-900 mb-4 tracking-tight" @click.away="editing = false">
-                        </div>
-                        <div x-data="{ editing: false }">
-                            <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.s1d.focus())" class="editable-hover text-gray-600 text-sm leading-relaxed" x-text="data.sensor1_desc.value"></p>
-                            <textarea x-ref="s1d" x-show="editing" x-cloak x-model="data.sensor1_desc.value" class="input-box text-gray-600 text-sm leading-relaxed" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })" @click.away="editing = false"></textarea>
-                        </div>
+                        <h3 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor1_title')" @input="syncContent($event, 'sensor1_title')"
+                            class="editable-hover text-xl font-bold text-gray-900 mb-4 tracking-tight" x-text="data.sensor1_title.value"></h3>
+                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor1_desc')" @input="syncContent($event, 'sensor1_desc')"
+                           class="editable-hover text-gray-600 text-sm leading-relaxed" x-text="data.sensor1_desc.value"></p>
                     </div>
 
                     <!-- Turbidity -->
@@ -191,14 +176,10 @@
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-gray-900 group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 110 2h-4a1 1 0 01-1-1z"></path><circle cx="12" cy="14" r="1" fill="currentColor"></circle><circle cx="15" cy="13" r="0.5" fill="currentColor"></circle><circle cx="9" cy="13" r="0.5" fill="currentColor"></circle></svg>
                         </div>
-                        <div x-data="{ editing: false }">
-                            <h3 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.s2t.focus())" class="editable-hover text-xl font-bold text-gray-900 mb-4 tracking-tight" x-text="data.sensor2_title.value"></h3>
-                            <input x-ref="s2t" x-show="editing" x-cloak x-model="data.sensor2_title.value" class="input-box text-xl font-bold text-gray-900 mb-4 tracking-tight" @click.away="editing = false">
-                        </div>
-                        <div x-data="{ editing: false }">
-                            <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.s2d.focus())" class="editable-hover text-gray-600 text-sm leading-relaxed" x-text="data.sensor2_desc.value"></p>
-                            <textarea x-ref="s2d" x-show="editing" x-cloak x-model="data.sensor2_desc.value" class="input-box text-gray-600 text-sm leading-relaxed" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })" @click.away="editing = false"></textarea>
-                        </div>
+                        <h3 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor2_title')" @input="syncContent($event, 'sensor2_title')"
+                            class="editable-hover text-xl font-bold text-gray-900 mb-4 tracking-tight" x-text="data.sensor2_title.value"></h3>
+                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor2_desc')" @input="syncContent($event, 'sensor2_desc')"
+                           class="editable-hover text-gray-600 text-sm leading-relaxed" x-text="data.sensor2_desc.value"></p>
                     </div>
 
                     <!-- TDS -->
@@ -206,14 +187,10 @@
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-gray-900 group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.691.383a4 4 0 01-2.573.344l-2.387-.477a2 2 0 00-1.022.547l-.736.736a2 2 0 000 2.828l.736.736a2 2 0 001.022.547l2.387.477a6 6 0 003.86-.517l.691-.383a4 4 0 012.573-.344l2.387.477a2 2 0 001.022-.547l.736-.736a2 2 0 000-2.828l-.736-.736z"></path><circle cx="12" cy="14" r="1.5" fill="currentColor"></circle><circle cx="15.5" cy="12.5" r="1" fill="currentColor"></circle><circle cx="8.5" cy="12.5" r="1" fill="currentColor"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v6"></path></svg>
                         </div>
-                        <div x-data="{ editing: false }">
-                            <h3 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.s3t.focus())" class="editable-hover text-xl font-bold text-gray-900 mb-4 tracking-tight" x-text="data.sensor3_title.value"></h3>
-                            <input x-ref="s3t" x-show="editing" x-cloak x-model="data.sensor3_title.value" class="input-box text-xl font-bold text-gray-900 mb-4 tracking-tight" @click.away="editing = false">
-                        </div>
-                        <div x-data="{ editing: false }">
-                            <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.s3d.focus())" class="editable-hover text-gray-600 text-sm leading-relaxed" x-text="data.sensor3_desc.value"></p>
-                            <textarea x-ref="s3d" x-show="editing" x-cloak x-model="data.sensor3_desc.value" class="input-box text-gray-600 text-sm leading-relaxed" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })" @click.away="editing = false"></textarea>
-                        </div>
+                        <h3 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor3_title')" @input="syncContent($event, 'sensor3_title')"
+                            class="editable-hover text-xl font-bold text-gray-900 mb-4 tracking-tight" x-text="data.sensor3_title.value"></h3>
+                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor3_desc')" @input="syncContent($event, 'sensor3_desc')"
+                           class="editable-hover text-gray-600 text-sm leading-relaxed" x-text="data.sensor3_desc.value"></p>
                     </div>
 
                     <!-- Temperature -->
@@ -221,14 +198,10 @@
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-gray-900 group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19c-1.657 0-3-1.343-3-3V6a3 3 0 116 0v10c0 1.657-1.343 3-3 3z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9h4m-4 4h4"></path></svg>
                         </div>
-                        <div x-data="{ editing: false }">
-                            <h3 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.s4t.focus())" class="editable-hover text-xl font-bold text-gray-900 mb-4 tracking-tight" x-text="data.sensor4_title.value"></h3>
-                            <input x-ref="s4t" x-show="editing" x-cloak x-model="data.sensor4_title.value" class="input-box text-xl font-bold text-gray-900 mb-4 tracking-tight" @click.away="editing = false">
-                        </div>
-                        <div x-data="{ editing: false }">
-                            <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.s4d.focus())" class="editable-hover text-gray-600 text-sm leading-relaxed" x-text="data.sensor4_desc.value"></p>
-                            <textarea x-ref="s4d" x-show="editing" x-cloak x-model="data.sensor4_desc.value" class="input-box text-gray-600 text-sm leading-relaxed" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })" @click.away="editing = false"></textarea>
-                        </div>
+                        <h3 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor4_title')" @input="syncContent($event, 'sensor4_title')"
+                            class="editable-hover text-xl font-bold text-gray-900 mb-4 tracking-tight" x-text="data.sensor4_title.value"></h3>
+                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor4_desc')" @input="syncContent($event, 'sensor4_desc')"
+                           class="editable-hover text-gray-600 text-sm leading-relaxed" x-text="data.sensor4_desc.value"></p>
                     </div>
 
                     <!-- Humidity -->
@@ -236,14 +209,10 @@
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-gray-900 group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a7 7 0 007-7c0-3.866-7-11-7-11s-7 7.134-7 11a7 7 0 007 7z"></path></svg>
                         </div>
-                        <div x-data="{ editing: false }">
-                            <h3 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.s5t.focus())" class="editable-hover text-xl font-bold text-gray-900 mb-4 tracking-tight" x-text="data.sensor5_title.value"></h3>
-                            <input x-ref="s5t" x-show="editing" x-cloak x-model="data.sensor5_title.value" class="input-box text-xl font-bold text-gray-900 mb-4 tracking-tight" @click.away="editing = false">
-                        </div>
-                        <div x-data="{ editing: false }">
-                            <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.s5d.focus())" class="editable-hover text-gray-600 text-sm leading-relaxed" x-text="data.sensor5_desc.value"></p>
-                            <textarea x-ref="s5d" x-show="editing" x-cloak x-model="data.sensor5_desc.value" class="input-box text-gray-600 text-sm leading-relaxed" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })" @click.away="editing = false"></textarea>
-                        </div>
+                        <h3 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor5_title')" @input="syncContent($event, 'sensor5_title')"
+                            class="editable-hover text-xl font-bold text-gray-900 mb-4 tracking-tight" x-text="data.sensor5_title.value"></h3>
+                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor5_desc')" @input="syncContent($event, 'sensor5_desc')"
+                           class="editable-hover text-gray-600 text-sm leading-relaxed" x-text="data.sensor5_desc.value"></p>
                     </div>
                 </div>
             </div>
@@ -253,66 +222,52 @@
         <section class="py-24 bg-white overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
-                    <div class="mb-4" x-data="{ editing: false }">
-                        <h2 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.servTitle.focus())" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight" x-text="data.services_title.value"></h2>
-                        <textarea x-ref="servTitle" x-show="editing" x-cloak x-model="data.services_title.value" rows="1" class="input-box text-4xl font-bold text-gray-900 tracking-tight text-center" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })" @click.away="editing = false"></textarea>
-                    </div>
-                    <div x-data="{ editing: false }">
-                        <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.servSub.focus())" class="editable-hover text-gray-500 text-lg" x-text="data.services_subtitle.value"></p>
-                        <textarea x-ref="servSub" x-show="editing" x-cloak x-model="data.services_subtitle.value" rows="1" class="input-box text-gray-500 text-lg text-center" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })" @click.away="editing = false"></textarea>
-                    </div>
+                    <h2 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'services_title')" @input="syncContent($event, 'services_title')"
+                        class="editable-hover text-4xl font-bold text-gray-900 tracking-tight mb-4"
+                        x-text="data.services_title.value"></h2>
+                    <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'services_subtitle')" @input="syncContent($event, 'services_subtitle')"
+                       class="editable-hover text-gray-500 text-lg"
+                       x-text="data.services_subtitle.value"></p>
                 </div>
 
                 <div class="max-w-4xl mx-auto space-y-12">
                     <!-- Service 1 -->
                     <div class="flex gap-8 items-start">
-                        <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl" x-data="{ editing: false }">
-                            <span x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sn1.focus())" class="editable-hover" x-text="data.service1_num.value"></span>
-                            <input x-ref="sn1" x-show="editing" x-cloak x-model="data.service1_num.value" class="input-box text-center font-bold text-xl w-10" @click.away="editing = false">
+                        <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">
+                            <span @dblclick="makeEditable($event)" @blur="stopEditing($event, 'service1_num')" @input="syncContent($event, 'service1_num')"
+                                  class="editable-hover" x-text="data.service1_num.value"></span>
                         </div>
                         <div class="flex-1">
-                            <div x-data="{ editing: false }">
-                                <h4 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sv1t.focus())" class="editable-hover text-2xl font-bold text-gray-900 mb-3 tracking-tight" x-text="data.service1_title.value"></h4>
-                                <input x-ref="sv1t" x-show="editing" x-cloak x-model="data.service1_title.value" class="input-box text-2xl font-bold text-gray-900 mb-3 tracking-tight" @click.away="editing = false">
-                            </div>
-                            <div x-data="{ editing: false }">
-                                <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sv1d.focus())" class="editable-hover text-gray-600 leading-relaxed text-lg" x-text="data.service1_desc.value"></p>
-                                <textarea x-ref="sv1d" x-show="editing" x-cloak x-model="data.service1_desc.value" class="input-box text-gray-600 leading-relaxed text-lg" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })" @click.away="editing = false"></textarea>
-                            </div>
+                            <h4 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'service1_title')" @input="syncContent($event, 'service1_title')"
+                                class="editable-hover text-2xl font-bold text-gray-900 mb-3 tracking-tight" x-text="data.service1_title.value"></h4>
+                            <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'service1_desc')" @input="syncContent($event, 'service1_desc')"
+                               class="editable-hover text-gray-600 leading-relaxed text-lg" x-text="data.service1_desc.value"></p>
                         </div>
                     </div>
                     <!-- Service 2 -->
                     <div class="flex gap-8 items-start">
-                        <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl" x-data="{ editing: false }">
-                            <span x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sn2.focus())" class="editable-hover" x-text="data.service2_num.value"></span>
-                            <input x-ref="sn2" x-show="editing" x-cloak x-model="data.service2_num.value" class="input-box text-center font-bold text-xl w-10" @click.away="editing = false">
+                        <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">
+                            <span @dblclick="makeEditable($event)" @blur="stopEditing($event, 'service2_num')" @input="syncContent($event, 'service2_num')"
+                                  class="editable-hover" x-text="data.service2_num.value"></span>
                         </div>
                         <div class="flex-1">
-                            <div x-data="{ editing: false }">
-                                <h4 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sv2t.focus())" class="editable-hover text-2xl font-bold text-gray-900 mb-3 tracking-tight" x-text="data.service2_title.value"></h4>
-                                <input x-ref="sv2t" x-show="editing" x-cloak x-model="data.service2_title.value" class="input-box text-2xl font-bold text-gray-900 mb-3 tracking-tight" @click.away="editing = false">
-                            </div>
-                            <div x-data="{ editing: false }">
-                                <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sv2d.focus())" class="editable-hover text-gray-600 leading-relaxed text-lg" x-text="data.service2_desc.value"></p>
-                                <textarea x-ref="sv2d" x-show="editing" x-cloak x-model="data.service2_desc.value" class="input-box text-gray-600 leading-relaxed text-lg" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })" @click.away="editing = false"></textarea>
-                            </div>
+                            <h4 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'service2_title')" @input="syncContent($event, 'service2_title')"
+                                class="editable-hover text-2xl font-bold text-gray-900 mb-3 tracking-tight" x-text="data.service2_title.value"></h4>
+                            <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'service2_desc')" @input="syncContent($event, 'service2_desc')"
+                               class="editable-hover text-gray-600 leading-relaxed text-lg" x-text="data.service2_desc.value"></p>
                         </div>
                     </div>
                     <!-- Service 3 -->
                     <div class="flex gap-8 items-start">
-                        <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl" x-data="{ editing: false }">
-                            <span x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sn3.focus())" class="editable-hover" x-text="data.service3_num.value"></span>
-                            <input x-ref="sn3" x-show="editing" x-cloak x-model="data.service3_num.value" class="input-box text-center font-bold text-xl w-10" @click.away="editing = false">
+                        <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">
+                            <span @dblclick="makeEditable($event)" @blur="stopEditing($event, 'service3_num')" @input="syncContent($event, 'service3_num')"
+                                  class="editable-hover" x-text="data.service3_num.value"></span>
                         </div>
                         <div class="flex-1">
-                            <div x-data="{ editing: false }">
-                                <h4 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sv3t.focus())" class="editable-hover text-2xl font-bold text-gray-900 mb-3 tracking-tight" x-text="data.service3_title.value"></h4>
-                                <input x-ref="sv3t" x-show="editing" x-cloak x-model="data.service3_title.value" class="input-box text-2xl font-bold text-gray-900 mb-3 tracking-tight" @click.away="editing = false">
-                            </div>
-                            <div x-data="{ editing: false }">
-                                <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sv3d.focus())" class="editable-hover text-gray-600 leading-relaxed text-lg" x-text="data.service3_desc.value"></p>
-                                <textarea x-ref="sv3d" x-show="editing" x-cloak x-model="data.service3_desc.value" class="input-box text-gray-600 leading-relaxed text-lg" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })" @click.away="editing = false"></textarea>
-                            </div>
+                            <h4 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'service3_title')" @input="syncContent($event, 'service3_title')"
+                                class="editable-hover text-2xl font-bold text-gray-900 mb-3 tracking-tight" x-text="data.service3_title.value"></h4>
+                            <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'service3_desc')" @input="syncContent($event, 'service3_desc')"
+                               class="editable-hover text-gray-600 leading-relaxed text-lg" x-text="data.service3_desc.value"></p>
                         </div>
                     </div>
                 </div>
@@ -323,14 +278,12 @@
         <section class="py-24 bg-gray-50 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-20">
-                    <div class="mb-4" x-data="{ editing: false }">
-                        <h2 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.contTitle.focus())" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight" x-text="data.contact_title.value"></h2>
-                        <textarea x-ref="contTitle" x-show="editing" x-cloak x-model="data.contact_title.value" rows="1" class="input-box text-4xl font-bold text-gray-900 tracking-tight text-center" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })" @click.away="editing = false"></textarea>
-                    </div>
-                    <div x-data="{ editing: false }">
-                        <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.contSub.focus())" class="editable-hover text-gray-500 text-lg" x-text="data.contact_subtitle.value"></p>
-                        <textarea x-ref="contSub" x-show="editing" x-cloak x-model="data.contact_subtitle.value" rows="1" class="input-box text-gray-500 text-lg text-center" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })" @click.away="editing = false"></textarea>
-                    </div>
+                    <h2 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_title')" @input="syncContent($event, 'contact_title')"
+                        class="editable-hover text-4xl font-bold text-gray-900 tracking-tight mb-4"
+                        x-text="data.contact_title.value"></h2>
+                    <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_subtitle')" @input="syncContent($event, 'contact_subtitle')"
+                       class="editable-hover text-gray-500 text-lg"
+                       x-text="data.contact_subtitle.value"></p>
                 </div>
 
                 <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
@@ -339,42 +292,30 @@
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         </div>
-                        <div x-data="{ editing: false }" class="mb-2">
-                            <h4 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.clEmail.focus())" class="editable-hover text-xl font-bold text-gray-900" x-text="data.contact_email_label.value"></h4>
-                            <input x-ref="clEmail" x-show="editing" x-cloak x-model="data.contact_email_label.value" class="input-box text-xl font-bold text-gray-900 text-center" @click.away="editing = false">
-                        </div>
-                        <div x-data="{ editing: false }">
-                            <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.cemail.focus())" class="editable-hover text-blue-600 font-medium" x-text="data.contact_email.value"></p>
-                            <input x-ref="cemail" x-show="editing" x-cloak x-model="data.contact_email.value" class="input-box text-blue-600 font-medium text-center" @click.away="editing = false">
-                        </div>
+                        <h4 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_email_label')" @input="syncContent($event, 'contact_email_label')"
+                            class="editable-hover text-xl font-bold text-gray-900 mb-2" x-text="data.contact_email_label.value"></h4>
+                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_email')" @input="syncContent($event, 'contact_email')"
+                           class="editable-hover text-blue-600 font-medium" x-text="data.contact_email.value"></p>
                     </div>
                     <!-- Phone -->
                     <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm">
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                         </div>
-                        <div x-data="{ editing: false }" class="mb-2">
-                            <h4 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.clPhone.focus())" class="editable-hover text-xl font-bold text-gray-900" x-text="data.contact_phone_label.value"></h4>
-                            <input x-ref="clPhone" x-show="editing" x-cloak x-model="data.contact_phone_label.value" class="input-box text-xl font-bold text-gray-900 text-center" @click.away="editing = false">
-                        </div>
-                        <div x-data="{ editing: false }">
-                            <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.cphone.focus())" class="editable-hover text-blue-600 font-medium" x-text="data.contact_phone.value"></p>
-                            <textarea x-ref="cphone" x-show="editing" x-cloak x-model="data.contact_phone.value" class="input-box text-blue-600 font-medium text-center" rows="2" @click.away="editing = false"></textarea>
-                        </div>
+                        <h4 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_phone_label')" @input="syncContent($event, 'contact_phone_label')"
+                            class="editable-hover text-xl font-bold text-gray-900 mb-2" x-text="data.contact_phone_label.value"></h4>
+                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_phone')" @input="syncContent($event, 'contact_phone')"
+                           class="editable-hover text-blue-600 font-medium" style="white-space: pre-line;" x-text="data.contact_phone.value"></p>
                     </div>
                     <!-- Location -->
                     <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm">
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         </div>
-                        <div x-data="{ editing: false }" class="mb-2">
-                            <h4 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.clLoc.focus())" class="editable-hover text-xl font-bold text-gray-900" x-text="data.contact_location_label.value"></h4>
-                            <input x-ref="clLoc" x-show="editing" x-cloak x-model="data.contact_location_label.value" class="input-box text-xl font-bold text-gray-900 text-center" @click.away="editing = false">
-                        </div>
-                        <div x-data="{ editing: false }">
-                            <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.cloc.focus())" class="editable-hover text-blue-600 font-medium" x-text="data.contact_location.value"></p>
-                            <input x-ref="cloc" x-show="editing" x-cloak x-model="data.contact_location.value" class="input-box text-blue-600 font-medium text-center" @click.away="editing = false">
-                        </div>
+                        <h4 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_location_label')" @input="syncContent($event, 'contact_location_label')"
+                            class="editable-hover text-xl font-bold text-gray-900 mb-2" x-text="data.contact_location_label.value"></h4>
+                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_location')" @input="syncContent($event, 'contact_location')"
+                           class="editable-hover text-blue-600 font-medium" x-text="data.contact_location.value"></p>
                     </div>
                 </div>
             </div>
@@ -386,24 +327,13 @@
                 <div class="text-center">
                     <div class="flex justify-center items-center gap-3 mb-6">
                         <img src="{{ asset('img/logo/logo-wq.png') }}" alt="Logo" class="h-8 w-auto grayscale opacity-50" />
-                        <div x-data="{ editing: false }">
-                            <span x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.footerBrand.focus())" class="editable-hover text-gray-400 font-bold tracking-tight text-xl uppercase" x-text="data.footer_brand.value"></span>
-                            <input x-ref="footerBrand" x-show="editing" x-cloak x-model="data.footer_brand.value" class="input-box text-gray-400 font-bold tracking-tight text-xl uppercase text-center w-48" @click.away="editing = false">
-                        </div>
+                        <span @dblclick="makeEditable($event)" @blur="stopEditing($event, 'footer_brand')" @input="syncContent($event, 'footer_brand')"
+                              class="editable-hover text-gray-400 font-bold tracking-tight text-xl uppercase" x-text="data.footer_brand.value"></span>
                     </div>
-                    <div x-data="{ editing: false }" class="mb-4">
-                        <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.footerCopy.focus())" class="editable-hover text-gray-500 text-sm" x-text="data.footer_copyright.value"></p>
-                        <input x-ref="footerCopy" x-show="editing" x-cloak x-model="data.footer_copyright.value" class="input-box text-gray-500 text-sm text-center" @click.away="editing = false">
-                    </div>
-                    <div x-data="{ editing: false }">
-                        <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.footerDevs.focus())" class="editable-hover text-sm font-medium text-gray-500 mt-2"
-                            x-text="data.footer_devs.value"></p>
-                        <textarea x-ref="footerDevs" x-show="editing" x-cloak x-model="data.footer_devs.value" rows="1"
-                            class="input-box text-sm font-medium text-gray-500 text-center"
-                            @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'"
-                            x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })"
-                            @click.away="editing = false"></textarea>
-                    </div>
+                    <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'footer_copyright')" @input="syncContent($event, 'footer_copyright')"
+                       class="editable-hover text-gray-500 text-sm mb-4" x-text="data.footer_copyright.value"></p>
+                    <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'footer_devs')" @input="syncContent($event, 'footer_devs')"
+                       class="editable-hover text-sm font-medium text-gray-500 mt-2" x-text="data.footer_devs.value"></p>
                 </div>
             </div>
         </footer>
@@ -527,6 +457,31 @@
                 tempUrl: '',
                 saving: false,
                 showSuccess: false,
+
+                // Make an element editable in-place (contenteditable)
+                makeEditable(e) {
+                    const el = e.target;
+                    el.setAttribute('contenteditable', 'true');
+                    el.focus();
+                    // Select all text for easy replacement
+                    const range = document.createRange();
+                    range.selectNodeContents(el);
+                    const sel = window.getSelection();
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                },
+
+                // Stop editing and sync the value back
+                stopEditing(e, key) {
+                    const el = e.target;
+                    el.removeAttribute('contenteditable');
+                    this.data[key].value = el.innerText;
+                },
+
+                // Sync on every keystroke so data stays current
+                syncContent(e, key) {
+                    this.data[key].value = e.target.innerText;
+                },
 
                 handleFileSelect(e) {
                     const file = e.target.files[0];
