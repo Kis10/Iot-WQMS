@@ -199,21 +199,21 @@
 
                 <div class="max-w-4xl mx-auto space-y-12 fade-in-up">
                     <div class="flex gap-8 items-start">
-                        <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">01</div>
+                        <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">{{ $contents['service1_num']->value ?? '01' }}</div>
                         <div>
                             <h4 class="text-2xl font-bold text-gray-900 mb-3 tracking-tight">{{ $contents['service1_title']->value ?? 'Automated Data Collection' }}</h4>
                             <p class="text-gray-600 leading-relaxed text-lg">{{ $contents['service1_desc']->value ?? 'Continuous background data harvesting from a pond, simultaneously without manual intervention.' }}</p>
                         </div>
                     </div>
                     <div class="flex gap-8 items-start">
-                        <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">02</div>
+                        <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">{{ $contents['service2_num']->value ?? '02' }}</div>
                         <div>
                             <h4 class="text-2xl font-bold text-gray-900 mb-3 tracking-tight">{{ $contents['service2_title']->value ?? 'Smart Alert Notifications' }}</h4>
                             <p class="text-gray-600 leading-relaxed text-lg">{{ $contents['service2_desc']->value ?? 'Instant Alert notifications when water parameters exceed safe threshold limits for your specific fish species.' }}</p>
                         </div>
                     </div>
                     <div class="flex gap-8 items-start">
-                        <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">03</div>
+                        <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">{{ $contents['service3_num']->value ?? '03' }}</div>
                         <div>
                             <h4 class="text-2xl font-bold text-gray-900 mb-3 tracking-tight">{{ $contents['service3_title']->value ?? 'AI Condition Analysis' }}</h4>
                             <p class="text-gray-600 leading-relaxed text-lg">{{ $contents['service3_desc']->value ?? 'Advanced algorithms that analyze patterns to predict water quality health and recommend corrective actions.' }}</p>
@@ -236,7 +236,7 @@
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         </div>
-                        <h4 class="text-xl font-bold text-gray-900 mb-2">Email Address</h4>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">{{ $contents['contact_email_label']->value ?? 'Email Address' }}</h4>
                         @php $email = $contents['contact_email']->value ?? 'kirstinesanchez9@gmail.com'; @endphp
                         <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ $email }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition font-medium block">
                             {{ $email }}
@@ -247,7 +247,7 @@
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                         </div>
-                        <h4 class="text-xl font-bold text-gray-900 mb-2">Mobile Number</h4>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">{{ $contents['contact_phone_label']->value ?? 'Mobile Number' }}</h4>
                         @php $phones = explode("\n", $contents['contact_phone']->value ?? "09207327946\n09151003714"); @endphp
                         @foreach($phones as $phone)
                             <a href="tel:{{ trim($phone) }}" class="text-blue-600 hover:text-blue-800 transition font-medium block">{{ trim($phone) }}</a>
@@ -258,7 +258,7 @@
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         </div>
-                        <h4 class="text-xl font-bold text-gray-900 mb-2">Our Location</h4>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">{{ $contents['contact_location_label']->value ?? 'Our Location' }}</h4>
                         @php $location = $contents['contact_location']->value ?? 'Po-Ok, Hinoba-an, Negros Occidental'; @endphp
                         <a id="dynamic-location" href="https://www.google.com/maps/search/?api=1&query={{ urlencode($location) }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition font-medium block">
                             {{ $location }}

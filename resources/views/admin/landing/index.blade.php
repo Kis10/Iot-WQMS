@@ -22,7 +22,8 @@
     <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <div class="landing-editor h-[calc(100vh-65px)] overflow-y-auto" x-data="landingEditor(@js($contents))">
+    <div class="py-6" x-data="landingEditor(@js($contents))">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <!-- Floating Save Button -->
         <div class="fixed top-20 right-8 z-50 flex items-center gap-3">
@@ -37,6 +38,10 @@
                 <span x-show="showSuccess && !saving">Saved!</span>
             </button>
         </div>
+
+        <!-- Scrollable container matching alerts page -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="landing-editor overflow-y-auto" style="max-height: calc(100vh - 140px);">
 
         <!-- ============================================== -->
         <!-- LIVE PREVIEW - EXACT REPLICA OF LANDING PAGE   -->
@@ -261,7 +266,10 @@
                 <div class="max-w-4xl mx-auto space-y-12">
                     <!-- Service 1 -->
                     <div class="flex gap-8 items-start">
-                        <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">01</div>
+                        <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl" x-data="{ editing: false }">
+                            <span x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sn1.focus())" class="editable-hover" x-text="data.service1_num.value"></span>
+                            <input x-ref="sn1" x-show="editing" x-cloak x-model="data.service1_num.value" class="input-box text-center font-bold text-xl w-10" @click.away="editing = false">
+                        </div>
                         <div class="flex-1">
                             <div x-data="{ editing: false }">
                                 <h4 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sv1t.focus())" class="editable-hover text-2xl font-bold text-gray-900 mb-3 tracking-tight" x-text="data.service1_title.value"></h4>
@@ -275,7 +283,10 @@
                     </div>
                     <!-- Service 2 -->
                     <div class="flex gap-8 items-start">
-                        <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">02</div>
+                        <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl" x-data="{ editing: false }">
+                            <span x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sn2.focus())" class="editable-hover" x-text="data.service2_num.value"></span>
+                            <input x-ref="sn2" x-show="editing" x-cloak x-model="data.service2_num.value" class="input-box text-center font-bold text-xl w-10" @click.away="editing = false">
+                        </div>
                         <div class="flex-1">
                             <div x-data="{ editing: false }">
                                 <h4 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sv2t.focus())" class="editable-hover text-2xl font-bold text-gray-900 mb-3 tracking-tight" x-text="data.service2_title.value"></h4>
@@ -289,7 +300,10 @@
                     </div>
                     <!-- Service 3 -->
                     <div class="flex gap-8 items-start">
-                        <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">03</div>
+                        <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl" x-data="{ editing: false }">
+                            <span x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sn3.focus())" class="editable-hover" x-text="data.service3_num.value"></span>
+                            <input x-ref="sn3" x-show="editing" x-cloak x-model="data.service3_num.value" class="input-box text-center font-bold text-xl w-10" @click.away="editing = false">
+                        </div>
                         <div class="flex-1">
                             <div x-data="{ editing: false }">
                                 <h4 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sv3t.focus())" class="editable-hover text-2xl font-bold text-gray-900 mb-3 tracking-tight" x-text="data.service3_title.value"></h4>
@@ -325,7 +339,10 @@
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         </div>
-                        <h4 class="text-xl font-bold text-gray-900 mb-2">Email Address</h4>
+                        <div x-data="{ editing: false }" class="mb-2">
+                            <h4 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.clEmail.focus())" class="editable-hover text-xl font-bold text-gray-900" x-text="data.contact_email_label.value"></h4>
+                            <input x-ref="clEmail" x-show="editing" x-cloak x-model="data.contact_email_label.value" class="input-box text-xl font-bold text-gray-900 text-center" @click.away="editing = false">
+                        </div>
                         <div x-data="{ editing: false }">
                             <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.cemail.focus())" class="editable-hover text-blue-600 font-medium" x-text="data.contact_email.value"></p>
                             <input x-ref="cemail" x-show="editing" x-cloak x-model="data.contact_email.value" class="input-box text-blue-600 font-medium text-center" @click.away="editing = false">
@@ -336,7 +353,10 @@
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                         </div>
-                        <h4 class="text-xl font-bold text-gray-900 mb-2">Mobile Number</h4>
+                        <div x-data="{ editing: false }" class="mb-2">
+                            <h4 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.clPhone.focus())" class="editable-hover text-xl font-bold text-gray-900" x-text="data.contact_phone_label.value"></h4>
+                            <input x-ref="clPhone" x-show="editing" x-cloak x-model="data.contact_phone_label.value" class="input-box text-xl font-bold text-gray-900 text-center" @click.away="editing = false">
+                        </div>
                         <div x-data="{ editing: false }">
                             <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.cphone.focus())" class="editable-hover text-blue-600 font-medium" x-text="data.contact_phone.value"></p>
                             <textarea x-ref="cphone" x-show="editing" x-cloak x-model="data.contact_phone.value" class="input-box text-blue-600 font-medium text-center" rows="2" @click.away="editing = false"></textarea>
@@ -347,7 +367,10 @@
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         </div>
-                        <h4 class="text-xl font-bold text-gray-900 mb-2">Our Location</h4>
+                        <div x-data="{ editing: false }" class="mb-2">
+                            <h4 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.clLoc.focus())" class="editable-hover text-xl font-bold text-gray-900" x-text="data.contact_location_label.value"></h4>
+                            <input x-ref="clLoc" x-show="editing" x-cloak x-model="data.contact_location_label.value" class="input-box text-xl font-bold text-gray-900 text-center" @click.away="editing = false">
+                        </div>
                         <div x-data="{ editing: false }">
                             <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.cloc.focus())" class="editable-hover text-blue-600 font-medium" x-text="data.contact_location.value"></p>
                             <input x-ref="cloc" x-show="editing" x-cloak x-model="data.contact_location.value" class="input-box text-blue-600 font-medium text-center" @click.away="editing = false">
@@ -431,6 +454,9 @@
             </div>
         </div>
 
+        </div>
+        </div>
+        </div>
     </div>
 
     <script>
@@ -460,17 +486,23 @@
 
                 services_title: { value: "Our Services" },
                 services_subtitle: { value: "We provide end-to-end solutions for aquaculture technology integration." },
+                service1_num: { value: "01" },
                 service1_title: { value: "Automated Data Collection" },
                 service1_desc: { value: "Continuous background data harvesting from a pond, simultaneously without manual intervention." },
+                service2_num: { value: "02" },
                 service2_title: { value: "Smart Alert Notifications" },
                 service2_desc: { value: "Instant Alert notifications when water parameters exceed safe threshold limits for your specific fish species." },
+                service3_num: { value: "03" },
                 service3_title: { value: "AI Condition Analysis" },
                 service3_desc: { value: "Advanced algorithms that analyze patterns to predict water quality health and recommend corrective actions." },
 
                 contact_title: { value: "Contact Us" },
                 contact_subtitle: { value: "Have questions? We're here to help you optimize your aquaculture operations." },
+                contact_email_label: { value: "Email Address" },
                 contact_email: { value: "kirstinesanchez9@gmail.com" },
+                contact_phone_label: { value: "Mobile Number" },
                 contact_phone: { value: "09207327946\n09151003714" },
+                contact_location_label: { value: "Our Location" },
                 contact_location: { value: "Po-Ok, Hinoba-an, Negros Occidental" },
 
                 footer_brand: { value: "AQUASENSE" },
