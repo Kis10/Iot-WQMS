@@ -41,6 +41,10 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsApproved::class])->g
     Route::get('/approval/check', function (Illuminate\Http\Request $request) {
         return response()->json(['approved' => $request->user()->is_approved]);
     })->name('approval.check');
+    Route::get('/block/check', function (Illuminate\Http\Request $request) {
+        $user = \App\Models\User::find($request->user()->id);
+        return response()->json(['blocked' => (bool) $user->is_blocked]);
+    })->name('block.check');
 
     Route::get('/approval', function () {
         // CHEAT: Redirect Admin to Dashboard
