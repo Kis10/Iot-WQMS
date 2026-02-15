@@ -21,6 +21,8 @@
                             Activity Log: {{ request()->route('user')->name }}
                         @elseif(request()->routeIs('admin.landing.index'))
                             Landing Page Editor
+                        @elseif(request()->routeIs('admin.users.approvals'))
+                             Pending Approvals
                         @else
                             Dashboard
                         @endif
