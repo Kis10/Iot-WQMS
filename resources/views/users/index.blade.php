@@ -26,6 +26,7 @@
                                         $isOnline = $user->isOnline();
                                     @endphp
                                     <tr 
+                                        id="user-row-{{ $user->id }}"
                                         @if(Auth::user()->isAdmin()) 
                                             onclick="window.location='{{ route('users.activities', $user) }}'" 
                                             class="cursor-pointer hover:bg-gray-50 transition duration-150 ease-in-out"
@@ -235,7 +236,8 @@
                         this.isLoading = false;
                         this.showBlockModal = false;
                         this.showMessage('Action granted!');
-                        setTimeout(() => window.location.reload(), 1500);
+                        const row = document.getElementById(`user-row-${this.selectedUserId}`);
+                        if (row) row.remove();
                     })
                     .catch(err => {
                         console.error(err);
@@ -268,7 +270,8 @@
                         this.isLoading = false;
                         this.showRemoveModal = false;
                         this.showMessage('Action granted!');
-                        setTimeout(() => window.location.reload(), 1500);
+                        const row = document.getElementById(`user-row-${this.selectedUserId}`);
+                        if (row) row.remove();
                     })
                     .catch(err => {
                         console.error(err);
