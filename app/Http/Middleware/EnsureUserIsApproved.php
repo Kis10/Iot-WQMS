@@ -21,15 +21,25 @@ class EnsureUserIsApproved
             return $next($request);
         }
 
-        if (Auth::check() && !Auth::user()->isApproved()) {
-            
-            // Allow access to logout and the 'waiting for approval' page itself
-            if ($request->routeIs('approval.wait') || $request->routeIs('logout') || $request->routeIs('approval.check')) {
-                return $next($request);
+        if (Auth::check()) {
+            // Check if blocked
+            if (Auth::user()->isBlocked()) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return redirect('/login')->with('status', 'You have been blocked. You cannot access the site anymore.');
             }
 
-            // Redirect to "Waiting for Approval" page
-            return redirect()->route('approval.wait');
+            if (!Auth::user()->isApproved()) {
+                
+                // Allow access to logout and the 'waiting for approval' page itself
+                if ($request->routeIs('approval.wait') || $request->routeIs('logout') || $request->routeIs('approval.check')) {
+                    return $next($request);
+                }
+    
+                // Redirect to "Waiting for Approval" page
+                return redirect()->route('approval.wait');
+            }
         }
 
         return $next($request);

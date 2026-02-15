@@ -52,10 +52,15 @@
             <!-- Header / Toolbar -->
             <div class="flex justify-end items-center mb-4">
                 <div class="flex items-center gap-3">
-                    <span x-show="showSuccess" x-transition class="text-green-600 font-bold text-sm">Saved Successfully!</span>
-                    <button @click="saveChanges" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg shadow-md font-bold transition flex items-center gap-2 text-sm">
-                        <span x-show="!saving">Save Changes</span>
+                    <div x-show="showSuccess" x-transition class="flex items-center gap-2 text-green-600 font-bold text-sm bg-green-50 px-3 py-1.5 rounded-full border border-green-100">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        Saved Successfully!
+                    </div>
+                    <button @click="saveChanges" :disabled="saving" class="bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white px-6 py-2 rounded-lg shadow-md font-bold transition flex items-center gap-2 text-sm">
+                        <svg x-show="saving" class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        <span x-show="!saving && !showSuccess">Save Changes</span>
                         <span x-show="saving">Saving...</span>
+                        <span x-show="showSuccess">Saved!</span>
                     </button>
                 </div>
             </div>
@@ -189,7 +194,7 @@
                             <div class="mb-8" x-data="{ editing: false }">
                                 <h2 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.misTitleInput.focus())" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight cursor-text"
                                     x-text="data.mission_title.value"></h2>
-                                <input x-ref="misTitleInput" x-show="editing" x-cloak x-model="data.mission_title.value" class="input-box text-4xl font-bold text-gray-900 tracking-tight text-center" @click.away="editing = false">
+                                <textarea x-ref="misTitleInput" x-show="editing" x-cloak x-model="data.mission_title.value" rows="1" class="input-box text-4xl font-bold text-gray-900 tracking-tight text-center" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', value => { if(value) { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' } })" @click.away="editing = false"></textarea>
                             </div>
 
                             <!-- Text -->
@@ -210,18 +215,48 @@
                     <section class="py-24 bg-gray-50 overflow-hidden">
                          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                             <div class="text-center mb-16">
-                                <div class="mb-4" x-data="{ editing: false }">
+                                 <div class="mb-4" x-data="{ editing: false }">
                                     <h2 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sensTitleInput.focus())" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight cursor-text" x-text="data.sensors_title.value"></h2>
-                                    <input x-ref="sensTitleInput" x-show="editing" x-cloak x-model="data.sensors_title.value" class="input-box text-4xl font-bold text-gray-900 tracking-tight text-center" @click.away="editing = false">
+                                    <textarea x-ref="sensTitleInput" x-show="editing" x-cloak x-model="data.sensors_title.value" rows="1" class="input-box text-4xl font-bold text-gray-900 tracking-tight text-center" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', value => { if(value) { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' } })" @click.away="editing = false"></textarea>
                                 </div>
                                  <div x-data="{ editing: false }">
                                     <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.sensSubInput.focus())" class="editable-hover text-gray-500 text-lg cursor-text" x-text="data.sensors_subtitle.value"></p>
-                                    <input x-ref="sensSubInput" x-show="editing" x-cloak x-model="data.sensors_subtitle.value" class="input-box text-gray-500 text-lg text-center" @click.away="editing = false">
+                                    <textarea x-ref="sensSubInput" x-show="editing" x-cloak x-model="data.sensors_subtitle.value" rows="1" class="input-box text-gray-500 text-lg text-center" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', value => { if(value) { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' } })" @click.away="editing = false"></textarea>
                                 </div>
                             </div>
                              <!-- Sensors Grid (Static) -->
-                             <div class="flex justify-center text-gray-400 italic">
-                                 (Sensor cards are static system components)
+                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-12 mt-12 opacity-50 grayscale pointer-events-none">
+                                 <!-- Sensor 1: pH -->
+                                 <div class="sensor-card bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                                     <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mb-4">
+                                         <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.691.383a4 4 0 01-2.573.344l-2.387-.477a2 2 0 00-1.022.547l-.736.736a2 2 0 000 2.828l.736.736a2 2 0 001.022.547l2.387.477a6 6 0 003.86-.517l.691-.383a4 4 0 012.573-.344l2.387.477a2 2 0 001.022-.547l.736-.736a2 2 0 000-2.828l-.736-.736z"></path></svg>
+                                     </div>
+                                     <h3 class="font-bold text-gray-900">pH Sensor</h3>
+                                 </div>
+                                 <div class="sensor-card bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                                     <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mb-4">
+                                         <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                     </div>
+                                     <h3 class="font-bold text-gray-900">Turbidity</h3>
+                                 </div>
+                                 <div class="sensor-card bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                                     <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mb-4">
+                                         <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                     </div>
+                                     <h3 class="font-bold text-gray-900">Temp</h3>
+                                 </div>
+                                 <div class="sensor-card bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                                     <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mb-4">
+                                         <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                     </div>
+                                     <h3 class="font-bold text-gray-900">DO</h3>
+                                 </div>
+                                 <div class="sensor-card bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                                     <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mb-4">
+                                         <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+                                     </div>
+                                     <h3 class="font-bold text-gray-900">Humidity</h3>
+                                 </div>
                              </div>
                         </div>
                     </section>
@@ -232,11 +267,11 @@
                             <div class="text-center mb-16">
                                 <div class="mb-4" x-data="{ editing: false }">
                                     <h2 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.servTitleInput.focus())" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight cursor-text" x-text="data.services_title.value"></h2>
-                                    <input x-ref="servTitleInput" x-show="editing" x-cloak x-model="data.services_title.value" class="input-box text-4xl font-bold text-gray-900 tracking-tight text-center" @click.away="editing = false">
+                                    <textarea x-ref="servTitleInput" x-show="editing" x-cloak x-model="data.services_title.value" rows="1" class="input-box text-4xl font-bold text-gray-900 tracking-tight text-center" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', value => { if(value) { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' } })" @click.away="editing = false"></textarea>
                                 </div>
                                  <div x-data="{ editing: false }">
                                     <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.servSubInput.focus())" class="editable-hover text-gray-500 text-lg cursor-text" x-text="data.services_subtitle.value"></p>
-                                    <input x-ref="servSubInput" x-show="editing" x-cloak x-model="data.services_subtitle.value" class="input-box text-gray-500 text-lg text-center" @click.away="editing = false">
+                                    <textarea x-ref="servSubInput" x-show="editing" x-cloak x-model="data.services_subtitle.value" rows="1" class="input-box text-gray-500 text-lg text-center" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', value => { if(value) { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' } })" @click.away="editing = false"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -248,15 +283,37 @@
                             <div class="text-center mb-20">
                                 <div class="mb-4" x-data="{ editing: false }">
                                     <h2 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.contTitleInput.focus())" class="editable-hover text-4xl font-bold text-gray-900 tracking-tight cursor-text" x-text="data.contact_title.value"></h2>
-                                    <input x-ref="contTitleInput" x-show="editing" x-cloak x-model="data.contact_title.value" class="input-box text-4xl font-bold text-gray-900 tracking-tight text-center" @click.away="editing = false">
+                                    <textarea x-ref="contTitleInput" x-show="editing" x-cloak x-model="data.contact_title.value" rows="1" class="input-box text-4xl font-bold text-gray-900 tracking-tight text-center" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', value => { if(value) { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' } })" @click.away="editing = false"></textarea>
                                 </div>
                                  <div x-data="{ editing: false }">
                                     <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.contSubInput.focus())" class="editable-hover text-gray-500 text-lg cursor-text" x-text="data.contact_subtitle.value"></p>
-                                    <input x-ref="contSubInput" x-show="editing" x-cloak x-model="data.contact_subtitle.value" class="input-box text-gray-500 text-lg text-center" @click.away="editing = false">
+                                    <textarea x-ref="contSubInput" x-show="editing" x-cloak x-model="data.contact_subtitle.value" rows="1" class="input-box text-gray-500 text-lg text-center" @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'" x-init="$watch('editing', value => { if(value) { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' } })" @click.away="editing = false"></textarea>
                                 </div>
                             </div>
                         </div>
                     </section>
+
+                    <!-- Improved Footer -->
+                    <footer class="bg-white py-12 border-t border-gray-100 overflow-hidden">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div class="text-center">
+                                <div class="flex justify-center items-center gap-3 mb-6">
+                                    <img src="{{ asset('img/logo/logo-wq.png') }}" alt="Logo" class="h-8 w-auto grayscale opacity-50" />
+                                    <span class="text-gray-400 font-bold tracking-tight text-xl uppercase">{{ config('app.name', 'AquaSense') }}</span>
+                                </div>
+                                <p class="text-gray-500 text-sm mb-4">&copy; {{ date('Y') }} {{ config('app.name', 'AquaSense') }}. All rights reserved.</p>
+                                <div x-data="{ editing: false }">
+                                    <p x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.footerInput.focus())" class="editable-hover text-sm font-medium text-gray-500 mt-2 cursor-text"
+                                        x-text="data.footer_devs.value"></p>
+                                    <textarea x-ref="footerInput" x-show="editing" x-cloak x-model="data.footer_devs.value" rows="1"
+                                        class="input-box text-sm font-medium text-gray-500 text-center" 
+                                        @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'"
+                                        x-init="$watch('editing', value => { if(value) { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' } })"
+                                        @click.away="editing = false"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
 
                  </div> <!-- End Scrollable Viewport -->
             </div>

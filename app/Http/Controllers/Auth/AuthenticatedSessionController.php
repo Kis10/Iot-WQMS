@@ -32,6 +32,13 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        if (Auth::user()->isBlocked()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect('login')->with('status', 'You have been blocked. You cannot access the site anymore.');
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

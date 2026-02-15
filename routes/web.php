@@ -72,6 +72,8 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserIsApproved::class])->g
     })->name('admin.approval.check-count');
     Route::get('/admin/approve/{user}', [\App\Http\Controllers\UserController::class, 'approve'])->name('admin.approve');
     Route::get('/admin/deny/{user}', [\App\Http\Controllers\UserController::class, 'deny'])->name('admin.deny');
+    Route::post('/admin/block/{user}', [\App\Http\Controllers\UserController::class, 'block'])->name('admin.users.block');
+    Route::post('/admin/remove/{user}', [\App\Http\Controllers\UserController::class, 'remove'])->name('admin.users.remove');
 
     // Default User Monitoring Route
     Route::get('/users', [\App\Http\Controllers\UserController::class, 'index'])->name('users.index');

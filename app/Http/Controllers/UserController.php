@@ -48,4 +48,18 @@ class UserController extends Controller
         $user->delete();
         return redirect()->back()->with('success', 'User Denied!');
     }
+
+    public function block(\App\Models\User $user)
+    {
+        if (!auth()->user()->isAdmin()) abort(403);
+        $user->update(['is_blocked' => true]);
+        return response()->json(['message' => 'User blocked successfully']);
+    }
+
+    public function remove(\App\Models\User $user)
+    {
+        if (!auth()->user()->isAdmin()) abort(403);
+        $user->update(['is_approved' => false]);
+        return response()->json(['message' => 'User removed successfully']);
+    }
 }
