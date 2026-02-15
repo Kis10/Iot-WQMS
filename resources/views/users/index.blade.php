@@ -14,6 +14,7 @@
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Login Time</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Logout Time</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
                                 </tr>
@@ -38,14 +39,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0 h-2.5 w-2.5 rounded-full {{ $isOnline ? 'bg-green-500' : 'bg-gray-300' }} mr-3" title="{{ $isOnline ? 'Online' : 'Offline' }}"></div>
-                                                <div>
-                                                    <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
-                                                    <div x-show="blockedUsers.includes({{ $user->id }}) || {{ $user->isBlocked() ? 'true' : 'false' }}">
-                                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
-                                                             Account has been blocked
-                                                         </span>
-                                                    </div>
-                                                </div>
+                                                <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
                                             </div>
                                         </td>
 
@@ -64,6 +58,15 @@
                                             {{ ($lastActivity && $lastActivity->logout_at) ? $lastActivity->logout_at->format('M d, Y h:i A') : ($isOnline ? 'Active Now' : '-') }}
                                         </td>
 
+                                        <!-- Column Status: Blocked Label -->
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <div x-show="blockedUsers.includes({{ $user->id }}) || {{ $user->isBlocked() ? 'true' : 'false' }}">
+                                                 <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium text-gray-500 border border-gray-300">
+                                                     Account has been blocked
+                                                 </span>
+                                            </div>
+                                        </td>
+
                                         <!-- Column 5: Duration -->
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             @if($lastActivity && $lastActivity->duration_minutes)
@@ -79,25 +82,27 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             <div class="flex items-center justify-between">
                                                 <span>{{ $lastActivity ? $lastActivity->ip_address : '-' }}</span>
-                                                <div class="relative" x-data="{ open: false }" @click.stop @click.outside="open = false">
-                                                    <button @click="open = !open" class="text-gray-400 hover:text-gray-600 focus:outline-none p-1 bg-gray-100 rounded-full">
-                                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                                                        </svg>
-                                                    </button>
-                                                    <div x-show="open" 
-                                                         x-transition:enter="transition ease-out duration-100"
-                                                         x-transition:enter-start="transform opacity-0 scale-95"
-                                                         x-transition:enter-end="transform opacity-100 scale-100"
-                                                         x-transition:leave="transition ease-in duration-75"
-                                                         x-transition:leave-start="transform opacity-100 scale-100"
-                                                         x-transition:leave-end="transform opacity-0 scale-95"
-                                                         class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 py-1 border border-gray-100" 
-                                                         style="display: none;">
-                                                         <a href="#" @click.prevent.stop="open = false; confirmBlock({{ $user->id }})" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700">Block</a>
-                                                         <a href="#" @click.prevent.stop="open = false; confirmRemove({{ $user->id }})" class="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-50 hover:text-yellow-700">Remove Account</a>
+                                                @if(Auth::user()->isAdmin())
+                                                    <div class="relative" x-data="{ open: false }" @click.stop @click.outside="open = false">
+                                                        <button @click="open = !open" class="text-gray-400 hover:text-gray-600 focus:outline-none p-1 bg-gray-100 rounded-full">
+                                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                                            </svg>
+                                                        </button>
+                                                        <div x-show="open" 
+                                                             x-transition:enter="transition ease-out duration-100"
+                                                             x-transition:enter-start="transform opacity-0 scale-95"
+                                                             x-transition:enter-end="transform opacity-100 scale-100"
+                                                             x-transition:leave="transition ease-in duration-75"
+                                                             x-transition:leave-start="transform opacity-100 scale-100"
+                                                             x-transition:leave-end="transform opacity-0 scale-95"
+                                                             class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50 py-1 border border-gray-100" 
+                                                             style="display: none;">
+                                                             <a href="#" @click.prevent.stop="open = false; confirmBlock({{ $user->id }})" class="block px-4 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-700">Block</a>
+                                                             <a href="#" @click.prevent.stop="open = false; confirmRemove({{ $user->id }})" class="block px-4 py-2 text-sm text-gray-700 hover:bg-yellow-50 hover:text-yellow-700">Remove Account</a>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
