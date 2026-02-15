@@ -50,26 +50,19 @@
                                                 {{ $user->updated_at->format('M d, Y h:i A') }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                                <div class="relative inline-block text-left" @click.outside="openMenuId = null">
-                                                    <button @click="openMenuId = (openMenuId === {{ $user->id }} ? null : {{ $user->id }})" type="button" class="inline-flex justify-center w-full rounded-full border border-gray-300 shadow-sm px-2 py-1 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none" id="menu-button" aria-expanded="true" aria-haspopup="true">
-                                                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                            <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                                                <div class="flex items-center justify-center gap-3">
+                                                    <!-- Approve (Check) -->
+                                                    <button @click="processApprove({{ $user->id }})" class="p-1.5 rounded-full bg-green-50 text-green-600 hover:bg-green-100 hover:text-green-700 transition" title="Approve">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
                                                         </svg>
                                                     </button>
-
-                                                    <div x-show="openMenuId === {{ $user->id }}" 
-                                                         x-transition:enter="transition ease-out duration-100"
-                                                         x-transition:enter-start="transform opacity-0 scale-95"
-                                                         x-transition:enter-end="transform opacity-100 scale-100"
-                                                         x-transition:leave="transition ease-in duration-75"
-                                                         x-transition:leave-start="transform opacity-100 scale-100"
-                                                         x-transition:leave-end="transform opacity-0 scale-95"
-                                                         class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1" style="display: none;">
-                                                        <div class="py-1" role="none">
-                                                            <a href="#" @click.prevent="openMenuId = null; processApprove({{ $user->id }})" class="text-green-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem" tabindex="-1">Approve</a>
-                                                            <a href="#" @click.prevent="openMenuId = null; processDeny({{ $user->id }})" class="text-red-700 block px-4 py-2 text-sm hover:bg-gray-100" role="menuitem" tabindex="-1">Deny</a>
-                                                        </div>
-                                                    </div>
+                                                    <!-- Deny (X) -->
+                                                    <button @click="processDeny({{ $user->id }})" class="p-1.5 rounded-full bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700 transition" title="Deny">
+                                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                                                        </svg>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -157,7 +150,6 @@
             isLoading: false,
             showNotification: false,
             notificationMessage: '',
-            openMenuId: null,
             details: { name: '', email: '', date: '' },
 
             showDetails(name, email, date) {
@@ -167,40 +159,34 @@
 
             processApprove(id) {
                 this.isLoading = true;
-                setTimeout(() => {
-                    fetch(`/admin/approve/${id}`, {
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' } // Ensure handled as AJAX if needed
-                    })
-                    .then(res => {
-                        if (res.ok) {
-                            this.successAction(id, 'Action granted');
-                        }
-                    })
-                    .catch(e => {
-                        this.isLoading = false;
-                        console.error(e);
-                    });
-                }, 1000);
+                fetch(`/admin/approve/${id}`, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(res => {
+                    if (res.ok) {
+                        this.successAction(id, 'Approved successfully!');
+                    }
+                })
+                .catch(e => {
+                    this.isLoading = false;
+                    console.error(e);
+                });
             },
 
             processDeny(id) {
-                if(!confirm('Are you sure you want to deny (delete) this user?')) return;
-                
                 this.isLoading = true;
-                setTimeout(() => {
-                    fetch(`/admin/deny/${id}`, {
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                    })
-                    .then(res => {
-                        if (res.ok) {
-                            this.successAction(id, 'Action granted');
-                        }
-                    })
-                    .catch(e => {
-                        this.isLoading = false;
-                        console.error(e);
-                    });
-                }, 1000);
+                fetch(`/admin/deny/${id}`, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(res => {
+                    if (res.ok) {
+                        this.successAction(id, 'Denied successfully!');
+                    }
+                })
+                .catch(e => {
+                    this.isLoading = false;
+                    console.error(e);
+                });
             },
 
             successAction(id, msg) {
@@ -217,7 +203,7 @@
                     // Check if table empty to show "No pending approvals"
                     const tbody = document.querySelector('tbody');
                     if (tbody && tbody.children.length === 0) {
-                        window.location.reload(); // Easiest way to show "No data" state
+                        window.location.reload();
                     }
                 }, 2000);
             }
