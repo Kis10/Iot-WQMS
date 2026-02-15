@@ -8,9 +8,10 @@ class UserController extends Controller
 {
     public function index()
     {
-        // Exclude Admins and Removed users from the list
+        // Exclude Admins, Removed, and Blocked users from the list
         $users = \App\Models\User::where('role', '!=', 'admin')
                                  ->whereNull('removed_at')
+                                 ->where('is_blocked', false)
                                  ->get();
         // Also exclude logs for admins
         $logs = \App\Models\LoginActivity::with('user')->whereHas('user', function($q) {
@@ -40,7 +41,11 @@ class UserController extends Controller
     public function approve(\App\Models\User $user)
     {
         if (!auth()->user()->isAdmin()) abort(403);
-        $user->update(['is_approved' => true]);
+        $user->update([
+            'is_approved' => true,
+            'is_blocked' => false,
+            'removed_at' => null,
+        ]);
         return redirect()->back()->with('success', 'User Approved!');
     }
 
