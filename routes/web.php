@@ -81,6 +81,14 @@ Route::middleware(['auth'])->group(function () {
         return $response ? $response->json() : null;
     });
 
+    // Firmware Configuration Routes
+    Route::prefix('admin/firmware')->name('admin.firmware.')->group(function () {
+        Route::get('/wifi', [\App\Http\Controllers\Admin\FirmwareController::class, 'wifi'])->name('wifi');
+        Route::put('/wifi', [\App\Http\Controllers\Admin\FirmwareController::class, 'updateWifi'])->name('wifi.update');
+        Route::get('/api', [\App\Http\Controllers\Admin\FirmwareController::class, 'api'])->name('api');
+        Route::put('/api', [\App\Http\Controllers\Admin\FirmwareController::class, 'updateApi'])->name('api.update');
+    });
+
 });
 
 require __DIR__.'/auth.php';
