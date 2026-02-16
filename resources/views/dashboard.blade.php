@@ -558,6 +558,36 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Audio Context Unlock Logic
+            const audioEl = document.getElementById('aiNotificationSound');
+            let audioUnlocked = false;
+
+            function unlockAudio() {
+                if (audioUnlocked || !audioEl) return;
+                
+                // Try to play and immediately pause to unlock audio capability
+                const playPromise = audioEl.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        audioEl.pause();
+                        audioEl.currentTime = 0;
+                        audioUnlocked = true;
+                        // Remove listeners once unlocked
+                        document.removeEventListener('click', unlockAudio);
+                        document.removeEventListener('touchstart', unlockAudio);
+                        document.removeEventListener('keydown', unlockAudio);
+                        console.log('Audio playback unlocked successfully.');
+                    }).catch(error => {
+                        // console.log('Audio unlock failed (will retry on next interaction):', error);
+                    });
+                }
+            }
+
+            // Listen for any user interaction
+            document.addEventListener('click', unlockAudio);
+            document.addEventListener('touchstart', unlockAudio);
+            document.addEventListener('keydown', unlockAudio);
+
             const dashboardContainer = document.getElementById('dashboardContainer');
             const popup = document.getElementById('aiAnalysisPopup');
             const popupHandle = document.getElementById('aiPopupHandle');
