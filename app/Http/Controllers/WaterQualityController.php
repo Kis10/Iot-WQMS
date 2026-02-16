@@ -56,6 +56,12 @@ class WaterQualityController extends Controller
         return view('history', compact('readings'));
     }
 
+    // Show single history reading details
+    public function show(WaterReading $reading)
+    {
+        return view('history.show', compact('reading'));
+    }
+
     // Alerts
     public function alerts(Request $request)
     {

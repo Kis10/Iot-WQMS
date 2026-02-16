@@ -8,12 +8,7 @@
                         <thead class="bg-gray-50 border-b border-gray-200">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Device</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Turbidity</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TDS</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">pH Level</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Temperature</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Humidity</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date and Time</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Modified</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     <label class="inline-flex items-center gap-2">
                                         <span>Delete</span>
@@ -25,18 +20,13 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @forelse($readings as $reading)
                                 <!-- Data Row -->
-                                <tr class="hover:bg-gray-50 transition duration-150">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $reading->device_id ?? 'N/A' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->turbidity ?? 'N/A' }}%</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->tds ?? 'N/A' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                        <span class="px-3 py-1 rounded-full {{ ($reading->ph >= 5.0 && $reading->ph <= 9.0) ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                            {{ $reading->ph ?? 'N/A' }}
-                                        </span>
+                                <tr class="hover:bg-gray-50 transition duration-150 cursor-pointer" onclick="if(!event.target.closest('input') && !event.target.closest('label')) window.location='{{ route('history.show', $reading) }}'">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600 hover:text-indigo-900">
+                                        {{ $reading->device_id ?? 'N/A' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->temperature ?? 'N/A' }}Â°C</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->humidity !== null ? $reading->humidity . '%' : 'N/A' }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->created_at ? $reading->created_at->setTimezone('Asia/Manila')->format('M j, Y g:i A') : 'N/A' }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ $reading->created_at ? $reading->created_at->setTimezone('Asia/Manila')->format('M j, Y g:i A') : 'N/A' }}
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         <label class="inline-flex items-center cursor-pointer">
                                             <input type="checkbox"
@@ -52,8 +42,8 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="px-6 py-4 text-center text-gray-500 text-sm">
-                                        No readings recorded yet. Data will appear here when the sensor starts transmitting.
+                                    <td colspan="3" class="px-6 py-4 text-center text-gray-500 text-sm">
+                                        No readings recorded yet.
                                     </td>
                                 </tr>
                             @endforelse

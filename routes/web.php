@@ -36,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [WaterQualityController::class, 'dashboard'])->name('dashboard');
     Route::get('/dashboard/chart-data', [WaterQualityController::class, 'chartData'])->name('dashboard.chart');
     Route::get('/history', [WaterQualityController::class, 'history'])->name('history');
+    Route::get('/history/{reading}', [WaterQualityController::class, 'show'])->name('history.show');
     Route::delete('/history/{reading}', [WaterQualityController::class, 'destroyReading'])->name('history.destroy');
     Route::post('/history/bulk-delete', [WaterQualityController::class, 'destroyReadings'])->name('history.bulk-delete');
     Route::get('/alerts', [WaterQualityController::class, 'alerts'])->name('alerts');
