@@ -27,8 +27,8 @@ Route::post('/login-unlock', function (Illuminate\Http\Request $request) {
 })->name('login.unlock');
 
 Route::middleware(['auth'])->group(function () {
-    // Admin Landing Page CMS
-    Route::prefix('admin/landing')->name('admin.landing.')->middleware(\App\Http\Middleware\EnsureAdmin::class)->group(function () {
+    // Landing Page CMS (Accessible by all authenticated users)
+    Route::prefix('admin/landing')->name('admin.landing.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\LandingController::class, 'index'])->name('index');
         Route::put('/', [\App\Http\Controllers\Admin\LandingController::class, 'update'])->name('update');
     });

@@ -42,7 +42,6 @@
 
 
 
-        @if(Auth::user()->isAdmin())
             <!-- Landing Page CMS -->
             <a href="{{ route('admin.landing.index') }}" 
                class="flex items-center px-4 py-3 rounded-lg transition duration-200 {{ request()->routeIs('admin.landing.index') ? 'bg-indigo-100 text-indigo-600 font-semibold' : 'text-gray-700 hover:bg-gray-100' }}">
@@ -51,6 +50,5 @@
                 </svg>
                 Landing Page
             </a>
-        @endif
     </nav>
 </aside>
