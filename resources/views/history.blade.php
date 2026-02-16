@@ -55,25 +55,6 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            @php
-                                $previousDate = null;
-                            @endphp
-                            @forelse($readings as $reading)
-                                @php
-                                    $currentDate = $reading->created_at?->toDateString();
-                                    $showDateHeader = $previousDate !== $currentDate;
-                                    $previousDate = $currentDate;
-                                @endphp
-
-                                <!-- Date Separator -->
-                                @if($showDateHeader && $reading->created_at)
-                                    <tr class="bg-gray-100 border-t-2 border-gray-300">
-                                        <td colspan="8" class="px-6 py-3">
-                                            <span class="text-sm font-semibold text-gray-700">Date: {{ $reading->created_at->format('Y-m-d') }}</span>
-                                        </td>
-                                    </tr>
-                                @endif
-
                                 <!-- Data Row -->
                                 <tr class="hover:bg-gray-50 transition duration-150">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $reading->device_id ?? 'N/A' }}</td>
