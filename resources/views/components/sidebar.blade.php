@@ -51,31 +51,6 @@
                 Landing Page
             </a>
 
-            <!-- Networking Dropdown -->
-            <div x-data="{ open: {{ (request()->routeIs('admin.firmware.*')) ? 'true' : 'false' }} }" class="space-y-1">
-                <button @click="open = !open" 
-                        class="flex w-full items-center justify-between px-4 py-3 rounded-lg transition duration-200 text-gray-700 hover:bg-gray-100 focus:outline-none">
-                    <div class="flex items-center">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
-                        </svg>
-                        Networking
-                    </div>
-                    <svg :class="{'rotate-180': open}" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-                
-                <div x-show="open" x-transition.origin.top class="pl-11 pr-4 space-y-1">
-                    <a href="{{ route('admin.firmware.wifi') }}" 
-                       class="block py-2 text-sm rounded-md transition duration-200 {{ request()->routeIs('admin.firmware.wifi') ? 'text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">
-                        Wi-Fi Credentials
-                    </a>
-                    <a href="{{ route('admin.firmware.api') }}" 
-                       class="block py-2 text-sm rounded-md transition duration-200 {{ request()->routeIs('admin.firmware.api') ? 'text-indigo-600 font-semibold' : 'text-gray-600 hover:text-gray-900' }}">
-                        API Configuration
-                    </a>
-                </div>
-            </div>
+
     </nav>
 </aside>
