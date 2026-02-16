@@ -238,6 +238,11 @@ void loop() {
   static bool wasConnected = false;
   static bool firstConnection = true;
   
+  // STATESPACE VARIABLES
+  static bool isInitializing = true;
+  static unsigned long initStartTime = 0;
+  static bool firstReadingSent = false;
+  
   updateSound();
 
   // 1. Maintain WiFi
@@ -253,7 +258,7 @@ void loop() {
         digitalWrite(powerLedPin, LOW);
         startSound(SOUND_WIFI_DISCONNECT);
         wasConnected = false;
-        firstConnection = false;
+        // If we lose connection, we don't reset initialization, just wait to reconnect
       }
       WiFi.disconnect();
       WiFi.reconnect();
@@ -261,8 +266,11 @@ void loop() {
       if (!wasConnected) {
         digitalWrite(wifiLedPin, LOW);
         digitalWrite(powerLedPin, HIGH);
-        lcd.setCursor(0,3);
-        lcd.print("WiFi: OK        ");
+        // Only update LCD if we are NOT in the special initialization phase display
+        if (!isInitializing) {
+             lcd.setCursor(0,3);
+             lcd.print("WiFi: OK        ");
+        }
         
         if (!firstConnection) {
           Serial.println("[WiFi] Reconnected! 🧬");
@@ -270,6 +278,12 @@ void loop() {
         } else {
           Serial.println("[WiFi] Connected! ✅");
           startSound(SOUND_WIFI_CONNECT);
+          
+          // START INITIALIZATION TIMER ONCE WIFI CONNECTS
+          if (firstConnection) {
+              initStartTime = millis();
+              isInitializing = true;
+          }
           firstConnection = false;
         }
         wasConnected = true;
@@ -277,8 +291,44 @@ void loop() {
     }
   }
 
-  // 2. Read Sensors & Send Data
-  if (currentMillis - lastDataSend >= dataSendInterval) {
+  // 2. Initialization Phase (1 Minute)
+  if (isInitializing && WiFi.status() == WL_CONNECTED) {
+      unsigned long elapsedInit = currentMillis - initStartTime;
+      int remainingSeconds = 60 - (elapsedInit / 1000);
+      
+      if (remainingSeconds > 0) {
+          lcd.setCursor(0,2);
+          lcd.printf("Init Sensors: %ds ", remainingSeconds);
+          lcd.setCursor(0,3);
+          lcd.print("Please Wait...  ");
+          
+          // During init, we can still update temp/humid seamlessly
+          // Read DHT periodically
+           if (currentMillis - lastDataSend >= 2000) {
+                float newHum = dht.readHumidity();
+                float newTemp = dht.readTemperature();
+                if (!isnan(newTemp) && !isnan(newHum)) {
+                  temperature = newTemp;
+                  humidity = newHum;
+                }
+                lcd.setCursor(0,0);
+                lcd.printf("T:%.1fC H:%d%%   ", temperature, (int)humidity);
+                lastDataSend = currentMillis;
+           }
+           delay(100);
+           return; // SKIP READING LOGIC UNTIL INIT DONE
+      } else {
+          isInitializing = false;
+          lcd.setCursor(0,2);
+          lcd.print("                "); // Clear line
+          // Force immediate read
+          lastDataSend = 0; 
+      }
+  }
+
+  // 3. Read Sensors & Send Data (Every 60 Seconds)
+  // Changed interval to 60000ms (1 minute)
+  if (!isInitializing && (currentMillis - lastDataSend >= 60000 || lastDataSend == 0)) {
     lastDataSend = currentMillis;
 
     // ===========================================
@@ -378,56 +428,62 @@ void connectToWiFi() {
   
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print("Connecting WiFi.");
+  lcd.print("Connecting WiFi...");
   lcd.setCursor(0,1);
   lcd.print(ssid);
   
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   
-  int attempts = 0;
-  while(WiFi.status() != WL_CONNECTED && attempts < 30) {
-    delay(500);
-    Serial.print(".");
-    lcd.setCursor(15,3);
-    lcd.print(attempts + 1);
-    lcd.print("/30");
-    attempts++;
-    updateSound(); // Keep sounds playing while connecting
+  // 30 Seconds Countdown
+  unsigned long startAttempt = millis();
+  bool connected = false;
+  
+  while (millis() - startAttempt < 30000) {
+      if (WiFi.status() == WL_CONNECTED) {
+          connected = true;
+          break;
+      }
+      
+      int remaining = 30 - ((millis() - startAttempt) / 1000);
+      lcd.setCursor(0, 3);
+      lcd.printf("Waiting... %ds    ", remaining);
+      
+      Serial.print(".");
+      updateSound(); 
+      delay(500);
   }
   
-  if(WiFi.status() == WL_CONNECTED) {
-    Serial.println("\n[WiFi] Connected! ✅");
-    Serial.print("[WiFi] IP: ");
-    Serial.println(WiFi.localIP().toString());
-    
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("WiFi Connected!");
-    lcd.setCursor(0,1);
-    lcd.print(WiFi.localIP().toString());
-    lcd.setCursor(0,2);
-    lcd.print("AquaSense Ready");
-    
-    digitalWrite(powerLedPin, HIGH);
-    digitalWrite(wifiLedPin, LOW);
-    
-    // ✅ WIFI CONNECTED - One beep only!
-    startSound(SOUND_WIFI_CONNECT);
-  } else {
-    Serial.println("\n[WiFi] Failed to connect! ❌");
-    
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("WiFi Failed!");
-    lcd.setCursor(0,1);
-    lcd.print("Check Network");
-    lcd.setCursor(0,2);
-    lcd.print(ssid);
-    
-    digitalWrite(powerLedPin, LOW);
-    digitalWrite(wifiLedPin, HIGH);
+  // If still not connected after 30s, keep trying but change display
+  if (!connected) {
+      lcd.setCursor(0, 3);
+      lcd.print("Connecting...       ");
+      
+      while (WiFi.status() != WL_CONNECTED) {
+          Serial.print(".");
+          updateSound();
+          delay(500);
+      }
   }
+  
+  // Connected!
+  Serial.println("\n[WiFi] Connected! ✅");
+  Serial.print("[WiFi] IP: ");
+  Serial.println(WiFi.localIP().toString());
+    
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("WiFi Connected!");
+  lcd.setCursor(0,1);
+  lcd.print(WiFi.localIP().toString());
+  lcd.setCursor(0,2);
+  lcd.print("AquaSense Ready");
+    
+  digitalWrite(powerLedPin, HIGH);
+  digitalWrite(wifiLedPin, LOW);
+    
+  // ✅ WIFI CONNECTED - One beep only!
+  startSound(SOUND_WIFI_CONNECT);
 }
 
 /************ SEND DATA ************/

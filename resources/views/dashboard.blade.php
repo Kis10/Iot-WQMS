@@ -597,7 +597,7 @@
             const popupStateKey = 'aiAnalysisPopupState';
             const popupPositionKey = 'aiAnalysisPopupPosition';
             const popupLastShownKey = 'aiAnalysisLastShownId';
-            const popupDurationMs = 60000;
+            const popupDurationMs = 30000;
             const analysisPollIntervalMs = 5000;
             const headerBaseClasses = 'px-4 py-3 bg-gradient-to-r cursor-move select-none';
             const badgeBaseClasses = 'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold';
