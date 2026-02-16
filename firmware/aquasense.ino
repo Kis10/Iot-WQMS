@@ -184,7 +184,12 @@ void updateSound() {
   }
 }
 
-/************ SETUP ************/
+
+// STATESPACE VARIABLES
+bool isSingleShotDone = false;
+bool isInitializing = true;
+unsigned long initStartTime = 0;
+
 void setup() {
   Serial.begin(115200);
 
@@ -193,249 +198,110 @@ void setup() {
   pinMode(powerLedPin, OUTPUT);
   pinMode(wifiLedPin, OUTPUT);
   
-  // ★★★ SENSOR POWER CONTROL ★★★
+  // SENSOR POWER INITIAL OFF
   pinMode(tdsPowerPin, OUTPUT);
-  digitalWrite(tdsPowerPin, LOW); // Start OFF
+  digitalWrite(tdsPowerPin, LOW); 
   
   pinMode(turbidityPowerPin, OUTPUT);
-  digitalWrite(turbidityPowerPin, LOW); // Start OFF
+  digitalWrite(turbidityPowerPin, LOW); 
 
   // Default states
   digitalWrite(buzzerPin, LOW);
   digitalWrite(powerLedPin, LOW);
   digitalWrite(wifiLedPin, LOW);
 
-  // LCD
+  // LCD Init
   Wire.begin(LCD_SDA, LCD_SCL);
   lcd.begin();
   lcd.backlight();
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print("AquaSense Booting");
-
-  // Sensors
+  lcd.print("Aquasense Booting");
+  
+  // 🎵 SYSTEM READY SOUND
+  startSound(SOUND_READY);
+  
+  // Sensors Init
   dht.begin();
   delay(1000);
   analogReadResolution(12);
 
-  // LCD - System Ready
-  lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print("System Ready!");
-  lcd.setCursor(0,1);
-  lcd.print("AquaSense v1.0");
-  
-  // 🎵 SYSTEM READY SOUND - NON-BLOCKING
-  startSound(SOUND_READY);
-  
-  // WiFi
-  connectToWiFi();
+  // WiFi Connection with 30s Timeout & Blink UI
+  connectToWiFiWithUI();
 }
 
-/************ LOOP ************/
 void loop() {
-  unsigned long currentMillis = millis();
-  static bool wasConnected = false;
-  static bool firstConnection = true;
-  
-  // STATESPACE VARIABLES
-  static bool isInitializing = true;
-  static unsigned long initStartTime = 0;
-  static bool firstReadingSent = false;
-  
   updateSound();
 
-  // 1. Maintain WiFi
-  if (currentMillis - lastWiFiCheck >= wifiCheckInterval) {
-    lastWiFiCheck = currentMillis;
-
-    if (WiFi.status() != WL_CONNECTED) {
-      if (wasConnected) {
-        Serial.println("[WiFi] Connection lost! 🔴");
-        lcd.setCursor(0,3);
-        lcd.print("WiFi: LOST!     ");
-        digitalWrite(wifiLedPin, HIGH);
-        digitalWrite(powerLedPin, LOW);
-        startSound(SOUND_WIFI_DISCONNECT);
-        wasConnected = false;
-        // If we lose connection, we don't reset initialization, just wait to reconnect
-      }
-      WiFi.disconnect();
-      WiFi.reconnect();
-    } else {
-      if (!wasConnected) {
-        digitalWrite(wifiLedPin, LOW);
-        digitalWrite(powerLedPin, HIGH);
-        // Only update LCD if we are NOT in the special initialization phase display
-        if (!isInitializing) {
-             lcd.setCursor(0,3);
-             lcd.print("WiFi: OK        ");
-        }
-        
-        if (!firstConnection) {
-          Serial.println("[WiFi] Reconnected! 🧬");
-          startSound(SOUND_WIFI_RECONNECT);
-        } else {
-          Serial.println("[WiFi] Connected! ✅");
-          startSound(SOUND_WIFI_CONNECT);
-          
-          // START INITIALIZATION TIMER ONCE WIFI CONNECTS
-          if (firstConnection) {
-              initStartTime = millis();
-              isInitializing = true;
-          }
-          firstConnection = false;
-        }
-        wasConnected = true;
-      }
+  // If already done, just freeze (loop idle)
+  if (isSingleShotDone) {
+    if (!soundPlaying && currentSound != 0) {
+       noTone(buzzerPin); // Security safety silence
     }
+    delay(100);
+    return;
   }
 
+  // If WiFi lost during operation (unlikely in short run but possible)
+  if (WiFi.status() != WL_CONNECTED) {
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Error: WiFi Lost");
+    while(1); // Halt
+  }
+
+  unsigned long currentMillis = millis();
+
   // 2. Initialization Phase (1 Minute)
-  if (isInitializing && WiFi.status() == WL_CONNECTED) {
+  if (isInitializing) {
+      if (initStartTime == 0) initStartTime = currentMillis; // Latch start time
+
       unsigned long elapsedInit = currentMillis - initStartTime;
       int remainingSeconds = 60 - (elapsedInit / 1000);
       
       if (remainingSeconds > 0) {
-          lcd.setCursor(0,2);
-          lcd.printf("Init Sensors: %ds ", remainingSeconds);
-          lcd.setCursor(0,3);
-          lcd.print("Please Wait...  ");
+          lcd.setCursor(0,0);
+          lcd.print(WiFi.localIP().toString());
           
-          // During init, we can still update temp/humid seamlessly
-          // Read DHT periodically
-           if (currentMillis - lastDataSend >= 2000) {
-                float newHum = dht.readHumidity();
-                float newTemp = dht.readTemperature();
-                if (!isnan(newTemp) && !isnan(newHum)) {
-                  temperature = newTemp;
-                  humidity = newHum;
-                }
-                lcd.setCursor(0,0);
-                lcd.printf("T:%.1fC H:%d%%   ", temperature, (int)humidity);
-                lastDataSend = currentMillis;
-           }
-           delay(100);
-           return; // SKIP READING LOGIC UNTIL INIT DONE
+          lcd.setCursor(0,1);
+          lcd.print("Initializing Sensors");
+          
+          lcd.setCursor(0,2);
+          lcd.print("Please wait...");
+          
+          lcd.setCursor(0,3);
+          lcd.printf("Countdown: %ds    ", remainingSeconds);
+          
+          // Background read DHT for warmup (optional)
+          dht.readHumidity();
+          dht.readTemperature();
+          
+          delay(100);
       } else {
           isInitializing = false;
-          lcd.setCursor(0,2);
-          lcd.print("                "); // Clear line
-          // Force immediate read
-          lastDataSend = 0; 
+          lcd.clear();
+          lcd.setCursor(0,0);
+          lcd.print("Processing...");
       }
+      return;
   }
 
-  // 3. Read Sensors & Send Data (Every 60 Seconds)
-  // Changed interval to 60000ms (1 minute)
-  if (!isInitializing && (currentMillis - lastDataSend >= 60000 || lastDataSend == 0)) {
-    lastDataSend = currentMillis;
-
-    // ===========================================
-    // ★★★ NEW SENSOR READING LOGIC ★★★
-    // ===========================================
-
-    // --- STEP 1: FORCE TDS & TURBIDITY OFF! ---
-    // This removes the electrical noise so pH can be read.
-    digitalWrite(tdsPowerPin, LOW); 
-    digitalWrite(turbidityPowerPin, LOW);
-    delay(200); // Wait for water voltage to stabilize
-    
-    // Read DHT first
-    float newHum = dht.readHumidity();
-    float newTemp = dht.readTemperature();
-    if (!isnan(newTemp) && !isnan(newHum)) {
-      temperature = newTemp;
-      humidity = newHum;
-    }
-
-    // --- STEP 2: READ pH (CLEANEST STATE) ---
-    long pHAvg = 0;
-    for(int i = 0; i < numSamples; i++) { 
-      pHAvg += analogRead(pHPin); 
-      delay(10); 
-    }
-    float pHVoltage = (pHAvg / (float)numSamples) * (3.3 / 4095.0);
-    float pHValue = slope * pHVoltage + offset;
-    
-    // --- STEP 3: READ TURBIDITY (Turn ON -> Read -> Turn OFF) ---
-    digitalWrite(turbidityPowerPin, HIGH);
-    delay(800); // Increased warmup for stability
-    long turbSum = 0;
-    for(int i = 0; i < 5; i++) { 
-      turbSum += analogRead(turbidityPin); 
-      delay(10); 
-    }
-    digitalWrite(turbidityPowerPin, LOW); // Turn OFF immediately
-    
-    int turbidityRaw = turbSum / 5;
-    // Calibrated for your sensor: Max Raw ~2100 = 100% Clarity
-    int clarityValue = map(turbidityRaw, 0, 2100, 0, 100); 
-    clarityValue = constrain(clarityValue, 0, 100);
-
-    // --- STEP 4: READ TDS (Turn ON -> Read -> Turn OFF) ---
-    digitalWrite(tdsPowerPin, HIGH);
-    delay(800); // Increased warmup for stability
-    
-    // Read TDS
-    long tdsAvg = 0;
-    for(int i = 0; i < numSamples; i++) { 
-      tdsAvg += analogRead(tdsPin); 
-      delay(10); 
-    }
-    float tdsVoltage = (tdsAvg / (float)numSamples) * (3.3 / 4095.0);
-    digitalWrite(tdsPowerPin, LOW); // Turn OFF immediately 
-
-    // DEBUG: Print Raw TDS
-    Serial.print("RAW TDS ANALOG: ");
-    Serial.println(tdsAvg / numSamples);
-    Serial.print("TDS VOLTAGE: ");
-    Serial.println(tdsVoltage); 
-
-    // Calculate TDS
-    float compensationCoefficient = 1.0 + 0.02 * (temperature - 25.0);
-    float compensatedVoltage = tdsVoltage / compensationCoefficient;
-    float tdsValue = (133.42 * pow(compensatedVoltage, 3)
-                     -255.86 * pow(compensatedVoltage, 2)
-                     +857.39 * compensatedVoltage) * tdsFactor;
-
-    // ===========================================
-    
-    // LCD Update
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.printf("T:%.1fC H:%d%%", temperature, (int)humidity);
-    lcd.setCursor(0,1);
-    lcd.printf("pH:%.2f TDS:%d", pHValue, (int)tdsValue);
-    lcd.setCursor(0,2);
-    lcd.printf("Clarity:%d%%", clarityValue);
-    lcd.setCursor(0,3);
-    lcd.print(WiFi.status() == WL_CONNECTED ? "WiFi: OK        " : "WiFi: DOWN      ");
-
-    // Send to Cloud
-    if (WiFi.status() == WL_CONNECTED) {
-      sendToRailway(pHValue, clarityValue, tdsValue, temperature, humidity);
-    }
+  // 3. SINGLE SHOT READING & SENDING
+  if (!isSingleShotDone && !isInitializing) {
+    performSingleReadingAndSend();
+    isSingleShotDone = true; // LOCK
   }
-  
-  delay(5);
 }
 
-/************ WIFI ************/
-void connectToWiFi() {
-  Serial.print("[WiFi] Connecting to "); 
-  Serial.println(ssid);
-  
-  lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print("Connecting WiFi...");
+void connectToWiFiWithUI() {
   lcd.setCursor(0,1);
+  lcd.print("Connecting to:");
+  lcd.setCursor(0,2);
   lcd.print(ssid);
-  
+
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
-  
-  // 30 Seconds Countdown
+
   unsigned long startAttempt = millis();
   bool connected = false;
   
@@ -446,45 +312,145 @@ void connectToWiFi() {
       }
       
       int remaining = 30 - ((millis() - startAttempt) / 1000);
+      
+      // Blink Effect on "Waiting..."
       lcd.setCursor(0, 3);
-      lcd.printf("Waiting... %ds    ", remaining);
+      if ((millis() / 500) % 2 == 0) {
+        lcd.printf("Waiting... %ds    ", remaining);
+      } else {
+        lcd.print("                "); // Blink off
+      }
       
       Serial.print(".");
       updateSound(); 
-      delay(500);
+      delay(200);
   }
-  
-  // If still not connected after 30s, keep trying but change display
+
   if (!connected) {
-      lcd.setCursor(0, 3);
-      lcd.print("Connecting...       ");
-      
-      while (WiFi.status() != WL_CONNECTED) {
-          Serial.print(".");
-          updateSound();
-          delay(500);
-      }
+     lcd.clear();
+     lcd.setCursor(0,0);
+     lcd.print("Aquasense Booting");
+     lcd.setCursor(0,1);
+     lcd.print("Connection Failed");
+     lcd.setCursor(0,2);
+     lcd.print("Check Network");
+     
+     // Stay in "waiting..." with blink forever (Halt)
+     while(1) {
+        lcd.setCursor(0, 3);
+        if ((millis() / 500) % 2 == 0) {
+          lcd.print("Waiting...      ");
+        } else {
+          lcd.print("                ");
+        }
+        delay(200);
+     }
   }
+
+  // CONNECTED SUCCESS
+  digitalWrite(wifiLedPin, LOW); 
+  digitalWrite(powerLedPin, HIGH);
   
-  // Connected!
-  Serial.println("\n[WiFi] Connected! ✅");
-  Serial.print("[WiFi] IP: ");
-  Serial.println(WiFi.localIP().toString());
-    
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("WiFi Connected!");
   lcd.setCursor(0,1);
-  lcd.print(WiFi.localIP().toString());
-  lcd.setCursor(0,2);
-  lcd.print("AquaSense Ready");
-    
-  digitalWrite(powerLedPin, HIGH);
-  digitalWrite(wifiLedPin, LOW);
-    
-  // ✅ WIFI CONNECTED - One beep only!
+  lcd.print("WELCOME!");
+  
   startSound(SOUND_WIFI_CONNECT);
+  
+  // 5s Countdown before startup
+  for(int i=5; i>0; i--) {
+     lcd.setCursor(0,3);
+     lcd.printf("Starting in %ds... ", i);
+     delay(1000);
+  }
+  lcd.clear();
 }
+
+void performSingleReadingAndSend() {
+    // --- STEP 1: FORCE TDS & TURBIDITY OFF NOISE ---
+    digitalWrite(tdsPowerPin, LOW); 
+    digitalWrite(turbidityPowerPin, LOW);
+    delay(500);
+    
+    // Read DHT
+    float h = dht.readHumidity();
+    float t = dht.readTemperature();
+    if (isnan(h) || isnan(t)) { h = 50.0; t = 25.0; } // Fallback
+
+    // --- STEP 2: READ pH ---
+    long pHAvg = 0;
+    for(int i = 0; i < 20; i++) { 
+      pHAvg += analogRead(pHPin); 
+      delay(10); 
+    }
+    float pHVoltage = (pHAvg / 20.0) * (3.3 / 4095.0);
+    float pHVal = slope * pHVoltage + offset;
+    
+    // --- STEP 3: READ TURBIDITY ---
+    digitalWrite(turbidityPowerPin, HIGH);
+    delay(1000); // Warmup
+    long turbSum = 0;
+    for(int i = 0; i < 10; i++) { 
+      turbSum += analogRead(turbidityPin); 
+      delay(10); 
+    }
+    digitalWrite(turbidityPowerPin, LOW);
+    int turbRaw = turbSum / 10;
+    int clarity = map(turbRaw, 0, 2100, 0, 100); 
+    clarity = constrain(clarity, 0, 100);
+
+    // --- STEP 4: READ TDS ---
+    digitalWrite(tdsPowerPin, HIGH);
+    delay(1000); // Warmup
+    long tdsAvg = 0;
+    for(int i = 0; i < 20; i++) { 
+      tdsAvg += analogRead(tdsPin); 
+      delay(10); 
+    }
+    digitalWrite(tdsPowerPin, LOW);
+    float tdsVolt = (tdsAvg / 20.0) * (3.3 / 4095.0);
+    
+    // Calculate TDS
+    float compCoeff = 1.0 + 0.02 * (t - 25.0);
+    float compVolt = tdsVolt / compCoeff;
+    float tdsVal = (133.42 * pow(compVolt, 3) - 255.86 * pow(compVolt, 2) + 857.39 * compVolt) * tdsFactor;
+
+    // --- SEND DATA ---
+    sendToRailway(pHVal, clarity, tdsVal, t, h); // This plays 'Data Sent' tone (one beep)
+
+    // Wait for the 'Data Sent' sound to finish inside sendToRailway if blocking, or play custom sound here
+    // Requirement: "buzzer will beep 4 times in 2s saying 'data sent!'"
+    
+    lcd.clear();
+    lcd.setCursor(0,1);
+    lcd.print("    DATA SENT!    ");
+    
+    // Custom 4 beeps
+    for(int i=0; i<4; i++) {
+        digitalWrite(buzzerPin, HIGH);
+        delay(200); // Beep ON
+        digitalWrite(buzzerPin, LOW);
+        delay(300); // Beep OFF
+    }
+    
+    delay(2000); // "Data sent!" 2s duration
+
+    // --- FREEZE RESULT ON LCD ---
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.printf("T:%.1f H:%d%%", t, (int)h);
+    lcd.setCursor(0,1);
+    lcd.printf("pH:%.2f", pHVal);
+    lcd.setCursor(9,1);
+    lcd.printf("TDS:%d", (int)tdsVal);
+    lcd.setCursor(0,2);
+    lcd.printf("Clarity:%d%%", clarity);
+    lcd.setCursor(0,3);
+    lcd.print(" READING COMPLETE ");
+}
+
 
 /************ SEND DATA ************/
 void sendToRailway(float pH, int turbidity, float tds, float temp, float humid) {
