@@ -15,14 +15,7 @@
                             Alerts
                         @elseif(request()->routeIs('analysis.index'))
                             AI Analysis
-                        @elseif(request()->routeIs('users.index'))
-                            User Monitoring
-                        @elseif(request()->routeIs('users.activities'))
-                            Activity Log: {{ request()->route('user')->name }}
-                        @elseif(request()->routeIs('admin.landing.index'))
-                            Landing Page Editor
-                        @elseif(request()->routeIs('admin.users.approvals'))
-                             Pending Approvals
+
                         @else
                             Dashboard
                         @endif
@@ -46,45 +39,7 @@
                 @endif
                 
                 <!-- Admin Notification Bell -->
-                @if(Auth::user()->isAdmin())
-                    <div class="relative mr-4" x-data="{ 
-                            notifOpen: false, 
-                            count: {{ \App\Models\User::where('is_approved', false)->count() }},
-                            check() {
-                                fetch('{{ route('admin.approval.check-count') }}')
-                                    .then(res => res.json())
-                                    .then(data => {
-                                        if (data.count > this.count) {
-                                            let audio = new Audio('/sounds/alert.mp3');
-                                            audio.play().catch(e => console.log('Audio error:', e));
-                                        }
-                                        this.count = data.count;
-                                    });
-                            }
-                        }"
-                        x-init="setInterval(() => check(), 10000)">
-                        
-                        <button @click="notifOpen = !notifOpen" class="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none relative">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                            </svg>
-                            <div x-show="count > 0" class="absolute top-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-600"></div>
-                        </button>
 
-                        <div x-show="notifOpen" @click.away="notifOpen = false" class="absolute right-0 mt-2 w-64 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5" style="display: none;">
-                            <div class="px-4 py-2 border-b text-sm font-semibold text-gray-700">Notifications</div>
-                            <template x-if="count > 0">
-                                <a href="{{ route('admin.users.approvals') }}" class="block px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 flex items-center justify-between">
-                                    <span><span x-text="count" class="font-bold text-red-600"></span> New User(s) waiting</span>
-                                    <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                                </a>
-                            </template>
-                            <template x-if="count === 0">
-                                <div class="px-4 py-3 text-sm text-gray-500 text-center">No new notifications</div>
-                            </template>
-                        </div>
-                    </div>
-                @endif
                 
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
@@ -146,15 +101,7 @@
             </div>
 
             <div class="mt-3 space-y-1">
-                <!-- Admin Mobile Notifications -->
-                @if(Auth::user()->isAdmin())
-                    <div x-data="{ count: {{ \App\Models\User::where('is_approved', false)->count() }} }">
-                        <x-responsive-nav-link :href="route('admin.users.approvals')" class="flex justify-between items-center">
-                            {{ __('Notifications') }}
-                            <span x-show="count > 0" class="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full" x-text="count"></span>
-                        </x-responsive-nav-link>
-                    </div>
-                @endif
+
 
                 <!-- Refresh Button for Mobile -->
                 @if(request()->routeIs('dashboard'))
