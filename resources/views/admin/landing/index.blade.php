@@ -274,8 +274,55 @@
             </div>
         </section>
 
+        <!-- About / Team Section -->
+        <section class="py-24 bg-gray-50 overflow-hidden border-t border-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'about_title')" @input="syncContent($event, 'about_title')"
+                        class="editable-hover text-4xl font-bold text-gray-900 mb-4 tracking-tight"
+                        x-text="data.about_title.value"></h2>
+                    <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'about_subtitle')" @input="syncContent($event, 'about_subtitle')"
+                       class="editable-hover text-gray-500 text-lg max-w-2xl mx-auto"
+                       x-text="data.about_subtitle.value"></p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    @foreach(['team1', 'team2', 'team3', 'team4'] as $key)
+                    <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
+                        <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative group/img">
+                            <!-- Image Preview -->
+                            <template x-if="previews['{{ $key }}_img']">
+                                <img :src="previews['{{ $key }}_img']" class="w-full h-full object-cover">
+                            </template>
+                            <template x-if="!previews['{{ $key }}_img'] && data.{{ $key }}_img && (data.{{ $key }}_img.image || data.{{ $key }}_img.value)">
+                                <img :src="(data.{{ $key }}_img.image || data.{{ $key }}_img.value).startsWith('http') ? (data.{{ $key }}_img.image || data.{{ $key }}_img.value) : ('/' + (data.{{ $key }}_img.image || data.{{ $key }}_img.value))" class="w-full h-full object-cover">
+                            </template>
+                            <template x-if="!previews['{{ $key }}_img'] && (!data.{{ $key }}_img || (!data.{{ $key }}_img.image && !data.{{ $key }}_img.value))">
+                                <div class="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
+                                    <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                                </div>
+                            </template>
+                            
+                            <!-- Edit Overlay -->
+                            <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition duration-200">
+                                <button @click="openUploadModal('{{ $key }}_img')" class="text-white text-xs font-bold uppercase tracking-wider hover:text-blue-300">Change</button>
+                            </div>
+                        </div>
+
+                        <h3 @dblclick="makeEditable($event)" @blur="stopEditing($event, '{{ $key }}_name')" @input="syncContent($event, '{{ $key }}_name')"
+                            class="editable-hover text-lg font-bold text-gray-900 mb-1" x-text="data.{{ $key }}_name.value"></h3>
+                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, '{{ $key }}_role')" @input="syncContent($event, '{{ $key }}_role')"
+                           class="editable-hover text-blue-600 font-medium text-xs uppercase tracking-wide mb-4" x-text="data.{{ $key }}_role.value"></p>
+                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, '{{ $key }}_desc')" @input="syncContent($event, '{{ $key }}_desc')"
+                           class="editable-hover text-gray-500 text-sm leading-relaxed" x-text="data.{{ $key }}_desc.value"></p>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+
         <!-- Contact Section -->
-        <section class="py-24 bg-gray-50 overflow-hidden">
+        <section class="py-24 bg-white overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-20">
                     <h2 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_title')" @input="syncContent($event, 'contact_title')"
@@ -343,8 +390,8 @@
         <!-- ================================ -->
         <div x-show="showBgModal" x-cloak class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm" x-transition style="display: none;">
             <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4" @click.outside="showBgModal = false">
-                <h3 class="text-lg font-bold text-gray-900 mb-2">Change Background</h3>
-                <p class="text-gray-500 text-sm mb-5">Choose how you'd like to upload a new hero background image.</p>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Change Image</h3>
+                <p class="text-gray-500 text-sm mb-5">Choose how you'd like to upload a new image.</p>
 
                 <div class="space-y-3">
                     <button @click="$refs.bgFileInput.click(); showBgModal = false" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition text-left">
@@ -426,6 +473,25 @@
                 service3_title: { value: "AI Condition Analysis" },
                 service3_desc: { value: "Advanced algorithms that analyze patterns to predict water quality health and recommend corrective actions." },
 
+                about_title: { value: "Meet the Team" },
+                about_subtitle: { value: "The dedicated minds behind AquaSense, working together to revolutionize aquaculture monitoring." },
+                team1_name: { value: "Kirstine A. Sanchez" },
+                team1_role: { value: "Web/Arduino Developer" },
+                team1_desc: { value: "Spearheads the hardware integration and full-stack web development." },
+                team1_img: { value: null },
+                team2_name: { value: "Dannica J. Besinio" },
+                team2_role: { value: "Documenter" },
+                team2_desc: { value: "Ensures comprehensive documentation of system processes and user guides." },
+                team2_img: { value: null },
+                team3_name: { value: "Joy Mae A. Samra" },
+                team3_role: { value: "Documenter" },
+                team3_desc: { value: "Focuses on research, technical writing, and system validation." },
+                team3_img: { value: null },
+                team4_name: { value: "Jonas D. Parraño" },
+                team4_role: { value: "System Analyst / Capstone Adviser" },
+                team4_desc: { value: "Provides expert guidance on system architecture and project direction." },
+                team4_img: { value: null },
+
                 contact_title: { value: "Contact Us" },
                 contact_subtitle: { value: "Have questions? We're here to help you optimize your aquaculture operations." },
                 contact_email_label: { value: "Email Address" },
@@ -452,11 +518,19 @@
                 data: mergedData,
                 heroBgPreview: null,
                 heroBgFile: null,
+                files: {},
+                previews: {},
                 showBgModal: false,
                 showUrlModal: false,
                 tempUrl: '',
                 saving: false,
                 showSuccess: false,
+                currentUploadKey: 'hero_bg',
+
+                openUploadModal(key) {
+                    this.currentUploadKey = key;
+                    this.showBgModal = true;
+                },
 
                 // Make an element editable in-place (contenteditable)
                 makeEditable(e) {
@@ -486,19 +560,37 @@
                 handleFileSelect(e) {
                     const file = e.target.files[0];
                     if (file) {
-                        this.heroBgFile = file;
-                        const reader = new FileReader();
-                        reader.onload = (e) => { this.heroBgPreview = e.target.result; };
-                        reader.readAsDataURL(file);
+                        if (this.currentUploadKey === 'hero_bg') {
+                            this.heroBgFile = file;
+                            const reader = new FileReader();
+                            reader.onload = (e) => { this.heroBgPreview = e.target.result; };
+                            reader.readAsDataURL(file);
+                        } else {
+                            // Generic file upload
+                            this.files[this.currentUploadKey] = file;
+                            const reader = new FileReader();
+                            reader.onload = (e) => { 
+                                this.previews[this.currentUploadKey] = e.target.result; 
+                            };
+                            reader.readAsDataURL(file);
+                        }
                     }
                 },
 
                 applyUrl() {
                     if (this.tempUrl) {
-                        if (!this.data.hero_bg) this.data.hero_bg = {};
-                        this.data.hero_bg.value = this.tempUrl;
-                        this.heroBgPreview = this.tempUrl;
-                        this.heroBgFile = null;
+                        if (!this.data[this.currentUploadKey]) this.data[this.currentUploadKey] = {};
+                        
+                        this.data[this.currentUploadKey].value = this.tempUrl;
+                        this.data[this.currentUploadKey].image = this.tempUrl; // Set image prop explicitly for preview
+                        
+                        if (this.currentUploadKey === 'hero_bg') {
+                            this.heroBgPreview = this.tempUrl;
+                            this.heroBgFile = null;
+                        } else {
+                            this.previews[this.currentUploadKey] = this.tempUrl;
+                            delete this.files[this.currentUploadKey];
+                        }
                     }
                     this.showUrlModal = false;
                 },
@@ -508,15 +600,24 @@
                     const formData = new FormData();
 
                     for (const key in this.data) {
-                        if (key !== 'hero_bg') {
-                            formData.append(key, this.data[key].value);
+                        if (key !== 'hero_bg' && !key.endsWith('_img')) {
+                             formData.append(key, this.data[key].value);
+                        }
+                        // Handle generic image URL values stored in data
+                         if (key.endsWith('_img') && this.data[key].value && !this.files[key]) {
+                            formData.append(key + '_url', this.data[key].value);
                         }
                     }
 
                     if (this.heroBgFile) {
                         formData.append('hero_bg_file', this.heroBgFile);
-                    } else if (this.tempUrl) {
-                        formData.append('hero_bg_url', this.tempUrl);
+                    } else if (this.data.hero_bg.image && this.data.hero_bg.image.startsWith('http')) {
+                        formData.append('hero_bg_url', this.data.hero_bg.image);
+                    }
+
+                    // Append Generic Files
+                    for (const key in this.files) {
+                        formData.append(key + '_file', this.files[key]);
                     }
 
                     formData.append('_method', 'PUT');

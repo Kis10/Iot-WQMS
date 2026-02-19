@@ -18,7 +18,13 @@ class LandingController extends Controller
     public function update(Request $request)
     {
         // Gather all text inputs (exclude special fields)
-        $exclude = ['_token', '_method', 'hero_bg_file', 'hero_bg_url'];
+        // Gather all text inputs (exclude special fields)
+        $exclude = ['_token', '_method'];
+        $imageKeys = ['hero_bg', 'team1_img', 'team2_img', 'team3_img', 'team4_img'];
+        foreach ($imageKeys as $key) {
+            $exclude[] = $key . '_file';
+            $exclude[] = $key . '_url';
+        }
         $inputs = $request->except($exclude);
 
         foreach ($inputs as $key => $value) {
@@ -28,22 +34,20 @@ class LandingController extends Controller
             );
         }
 
-        // Handle File Upload (Hero BG)
-        if ($request->hasFile('hero_bg_file')) {
-            $file = $request->file('hero_bg_file');
-            $path = $file->store('landing', 'public');
+        // Handle Multiple File Uploads
+        $imageKeys = ['hero_bg', 'team1_img', 'team2_img', 'team3_img', 'team4_img'];
 
-            LandingContent::updateOrCreate(
-                ['key' => 'hero_bg'],
-                ['image' => 'storage/' . $path]
-            );
-        }
-        // Handle URL Input for Image (if provided and no file)
-        elseif ($request->input('hero_bg_url')) {
-             LandingContent::updateOrCreate(
-                ['key' => 'hero_bg'],
-                ['image' => $request->input('hero_bg_url')]
-            );
+        foreach ($imageKeys as $key) {
+            $fileInput = $key . '_file';
+            $urlInput = $key . '_url';
+
+            if ($request->hasFile($fileInput)) {
+                $file = $request->file($fileInput);
+                $path = $file->store('landing', 'public');
+                LandingContent::updateOrCreate(['key' => $key], ['image' => 'storage/' . $path]);
+            } elseif ($request->input($urlInput)) {
+                LandingContent::updateOrCreate(['key' => $key], ['image' => $request->input($urlInput)]);
+            }
         }
 
         // For AJAX requests, return JSON

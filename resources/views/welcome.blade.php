@@ -66,6 +66,7 @@
                     <!-- Nav Links (Right) -->
                     <div class="hidden md:flex items-center space-x-8 text-sm font-semibold ml-auto">
                         <a href="#home" class="text-gray-600 hover:text-blue-600 transition tracking-wide">Home</a>
+                        <a href="#about" class="text-gray-600 hover:text-blue-600 transition tracking-wide">About</a>
                         <a href="#features" class="text-gray-600 hover:text-blue-600 transition tracking-wide">Sensors</a>
                         <a href="#services" class="text-gray-600 hover:text-blue-600 transition tracking-wide">Services</a>
                         <a href="#contact" class="text-gray-600 hover:text-blue-600 transition tracking-wide">Contact</a>
@@ -223,8 +224,86 @@
             </div>
         </section>
 
+        <!-- About / Team Section -->
+        <section id="about" class="py-24 bg-gray-50 overflow-hidden border-t border-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16 fade-in-up">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['about_title']->value ?? 'Meet the Team' }}</h2>
+                    <p class="text-gray-500 text-lg max-w-2xl mx-auto">{{ $contents['about_subtitle']->value ?? 'The dedicated minds behind AquaSense, working together to revolutionize aquaculture monitoring.' }}</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 fade-in-up">
+                    
+                    <!-- Team Member 1 -->
+                    <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
+                        <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative">
+                            @if(isset($contents['team1_img']) && $contents['team1_img']->image)
+                                <img src="{{ asset($contents['team1_img']->image) }}" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
+                                    <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                                </div>
+                            @endif
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-1">{{ $contents['team1_name']->value ?? 'Kirstine A. Sanchez' }}</h3>
+                        <p class="text-blue-600 font-medium text-xs uppercase tracking-wide mb-4">{{ $contents['team1_role']->value ?? 'Web/Arduino Developer' }}</p>
+                        <p class="text-gray-500 text-sm leading-relaxed">{{ $contents['team1_desc']->value ?? 'Spearheads the hardware integration and full-stack web development.' }}</p>
+                    </div>
+
+                    <!-- Team Member 2 -->
+                    <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
+                         <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative">
+                            @if(isset($contents['team2_img']) && $contents['team2_img']->image)
+                                <img src="{{ asset($contents['team2_img']->image) }}" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
+                                    <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                                </div>
+                            @endif
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-1">{{ $contents['team2_name']->value ?? 'Dannica J. Besinio' }}</h3>
+                        <p class="text-blue-600 font-medium text-xs uppercase tracking-wide mb-4">{{ $contents['team2_role']->value ?? 'Documenter' }}</p>
+                        <p class="text-gray-500 text-sm leading-relaxed">{{ $contents['team2_desc']->value ?? 'Ensures comprehensive documentation of system processes and user guides.' }}</p>
+                    </div>
+
+                    <!-- Team Member 3 -->
+                    <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
+                         <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative">
+                            @if(isset($contents['team3_img']) && $contents['team3_img']->image)
+                                <img src="{{ asset($contents['team3_img']->image) }}" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
+                                    <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                                </div>
+                            @endif
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-1">{{ $contents['team3_name']->value ?? 'Joy Mae A. Samra' }}</h3>
+                        <p class="text-blue-600 font-medium text-xs uppercase tracking-wide mb-4">{{ $contents['team3_role']->value ?? 'Documenter' }}</p>
+                        <p class="text-gray-500 text-sm leading-relaxed">{{ $contents['team3_desc']->value ?? 'Focuses on research, technical writing, and system validation.' }}</p>
+                    </div>
+
+                    <!-- Team Member 4 -->
+                    <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
+                         <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative">
+                            @if(isset($contents['team4_img']) && $contents['team4_img']->image)
+                                <img src="{{ asset($contents['team4_img']->image) }}" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
+                                    <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                                </div>
+                            @endif
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-1">{{ $contents['team4_name']->value ?? 'Jonas D. Parraño' }}</h3>
+                        <p class="text-blue-600 font-medium text-xs uppercase tracking-wide mb-4">{{ $contents['team4_role']->value ?? 'System Analyst / Capstone Adviser' }}</p>
+                        <p class="text-gray-500 text-sm leading-relaxed">{{ $contents['team4_desc']->value ?? 'Provides expert guidance on system architecture and project direction.' }}</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
         <!-- Contact Us Section -->
-        <section id="contact" class="py-24 bg-gray-50 overflow-hidden">
+        <section id="contact" class="py-24 bg-white overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-20 fade-in-up">
                     <h2 class="text-4xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['contact_title']->value ?? 'Contact Us' }}</h2>
