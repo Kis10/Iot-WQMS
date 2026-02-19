@@ -17,9 +17,7 @@ class LandingController extends Controller
 
     public function update(Request $request)
     {
-        // Gather all text inputs (exclude special fields)
-        // Gather all text inputs (exclude special fields)
-        $exclude = ['_token', '_method'];
+        // 1. Define Image Keys
         $imageKeys = [
             'hero_bg', 
             'team1_img', 'team1_img_hover', 
@@ -27,45 +25,58 @@ class LandingController extends Controller
             'team3_img', 'team3_img_hover', 
             'team4_img', 'team4_img_hover'
         ];
+
+        // 2. Separate Inputs
+        // $inputs will contain all text fields sent by the form.
+        // We exclude _token, _method, and any _file/_url parameters related to images.
+        $exclude = ['_token', '_method'];
         foreach ($imageKeys as $key) {
             $exclude[] = $key . '_file';
             $exclude[] = $key . '_url';
         }
-        $inputs = $request->except($exclude);
+        
+        $textInputs = $request->except($exclude);
 
-        foreach ($inputs as $key => $value) {
+        // 3. Process Text Updates
+        foreach ($textInputs as $key => $value) {
+            // Skip if this is actually an image key that slipped through (shouldn't happen due to JS logic, but safety first)
+            if (in_array($key, $imageKeys)) continue;
+
             LandingContent::updateOrCreate(
                 ['key' => $key],
                 ['value' => $value]
             );
         }
 
-        // Handle Multiple File Uploads
-        // Defined above in previous block or re-add full list
-        // $imageKeys = [...]; - We can just reuse the variable if it's in scope, but wait, the previous snippet redefined it.
-        // Let's redefine it here to be safe as per the user's explicit request to fix logic.
-        $imageKeys = [
-            'hero_bg', 
-            'team1_img', 'team1_img_hover', 
-            'team2_img', 'team2_img_hover', 
-            'team3_img', 'team3_img_hover', 
-            'team4_img', 'team4_img_hover'
-        ];
-
+        // 4. Process Image Updates
         foreach ($imageKeys as $key) {
             $fileInput = $key . '_file';
             $urlInput = $key . '_url';
+            $updateData = [];
 
+            // A. Handle File Upload
             if ($request->hasFile($fileInput)) {
                 $file = $request->file($fileInput);
-                $path = $file->store('landing', 'public');
-                LandingContent::updateOrCreate(['key' => $key], ['image' => 'storage/' . $path]);
-            } elseif ($request->input($urlInput)) {
-                LandingContent::updateOrCreate(['key' => $key], ['image' => $request->input($urlInput)]);
+                if ($file->isValid()) {
+                    $path = $file->store('landing', 'public');
+                    $updateData['image'] = 'storage/' . $path;
+                }
+            } 
+            // B. Handle URL String (only if no file uploaded)
+            elseif ($request->filled($urlInput)) {
+                $updateData['image'] = $request->input($urlInput);
+            }
+
+            // Only perform DB update if we have new image data
+            if (!empty($updateData)) {
+                LandingContent::updateOrCreate(
+                    ['key' => $key],
+                    $updateData
+                );
             }
         }
 
-        // For AJAX requests, return JSON
+        // Return Success
         if ($request->wantsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
             return response()->json(['status' => 'success']);
         }
