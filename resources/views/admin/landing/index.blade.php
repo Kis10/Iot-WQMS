@@ -165,7 +165,7 @@
             <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
                 <br><br>
                 <div class="mb-8">
-                    <h1 @dblclick="makeEditableHtml($event)" 
+                    <h1 @click="makeEditableHtml($event)" 
                         @blur="stopEditingHtml($event, 'hero_title')"
                         @keydown.enter.prevent="$event.target.blur()"
                         class="editable-hover text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight tracking-tight outline-none focus:outline-none"
@@ -174,9 +174,9 @@
                 </div>
 
                 <!-- Hero Subtitle -->
-                <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'hero_subtitle')" @input="syncContent($event, 'hero_subtitle')"
+                <p @click="makeEditable($event)" @blur="stopEditing($event, 'hero_subtitle')"
                    class="editable-hover text-xl md:text-2xl text-blue-100 max-w-3xl mx-auto font-medium leading-relaxed opacity-90 mb-12"
-                   x-text="data.hero_subtitle.value"></p>
+                   x-html="data.hero_subtitle.value" :style="data.hero_subtitle.style || ''"></p>
             </div>
         </section>
 
@@ -186,20 +186,20 @@
                 <div class="max-w-3xl mx-auto">
                     <!-- Badge -->
                     <div class="mb-6 flex justify-center">
-                        <div @dblclick="makeEditable($event)" @blur="stopEditing($event, 'mission_badge')" @input="syncContent($event, 'mission_badge')"
+                        <div @click="makeEditable($event)" @blur="stopEditing($event, 'mission_badge')"
                              class="editable-hover inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-sm font-bold"
-                             x-text="data.mission_badge.value"></div>
+                             x-html="data.mission_badge.value" :style="data.mission_badge.style || ''"></div>
                     </div>
 
                     <!-- Title -->
-                    <h2 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'mission_title')" @input="syncContent($event, 'mission_title')"
+                    <h2 @click="makeEditable($event)" @blur="stopEditing($event, 'mission_title')"
                         class="editable-hover text-4xl font-bold tracking-tight mb-8" style="color: #0D1A63;"
-                        x-text="data.mission_title.value"></h2>
+                        x-html="data.mission_title.value" :style="data.mission_title.style || ''"></h2>
 
                     <!-- Text -->
-                    <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'mission_text')" @input="syncContent($event, 'mission_text')"
+                    <p @click="makeEditable($event)" @blur="stopEditing($event, 'mission_text')"
                        class="editable-hover text-xl text-gray-600 leading-relaxed font-light"
-                       x-text="data.mission_text.value"></p>
+                       x-html="data.mission_text.value" :style="data.mission_text.style || ''"></p>
                 </div>
             </div>
         </section>
@@ -208,12 +208,12 @@
         <section class="py-24 bg-gray-50 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
-                    <h2 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensors_title')" @input="syncContent($event, 'sensors_title')"
+                    <h2 @click="makeEditable($event)" @blur="stopEditing($event, 'sensors_title')"
                         class="editable-hover text-4xl font-bold tracking-tight mb-4" style="color: #0D1A63;"
-                        x-text="data.sensors_title.value"></h2>
-                    <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensors_subtitle')" @input="syncContent($event, 'sensors_subtitle')"
+                        x-html="data.sensors_title.value" :style="data.sensors_title.style || ''"></h2>
+                    <p @click="makeEditable($event)" @blur="stopEditing($event, 'sensors_subtitle')"
                        class="editable-hover text-gray-500 text-lg"
-                       x-text="data.sensors_subtitle.value"></p>
+                       x-html="data.sensors_subtitle.value" :style="data.sensors_subtitle.style || ''"></p>
                 </div>
 
                 <!-- Sensor Cards -->
@@ -223,10 +223,10 @@
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.691.383a4 4 0 01-2.573.344l-2.387-.477a2 2 0 00-1.022.547l-.736.736a2 2 0 000 2.828l.736.736a2 2 0 001.022.547l2.387.477a6 6 0 003.86-.517l.691-.383a4 4 0 012.573-.344l2.387.477a2 2 0 001.022-.547l.736-.736a2 2 0 000-2.828l-.736-.736z"></path></svg>
                         </div>
-                        <h3 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor1_title')" @input="syncContent($event, 'sensor1_title')"
-                            class="editable-hover text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;" x-text="data.sensor1_title.value"></h3>
-                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor1_desc')" @input="syncContent($event, 'sensor1_desc')"
-                           class="editable-hover text-gray-600 text-sm leading-relaxed" x-text="data.sensor1_desc.value"></p>
+                        <h3 @click="makeEditable($event)" @blur="stopEditing($event, 'sensor1_title')"
+                            class="editable-hover text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;" x-html="data.sensor1_title.value" :style="data.sensor1_title.style || ''"></h3>
+                        <p @click="makeEditable($event)" @blur="stopEditing($event, 'sensor1_desc')"
+                           class="editable-hover text-gray-600 text-sm leading-relaxed" x-html="data.sensor1_desc.value" :style="data.sensor1_desc.style || ''"></p>
                     </div>
 
                     <!-- Turbidity -->
@@ -234,10 +234,10 @@
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 110 2h-4a1 1 0 01-1-1z"></path><circle cx="12" cy="14" r="1" fill="currentColor"></circle><circle cx="15" cy="13" r="0.5" fill="currentColor"></circle><circle cx="9" cy="13" r="0.5" fill="currentColor"></circle></svg>
                         </div>
-                        <h3 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor2_title')" @input="syncContent($event, 'sensor2_title')"
-                            class="editable-hover text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;" x-text="data.sensor2_title.value"></h3>
-                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor2_desc')" @input="syncContent($event, 'sensor2_desc')"
-                           class="editable-hover text-gray-600 text-sm leading-relaxed" x-text="data.sensor2_desc.value"></p>
+                        <h3 @click="makeEditable($event)" @blur="stopEditing($event, 'sensor2_title')"
+                            class="editable-hover text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;" x-html="data.sensor2_title.value" :style="data.sensor2_title.style || ''"></h3>
+                        <p @click="makeEditable($event)" @blur="stopEditing($event, 'sensor2_desc')"
+                           class="editable-hover text-gray-600 text-sm leading-relaxed" x-html="data.sensor2_desc.value" :style="data.sensor2_desc.style || ''"></p>
                     </div>
 
                     <!-- TDS -->
@@ -245,10 +245,10 @@
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.691.383a4 4 0 01-2.573.344l-2.387-.477a2 2 0 00-1.022.547l-.736.736a2 2 0 000 2.828l.736.736a2 2 0 001.022.547l2.387.477a6 6 0 003.86-.517l.691-.383a4 4 0 012.573-.344l2.387.477a2 2 0 001.022-.547l.736-.736a2 2 0 000-2.828l-.736-.736z"></path><circle cx="12" cy="14" r="1.5" fill="currentColor"></circle><circle cx="15.5" cy="12.5" r="1" fill="currentColor"></circle><circle cx="8.5" cy="12.5" r="1" fill="currentColor"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v6"></path></svg>
                         </div>
-                        <h3 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor3_title')" @input="syncContent($event, 'sensor3_title')"
-                            class="editable-hover text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;" x-text="data.sensor3_title.value"></h3>
-                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor3_desc')" @input="syncContent($event, 'sensor3_desc')"
-                           class="editable-hover text-gray-600 text-sm leading-relaxed" x-text="data.sensor3_desc.value"></p>
+                        <h3 @click="makeEditable($event)" @blur="stopEditing($event, 'sensor3_title')"
+                            class="editable-hover text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;" x-html="data.sensor3_title.value" :style="data.sensor3_title.style || ''"></h3>
+                        <p @click="makeEditable($event)" @blur="stopEditing($event, 'sensor3_desc')"
+                           class="editable-hover text-gray-600 text-sm leading-relaxed" x-html="data.sensor3_desc.value" :style="data.sensor3_desc.style || ''"></p>
                     </div>
 
                     <!-- Temperature -->
@@ -256,10 +256,10 @@
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19c-1.657 0-3-1.343-3-3V6a3 3 0 116 0v10c0 1.657-1.343 3-3 3z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9h4m-4 4h4"></path></svg>
                         </div>
-                        <h3 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor4_title')" @input="syncContent($event, 'sensor4_title')"
-                            class="editable-hover text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;" x-text="data.sensor4_title.value"></h3>
-                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor4_desc')" @input="syncContent($event, 'sensor4_desc')"
-                           class="editable-hover text-gray-600 text-sm leading-relaxed" x-text="data.sensor4_desc.value"></p>
+                        <h3 @click="makeEditable($event)" @blur="stopEditing($event, 'sensor4_title')"
+                            class="editable-hover text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;" x-html="data.sensor4_title.value" :style="data.sensor4_title.style || ''"></h3>
+                        <p @click="makeEditable($event)" @blur="stopEditing($event, 'sensor4_desc')"
+                           class="editable-hover text-gray-600 text-sm leading-relaxed" x-html="data.sensor4_desc.value" :style="data.sensor4_desc.style || ''"></p>
                     </div>
 
                     <!-- Humidity -->
@@ -267,10 +267,10 @@
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a7 7 0 007-7c0-3.866-7-11-7-11s-7 7.134-7 11a7 7 0 007 7z"></path></svg>
                         </div>
-                        <h3 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor5_title')" @input="syncContent($event, 'sensor5_title')"
-                            class="editable-hover text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;" x-text="data.sensor5_title.value"></h3>
-                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensor5_desc')" @input="syncContent($event, 'sensor5_desc')"
-                           class="editable-hover text-gray-600 text-sm leading-relaxed" x-text="data.sensor5_desc.value"></p>
+                        <h3 @click="makeEditable($event)" @blur="stopEditing($event, 'sensor5_title')"
+                            class="editable-hover text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;" x-html="data.sensor5_title.value" :style="data.sensor5_title.style || ''"></h3>
+                        <p @click="makeEditable($event)" @blur="stopEditing($event, 'sensor5_desc')"
+                           class="editable-hover text-gray-600 text-sm leading-relaxed" x-html="data.sensor5_desc.value" :style="data.sensor5_desc.style || ''"></p>
                     </div>
                 </div>
             </div>
@@ -280,52 +280,52 @@
         <section class="py-24 bg-white overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
-                    <h2 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'services_title')" @input="syncContent($event, 'services_title')"
+                    <h2 @click="makeEditable($event)" @blur="stopEditing($event, 'services_title')"
                         class="editable-hover text-4xl font-bold tracking-tight mb-4" style="color: #0D1A63;"
-                        x-text="data.services_title.value"></h2>
-                    <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'services_subtitle')" @input="syncContent($event, 'services_subtitle')"
+                        x-html="data.services_title.value" :style="data.services_title.style || ''"></h2>
+                    <p @click="makeEditable($event)" @blur="stopEditing($event, 'services_subtitle')"
                        class="editable-hover text-gray-500 text-lg"
-                       x-text="data.services_subtitle.value"></p>
+                       x-html="data.services_subtitle.value" :style="data.services_subtitle.style || ''"></p>
                 </div>
 
                 <div class="max-w-4xl mx-auto space-y-12">
                     <!-- Service 1 -->
                     <div class="flex gap-8 items-start">
                         <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">
-                            <span @dblclick="makeEditable($event)" @blur="stopEditing($event, 'service1_num')" @input="syncContent($event, 'service1_num')"
-                                  class="editable-hover" x-text="data.service1_num.value"></span>
+                            <span @click="makeEditable($event)" @blur="stopEditing($event, 'service1_num')"
+                                  class="editable-hover" x-html="data.service1_num.value" :style="data.service1_num.style || ''"></span>
                         </div>
                         <div class="flex-1">
-                            <h4 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'service1_title')" @input="syncContent($event, 'service1_title')"
-                                class="editable-hover text-2xl font-bold mb-3 tracking-tight" style="color: #0D1A63;" x-text="data.service1_title.value"></h4>
-                            <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'service1_desc')" @input="syncContent($event, 'service1_desc')"
-                               class="editable-hover text-gray-600 leading-relaxed text-lg" x-text="data.service1_desc.value"></p>
+                            <h4 @click="makeEditable($event)" @blur="stopEditing($event, 'service1_title')"
+                                class="editable-hover text-2xl font-bold mb-3 tracking-tight" style="color: #0D1A63;" x-html="data.service1_title.value" :style="data.service1_title.style || ''"></h4>
+                            <p @click="makeEditable($event)" @blur="stopEditing($event, 'service1_desc')"
+                               class="editable-hover text-gray-600 leading-relaxed text-lg" x-html="data.service1_desc.value" :style="data.service1_desc.style || ''"></p>
                         </div>
                     </div>
                     <!-- Service 2 -->
                     <div class="flex gap-8 items-start">
                         <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">
-                            <span @dblclick="makeEditable($event)" @blur="stopEditing($event, 'service2_num')" @input="syncContent($event, 'service2_num')"
-                                  class="editable-hover" x-text="data.service2_num.value"></span>
+                            <span @click="makeEditable($event)" @blur="stopEditing($event, 'service2_num')"
+                                  class="editable-hover" x-html="data.service2_num.value" :style="data.service2_num.style || ''"></span>
                         </div>
                         <div class="flex-1">
-                            <h4 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'service2_title')" @input="syncContent($event, 'service2_title')"
-                                class="editable-hover text-2xl font-bold mb-3 tracking-tight" style="color: #0D1A63;" x-text="data.service2_title.value"></h4>
-                            <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'service2_desc')" @input="syncContent($event, 'service2_desc')"
-                               class="editable-hover text-gray-600 leading-relaxed text-lg" x-text="data.service2_desc.value"></p>
+                            <h4 @click="makeEditable($event)" @blur="stopEditing($event, 'service2_title')"
+                                class="editable-hover text-2xl font-bold mb-3 tracking-tight" style="color: #0D1A63;" x-html="data.service2_title.value" :style="data.service2_title.style || ''"></h4>
+                            <p @click="makeEditable($event)" @blur="stopEditing($event, 'service2_desc')"
+                               class="editable-hover text-gray-600 leading-relaxed text-lg" x-html="data.service2_desc.value" :style="data.service2_desc.style || ''"></p>
                         </div>
                     </div>
                     <!-- Service 3 -->
                     <div class="flex gap-8 items-start">
                         <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">
-                            <span @dblclick="makeEditable($event)" @blur="stopEditing($event, 'service3_num')" @input="syncContent($event, 'service3_num')"
-                                  class="editable-hover" x-text="data.service3_num.value"></span>
+                            <span @click="makeEditable($event)" @blur="stopEditing($event, 'service3_num')"
+                                  class="editable-hover" x-html="data.service3_num.value" :style="data.service3_num.style || ''"></span>
                         </div>
                         <div class="flex-1">
-                            <h4 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'service3_title')" @input="syncContent($event, 'service3_title')"
-                                class="editable-hover text-2xl font-bold mb-3 tracking-tight" style="color: #0D1A63;" x-text="data.service3_title.value"></h4>
-                            <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'service3_desc')" @input="syncContent($event, 'service3_desc')"
-                               class="editable-hover text-gray-600 leading-relaxed text-lg" x-text="data.service3_desc.value"></p>
+                            <h4 @click="makeEditable($event)" @blur="stopEditing($event, 'service3_title')"
+                                class="editable-hover text-2xl font-bold mb-3 tracking-tight" style="color: #0D1A63;" x-html="data.service3_title.value" :style="data.service3_title.style || ''"></h4>
+                            <p @click="makeEditable($event)" @blur="stopEditing($event, 'service3_desc')"
+                               class="editable-hover text-gray-600 leading-relaxed text-lg" x-html="data.service3_desc.value" :style="data.service3_desc.style || ''"></p>
                         </div>
                     </div>
                 </div>
@@ -336,12 +336,12 @@
         <section class="py-24 bg-gray-50 overflow-hidden border-t border-gray-100">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
-                    <h2 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'about_title')" @input="syncContent($event, 'about_title')"
+                    <h2 @click="makeEditable($event)" @blur="stopEditing($event, 'about_title')"
                         class="editable-hover text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;"
-                        x-text="data.about_title.value"></h2>
-                    <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'about_subtitle')" @input="syncContent($event, 'about_subtitle')"
+                        x-html="data.about_title.value" :style="data.about_title.style || ''"></h2>
+                    <p @click="makeEditable($event)" @blur="stopEditing($event, 'about_subtitle')"
                        class="editable-hover text-gray-500 text-lg max-w-2xl mx-auto"
-                       x-text="data.about_subtitle.value"></p>
+                       x-html="data.about_subtitle.value" :style="data.about_subtitle.style || ''"></p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -376,11 +376,11 @@
                             </div>
                         </div>
 
-                        <h3 @dblclick="makeEditable($event)" @blur="stopEditing($event, '{{ $key }}_name')" @input="syncContent($event, '{{ $key }}_name')"
+                        <h3 @click="makeEditable($event)" @blur="stopEditing($event, '{{ $key }}_name')"
                             class="editable-hover text-lg font-bold mb-1" style="color: #0D1A63;" x-text="data.{{ $key }}_name.value"></h3>
-                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, '{{ $key }}_role')" @input="syncContent($event, '{{ $key }}_role')"
+                        <p @click="makeEditable($event)" @blur="stopEditing($event, '{{ $key }}_role')"
                            class="editable-hover text-blue-600 font-medium text-xs uppercase tracking-wide mb-4" x-text="data.{{ $key }}_role.value"></p>
-                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, '{{ $key }}_desc')" @input="syncContent($event, '{{ $key }}_desc')"
+                        <p @click="makeEditable($event)" @blur="stopEditing($event, '{{ $key }}_desc')"
                            class="editable-hover text-gray-500 text-sm leading-relaxed" x-text="data.{{ $key }}_desc.value"></p>
                     </div>
                     @endforeach
@@ -392,12 +392,12 @@
         <section class="py-24 bg-white overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-20">
-                    <h2 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_title')" @input="syncContent($event, 'contact_title')"
+                    <h2 @click="makeEditable($event)" @blur="stopEditing($event, 'contact_title')"
                         class="editable-hover text-4xl font-bold tracking-tight mb-4" style="color: #0D1A63;"
-                        x-text="data.contact_title.value"></h2>
-                    <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_subtitle')" @input="syncContent($event, 'contact_subtitle')"
+                        x-html="data.contact_title.value" :style="data.contact_title.style || ''"></h2>
+                    <p @click="makeEditable($event)" @blur="stopEditing($event, 'contact_subtitle')"
                        class="editable-hover text-gray-500 text-lg"
-                       x-text="data.contact_subtitle.value"></p>
+                       x-html="data.contact_subtitle.value" :style="data.contact_subtitle.style || ''"></p>
                 </div>
 
                 <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
@@ -406,30 +406,30 @@
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         </div>
-                        <h4 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_email_label')" @input="syncContent($event, 'contact_email_label')"
-                            class="editable-hover text-xl font-bold mb-2" style="color: #0D1A63;" x-text="data.contact_email_label.value"></h4>
-                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_email')" @input="syncContent($event, 'contact_email')"
-                           class="editable-hover text-gray-500 font-medium" x-text="data.contact_email.value"></p>
+                        <h4 @click="makeEditable($event)" @blur="stopEditing($event, 'contact_email_label')"
+                            class="editable-hover text-xl font-bold mb-2" style="color: #0D1A63;" x-html="data.contact_email_label.value" :style="data.contact_email_label.style || ''"></h4>
+                        <p @click="makeEditable($event)" @blur="stopEditing($event, 'contact_email')"
+                           class="editable-hover text-gray-500 font-medium" x-html="data.contact_email.value" :style="data.contact_email.style || ''"></p>
                     </div>
                     <!-- Phone -->
                     <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm group hover:-translate-y-2 transition-all duration-300">
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                         </div>
-                        <h4 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_phone_label')" @input="syncContent($event, 'contact_phone_label')"
-                            class="editable-hover text-xl font-bold mb-2" style="color: #0D1A63;" x-text="data.contact_phone_label.value"></h4>
-                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_phone')" @input="syncContent($event, 'contact_phone')"
-                           class="editable-hover text-gray-500 font-medium" style="white-space: pre-line;" x-text="data.contact_phone.value"></p>
+                        <h4 @click="makeEditable($event)" @blur="stopEditing($event, 'contact_phone_label')"
+                            class="editable-hover text-xl font-bold mb-2" style="color: #0D1A63;" x-html="data.contact_phone_label.value" :style="data.contact_phone_label.style || ''"></h4>
+                        <p @click="makeEditable($event)" @blur="stopEditing($event, 'contact_phone')"
+                           class="editable-hover text-gray-500 font-medium" style="white-space: pre-line;" x-html="data.contact_phone.value" :style="data.contact_phone.style || ''"></p>
                     </div>
                     <!-- Location -->
                     <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm group hover:-translate-y-2 transition-all duration-300">
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         </div>
-                        <h4 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_location_label')" @input="syncContent($event, 'contact_location_label')"
-                            class="editable-hover text-xl font-bold mb-2" style="color: #0D1A63;" x-text="data.contact_location_label.value"></h4>
-                        <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_location')" @input="syncContent($event, 'contact_location')"
-                           class="editable-hover text-gray-500 font-medium" x-text="data.contact_location.value"></p>
+                        <h4 @click="makeEditable($event)" @blur="stopEditing($event, 'contact_location_label')"
+                            class="editable-hover text-xl font-bold mb-2" style="color: #0D1A63;" x-html="data.contact_location_label.value" :style="data.contact_location_label.style || ''"></h4>
+                        <p @click="makeEditable($event)" @blur="stopEditing($event, 'contact_location')"
+                           class="editable-hover text-gray-500 font-medium" x-html="data.contact_location.value" :style="data.contact_location.style || ''"></p>
                     </div>
                 </div>
             </div>
@@ -441,13 +441,13 @@
                 <div class="text-center">
                     <div class="flex justify-center items-center gap-3 mb-6">
                         <img src="{{ asset('img/logo/logo-wq.png') }}" alt="Logo" class="h-8 w-auto grayscale opacity-50" />
-                        <span @dblclick="makeEditable($event)" @blur="stopEditing($event, 'footer_brand')" @input="syncContent($event, 'footer_brand')"
-                              class="editable-hover text-lg font-bold text-gray-700 tracking-wider" x-text="data.footer_brand.value"></span>
+                        <span @click="makeEditable($event)" @blur="stopEditing($event, 'footer_brand')"
+                              class="editable-hover text-lg font-bold text-gray-700 tracking-wider" x-html="data.footer_brand.value" :style="data.footer_brand.style || ''"></span>
                     </div>
-                    <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'footer_copyright')" @input="syncContent($event, 'footer_copyright')"
-                       class="editable-hover text-gray-500 text-sm mb-4" x-text="data.footer_copyright.value"></p>
-                    <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'footer_devs')" @input="syncContent($event, 'footer_devs')"
-                       class="editable-hover text-sm font-medium text-gray-500 mt-2" x-text="data.footer_devs.value"></p>
+                    <p @click="makeEditable($event)" @blur="stopEditing($event, 'footer_copyright')"
+                       class="editable-hover text-gray-500 text-sm mb-4" x-html="data.footer_copyright.value" :style="data.footer_copyright.style || ''"></p>
+                    <p @click="makeEditable($event)" @blur="stopEditing($event, 'footer_devs')"
+                       class="editable-hover text-sm font-medium text-gray-500 mt-2" x-html="data.footer_devs.value" :style="data.footer_devs.style || ''"></p>
                 </div>
             </div>
         </footer>
@@ -709,6 +709,12 @@
 
                 init() {
                     console.log('Landing Editor Initialized');
+                    // Ensure all data items have a style property
+                    for (const key in this.data) {
+                        if (typeof this.data[key] === 'object' && !this.data[key].style) {
+                            this.data[key].style = '';
+                        }
+                    }
                 },
 
                 format(cmd, value) {
@@ -716,13 +722,21 @@
                     console.log('Formatting:', cmd, value); 
                     
                     if (cmd === 'increaseFontSize' || cmd === 'decreaseFontSize') {
-                        // Handle Font Size (Apply to whole block for consistency)
+                        // Direct Style Manipulation (Pixel Perfect)
                         const currentStyle = window.getComputedStyle(this.activeElement);
                         let currentSize = parseFloat(currentStyle.fontSize);
-                        let newSize = cmd === 'increaseFontSize' ? currentSize + 2 : currentSize - 2;
+                        let newSize = cmd === 'increaseFontSize' ? currentSize + 4 : currentSize - 4; // Bigger steps
+                        if (newSize < 8) newSize = 8;
                         this.activeElement.style.fontSize = newSize + 'px';
                         this.currentFontSize = Math.round(newSize);
-                    } else if (cmd === 'foreColor') {
+                    } 
+                    else if (cmd === 'justifyLeft' || cmd === 'justifyCenter' || cmd === 'justifyRight' || cmd === 'justifyFull') {
+                         // Apply Alignment to Block (cleaner than execCommand for Headers)
+                         let align = cmd.replace('justify', '').toLowerCase();
+                         if (align === 'full') align = 'justify';
+                         this.activeElement.style.textAlign = align;
+                    }
+                    else if (cmd === 'foreColor') {
                          document.execCommand('styleWithCSS', false, true);
                          document.execCommand('foreColor', false, value);
                     } else {
@@ -802,6 +816,11 @@
                     // Save innerHTML to preserve formatting (Bold, Italic, etc.)
                     this.data[key].value = el.innerHTML;
                     
+                    // Save Block Styles (Font Size, Alignment)
+                    if (this.data[key] && typeof this.data[key] === 'object') {
+                        this.data[key].style = el.getAttribute('style') || '';
+                    }
+
                     this.activeElement = null; // Hide Toolbar
                 },
 
@@ -826,6 +845,12 @@
                     
                     // Save innerHTML to preserve spans/formatting
                     this.data[key].value = el.innerHTML;
+                    
+                    // Save Styles
+                    if (this.data[key] && typeof this.data[key] === 'object') {
+                        this.data[key].style = el.getAttribute('style') || '';
+                    }
+
                     this.activeElement = null;
                 },
 
