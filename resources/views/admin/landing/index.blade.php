@@ -289,8 +289,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     @foreach(['team1', 'team2', 'team3', 'team4'] as $key)
                     <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
-                        <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative group/img">
-                            <!-- Image Preview -->
+                        <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative group/img border-4 border-blue-500 bg-white">
+                            <!-- Main Image -->
                             <template x-if="previews['{{ $key }}_img']">
                                 <img :src="previews['{{ $key }}_img']" class="w-full h-full object-cover">
                             </template>
@@ -302,9 +302,18 @@
                                     <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
                                 </div>
                             </template>
+
+                            <!-- Hover Image -->
+                            <template x-if="previews['{{ $key }}_img_hover']">
+                                <img :src="previews['{{ $key }}_img_hover']" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 z-10 bg-white">
+                            </template>
+                            <template x-if="!previews['{{ $key }}_img_hover'] && data.{{ $key }}_img_hover && (data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value)">
+                                <img :src="(data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value).startsWith('http') ? (data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value) : ('/' + (data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value))" 
+                                     class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 z-10 bg-white">
+                            </template>
                             
                             <!-- Edit Overlay -->
-                            <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition duration-200">
+                            <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition duration-200 z-20">
                                 <button @click="openUploadModal('{{ $key }}_img')" class="text-white text-xs font-bold uppercase tracking-wider hover:text-blue-300">Change</button>
                             </div>
                         </div>
@@ -412,6 +421,20 @@
                             <div class="text-gray-400 text-xs">Paste an image URL from the web</div>
                         </div>
                     </button>
+
+                    <!-- Hover Effect Upload -->
+                    <template x-if="currentUploadKey.includes('team') && ((data[currentUploadKey] && data[currentUploadKey].value) || previews[currentUploadKey])">
+                        <button @click="currentUploadKey = currentUploadKey + '_hover'; $refs.bgFileInput.click(); showBgModal = false;" 
+                                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition text-left">
+                            <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center text-pink-600 shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-gray-900 text-sm">Upload Hover Effect</div>
+                                <div class="text-gray-400 text-xs">Image changes when cursor passes</div>
+                            </div>
+                        </button>
+                    </template>
                 </div>
 
                 <button @click="showBgModal = false" class="mt-4 w-full text-center text-gray-400 hover:text-gray-600 text-sm font-medium transition">Cancel</button>
@@ -567,18 +590,22 @@
                 team1_role: { value: "Web/Arduino Developer" },
                 team1_desc: { value: "Spearheads the hardware integration and full-stack web development." },
                 team1_img: { value: null },
+                team1_img_hover: { value: null },
                 team2_name: { value: "Dannica J. Besinio" },
                 team2_role: { value: "Documenter" },
                 team2_desc: { value: "Ensures comprehensive documentation of system processes and user guides." },
                 team2_img: { value: null },
+                team2_img_hover: { value: null },
                 team3_name: { value: "Joy Mae A. Samra" },
                 team3_role: { value: "Documenter" },
                 team3_desc: { value: "Focuses on research, technical writing, and system validation." },
                 team3_img: { value: null },
+                team3_img_hover: { value: null },
                 team4_name: { value: "Jonas D. Parraño" },
                 team4_role: { value: "System Analyst / Capstone Adviser" },
                 team4_desc: { value: "Provides expert guidance on system architecture and project direction." },
                 team4_img: { value: null },
+                team4_img_hover: { value: null },
 
                 contact_title: { value: "Contact Us" },
                 contact_subtitle: { value: "Have questions? We're here to help you optimize your aquaculture operations." },

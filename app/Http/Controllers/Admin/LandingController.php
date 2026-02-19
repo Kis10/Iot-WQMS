@@ -20,7 +20,13 @@ class LandingController extends Controller
         // Gather all text inputs (exclude special fields)
         // Gather all text inputs (exclude special fields)
         $exclude = ['_token', '_method'];
-        $imageKeys = ['hero_bg', 'team1_img', 'team2_img', 'team3_img', 'team4_img'];
+        $imageKeys = [
+            'hero_bg', 
+            'team1_img', 'team1_img_hover', 
+            'team2_img', 'team2_img_hover', 
+            'team3_img', 'team3_img_hover', 
+            'team4_img', 'team4_img_hover'
+        ];
         foreach ($imageKeys as $key) {
             $exclude[] = $key . '_file';
             $exclude[] = $key . '_url';
@@ -35,7 +41,16 @@ class LandingController extends Controller
         }
 
         // Handle Multiple File Uploads
-        $imageKeys = ['hero_bg', 'team1_img', 'team2_img', 'team3_img', 'team4_img'];
+        // Defined above in previous block or re-add full list
+        // $imageKeys = [...]; - We can just reuse the variable if it's in scope, but wait, the previous snippet redefined it.
+        // Let's redefine it here to be safe as per the user's explicit request to fix logic.
+        $imageKeys = [
+            'hero_bg', 
+            'team1_img', 'team1_img_hover', 
+            'team2_img', 'team2_img_hover', 
+            'team3_img', 'team3_img_hover', 
+            'team4_img', 'team4_img_hover'
+        ];
 
         foreach ($imageKeys as $key) {
             $fileInput = $key . '_file';
