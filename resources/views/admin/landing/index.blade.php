@@ -102,18 +102,13 @@
             <!-- Hero Content -->
             <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
                 <br><br>
-                <!-- Hero Title (HTML - uses textarea for raw HTML editing) -->
-                <div class="mb-8" x-data="{ editing: false }">
-                    <h1 x-show="!editing" @dblclick="editing = true; $nextTick(() => $refs.heroTitle.focus())" class="editable-hover text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight tracking-tight"
+                <div class="mb-8">
+                    <h1 @dblclick="makeEditableHtml($event)" 
+                        @blur="stopEditingHtml($event, 'hero_title')"
+                        @keydown.enter.prevent="$event.target.blur()"
+                        class="editable-hover text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight tracking-tight outline-none focus:outline-none"
                         x-html="data.hero_title.value"></h1>
-                    <div x-show="editing" x-cloak>
-                        <textarea x-ref="heroTitle" x-model="data.hero_title.value"
-                            class="input-box text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight tracking-tight text-center"
-                            @input="$el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px'"
-                            x-init="$watch('editing', v => { if(v) { $nextTick(() => { $el.style.height = 'auto'; $el.style.height = $el.scrollHeight + 'px' }) } })"
-                            @click.away="editing = false"></textarea>
-                        <p class="text-white/50 text-xs mt-1">Supports HTML</p>
-                    </div>
+                    <p class="text-white/30 text-[10px] mt-2 font-mono">Double-click to edit (Supports HTML)</p>
                 </div>
 
                 <!-- Hero Subtitle -->
@@ -690,6 +685,21 @@
                 // Sync on every keystroke so data stays current
                 syncContent(e, key) {
                     this.data[key].value = e.target.innerText;
+                },
+
+                // HTML Aware Editing (For Hero Title)
+                // We do NOT sync on input to avoid x-html re-rendering cursor jumps
+                makeEditableHtml(e) {
+                    const el = e.target;
+                    el.setAttribute('contenteditable', 'true');
+                    el.focus();
+                },
+                
+                stopEditingHtml(e, key) {
+                    const el = e.target;
+                    el.removeAttribute('contenteditable');
+                    // Save innerHTML to preserve spans/formatting
+                    this.data[key].value = el.innerHTML;
                 },
 
                 handleFileSelect(e) {
