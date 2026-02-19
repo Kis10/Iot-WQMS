@@ -232,36 +232,52 @@
             }
             // --- PERSISTENCE LOGIC END ---
 
+            // Check if user has explicitly cleared the dashboard
+            const isCleared = localStorage.getItem('dashboardCleared') === 'true';
+
             // Prepare data from backend
             const backendData = @json($chartData);
-            let initialLabels = backendData.map(reading => {
-                const date = new Date(reading.created_at);
-                return date.toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    timeZone: 'Asia/Manila'
-                });
-            });
-            
-            // Default Dataset Arrays
+            let initialLabels = [];
             let initialData = {
-                turbidity: backendData.map(r => r.turbidity || 0),
-                tds: backendData.map(r => r.tds || 0),
-                ph: backendData.map(r => r.ph || 0),
-                temp: backendData.map(r => r.temperature || 0),
-                humid: backendData.map(r => r.humidity || 0)
+                turbidity: [],
+                tds: [],
+                ph: [],
+                temp: [],
+                humid: []
             };
 
-            // Check LocalStorage for "Continued" readings
-            const savedState = loadStateFromStorage();
-            if (savedState && savedState.labels && savedState.labels.length > 0) {
-                console.log('Restoring readings from previous session...');
-                initialLabels = savedState.labels;
-                initialData.turbidity = savedState.datasetsData[0] || [];
-                initialData.tds = savedState.datasetsData[1] || [];
-                initialData.ph = savedState.datasetsData[2] || [];
-                initialData.temp = savedState.datasetsData[3] || [];
-                initialData.humid = savedState.datasetsData[4] || [];
+            // ONLY load backend data if dashboard is NOT cleared
+            if (!isCleared) {
+                initialLabels = backendData.map(reading => {
+                    const date = new Date(reading.created_at);
+                    return date.toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        timeZone: 'Asia/Manila'
+                    });
+                });
+                
+                initialData = {
+                    turbidity: backendData.map(r => r.turbidity || 0),
+                    tds: backendData.map(r => r.tds || 0),
+                    ph: backendData.map(r => r.ph || 0),
+                    temp: backendData.map(r => r.temperature || 0),
+                    humid: backendData.map(r => r.humidity || 0)
+                };
+
+                // Check LocalStorage for "Continued" real-time session
+                const savedState = loadStateFromStorage();
+                if (savedState && savedState.labels && savedState.labels.length > 0) {
+                    console.log('Restoring readings from previous session...');
+                    initialLabels = savedState.labels;
+                    initialData.turbidity = savedState.datasetsData[0] || [];
+                    initialData.tds = savedState.datasetsData[1] || [];
+                    initialData.ph = savedState.datasetsData[2] || [];
+                    initialData.temp = savedState.datasetsData[3] || [];
+                    initialData.humid = savedState.datasetsData[4] || [];
+                }
+            } else {
+                console.log('Dashboard is in CLEARED state. Waiting for new data.');
             }
             
             const chart = new Chart(ctx, {
@@ -410,6 +426,10 @@
 
             function appendReading(reading) {
                 if (!reading || !reading.created_at) return;
+
+                // New data arrived, so we are no longer in "cleared" state
+                localStorage.removeItem('dashboardCleared');
+
                 chart.data.labels.push(formatTimeLabel(reading.created_at));
                 chart.data.datasets[0].data.push(reading.turbidity || 0);
                 chart.data.datasets[1].data.push(reading.tds || 0);
@@ -510,8 +530,9 @@
             function refreshDashboard() {
                 // Frontend-only Reset (Does not affect History/Alerts/AI Popup)
                 
-                // 1. CLEAR STORAGE
+                // 1. CLEAR STORAGE & SET CLEARED FLAG
                 clearStorageState();
+                localStorage.setItem('dashboardCleared', 'true');
 
                 // 2. Clear Chart Data
                 chart.data.labels = [];
