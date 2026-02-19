@@ -487,11 +487,23 @@
             }
 
             // Restore Gauges on Load
-            const savedLatest = localStorage.getItem(STORAGE_KEY_LATEST);
-            if (savedLatest) {
-                try {
-                    updateGauges(JSON.parse(savedLatest));
-                } catch(e) {}
+            // ONLY if dashboard is NOT cleared
+            if (!isCleared) {
+                const savedLatest = localStorage.getItem(STORAGE_KEY_LATEST);
+                if (savedLatest) {
+                    try {
+                        updateGauges(JSON.parse(savedLatest));
+                    } catch(e) {}
+                }
+            } else {
+                // Dashboard is cleared, ensure gauges are 0
+                updateGauges({
+                    turbidity: 0,
+                    tds: 0,
+                    ph: 0,
+                    temperature: 0,
+                    humidity: 0
+                });
             }
 
             let lastKnobUpdate = 0;
