@@ -87,7 +87,7 @@ class WaterReadingController extends Controller
                     'created_at' => $reading->created_at?->toIso8601String(),
                 ]);
 
-                // 2. Check and Perform AI Analysis (Every 5 Minutes)
+                // 2. Perform AI Analysis (Every saved reading)
                 // Only analyze if we SAVED the reading (requires ID)
                 if ($shouldSaveToDb) {
                     $analysis = $this->performAnalysis($reading);
@@ -117,11 +117,7 @@ class WaterReadingController extends Controller
 
     private function performAnalysis(WaterReading $reading)
     {
-        // specific rule: only analyze every 5 minutes
-        $lastAnalysis = WaterAnalysis::latest('analyzed_at')->first();
-        if ($lastAnalysis && $lastAnalysis->analyzed_at->diffInMinutes(now()) < 5) {
-            return null; // Skip analysis (too soon)
-        }
+        // NO MORE TIMEOUT: Analyze every saved reading as requested.
 
         // --- PERFORM ANALYSIS (FISH GROWTH FOCUS) ---
         $risk = 'safe';
