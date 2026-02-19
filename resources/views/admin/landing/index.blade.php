@@ -289,7 +289,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     @foreach(['team1', 'team2', 'team3', 'team4'] as $key)
                     <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
-                        <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative group/img border-4 border-slate-900 bg-white">
+                        <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative group/img border-4 border-slate-800 bg-white">
                             <!-- Main Image -->
                             <template x-if="previews['{{ $key }}_img']">
                                 <img :src="previews['{{ $key }}_img']" class="w-full h-full object-cover">

@@ -236,7 +236,7 @@
                     
                     <!-- Team Member 1 -->
                     <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
-                        <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative border-4 border-slate-900 bg-white">
+                        <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative border-4 border-slate-800 bg-white">
                             @if(isset($contents['team1_img']) && $contents['team1_img']->image)
                                 <img src="{{ asset($contents['team1_img']->image) }}" class="w-full h-full object-cover">
                             @else
@@ -256,7 +256,7 @@
 
                     <!-- Team Member 2 -->
                     <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
-                         <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative border-4 border-slate-900 bg-white">
+                         <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative border-4 border-slate-800 bg-white">
                             @if(isset($contents['team2_img']) && $contents['team2_img']->image)
                                 <img src="{{ asset($contents['team2_img']->image) }}" class="w-full h-full object-cover">
                             @else
@@ -276,7 +276,7 @@
 
                     <!-- Team Member 3 -->
                     <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
-                         <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative border-4 border-slate-900 bg-white">
+                         <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative border-4 border-slate-800 bg-white">
                             @if(isset($contents['team3_img']) && $contents['team3_img']->image)
                                 <img src="{{ asset($contents['team3_img']->image) }}" class="w-full h-full object-cover">
                             @else
@@ -296,7 +296,7 @@
 
                     <!-- Team Member 4 -->
                     <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
-                         <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative border-4 border-slate-900 bg-white">
+                         <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative border-4 border-slate-800 bg-white">
                             @if(isset($contents['team4_img']) && $contents['team4_img']->image)
                                 <img src="{{ asset($contents['team4_img']->image) }}" class="w-full h-full object-cover">
                             @else
