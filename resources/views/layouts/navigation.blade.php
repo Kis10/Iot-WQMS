@@ -17,7 +17,8 @@
                             Alerts
                         @elseif(request()->routeIs('analysis.index'))
                             AI Analysis
-
+                        @elseif(request()->routeIs('profile.edit'))
+                            Profile
                         @else
                             Dashboard
                         @endif
