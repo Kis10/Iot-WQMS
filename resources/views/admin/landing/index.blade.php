@@ -434,7 +434,6 @@
         </div>
         </div>
         </div>
-    </div>
 
     <!-- ================================ -->
     <!-- Image Crop/Adjust Modal          -->
@@ -487,6 +486,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <script>
