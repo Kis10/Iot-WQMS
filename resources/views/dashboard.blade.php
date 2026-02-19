@@ -536,8 +536,7 @@
 
                 console.log('Dashboard cleared. Waiting for new real-time data...');
             }
-        });
-    </script>
+
             const dashboardContainer = document.getElementById('dashboardContainer');
             const popup = document.getElementById('aiAnalysisPopup');
             const popupHandle = document.getElementById('aiPopupHandle');
