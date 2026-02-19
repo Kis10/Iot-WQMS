@@ -68,6 +68,13 @@ class WaterReadingController extends Controller
             // ID will be null, but chart doesn't need it
         }
 
+        // 2. Perform AI Analysis (Every saved reading)
+        // Only analyze if we SAVED the reading (requires ID)
+        $analysis = null;
+        if ($shouldSaveToDb) {
+            $analysis = $this->performAnalysis($reading);
+        }
+
         // Broadcast to Ably for live updates (Every 5 seconds)
         $ablyKey = config('services.ably.key');
         $ablyChannel = config('services.ably.channel', 'water-readings');
@@ -87,21 +94,15 @@ class WaterReadingController extends Controller
                     'created_at' => $reading->created_at?->toIso8601String(),
                 ]);
 
-                // 2. Perform AI Analysis (Every saved reading)
-                // Only analyze if we SAVED the reading (requires ID)
-                if ($shouldSaveToDb) {
-                    $analysis = $this->performAnalysis($reading);
-                    
-                    if ($analysis) {
-                        $channel->publish('analysis', [
-                            'id' => $analysis->id,
-                            'risk_level' => $analysis->risk_level,
-                            'ai_insight' => $analysis->ai_insight,
-                            'recommendations' => $analysis->recommendations,
-                            'analyzed_at' => $analysis->analyzed_at->toIso8601String(),
-                            'confidence_score' => $analysis->confidence_score,
-                        ]);
-                    }
+                if ($analysis) {
+                    $channel->publish('analysis', [
+                        'id' => $analysis->id,
+                        'risk_level' => $analysis->risk_level,
+                        'ai_insight' => $analysis->ai_insight,
+                        'recommendations' => $analysis->recommendations,
+                        'analyzed_at' => $analysis->analyzed_at->toIso8601String(),
+                        'confidence_score' => $analysis->confidence_score,
+                    ]);
                 }
             } catch (\Throwable $e) {
                 // Fail silently to avoid breaking the API response
