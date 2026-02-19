@@ -207,8 +207,8 @@ void setup() {
 
   // Default states
   digitalWrite(buzzerPin, LOW);
-  digitalWrite(powerLedPin, LOW);
-  digitalWrite(wifiLedPin, LOW);
+  digitalWrite(powerLedPin, HIGH); // Power LED ON immediately (Green)
+  digitalWrite(wifiLedPin, LOW);   // WiFi LED starts OFF
 
   // LCD Init
   Wire.begin(LCD_SDA, LCD_SCL);
@@ -313,12 +313,14 @@ void connectToWiFiWithUI() {
       
       int remaining = 30 - ((millis() - startAttempt) / 1000);
       
-      // Blink Effect on "Waiting..."
+      // Blink Effect on "Waiting..." AND Red LED
       lcd.setCursor(0, 3);
       if ((millis() / 500) % 2 == 0) {
         lcd.printf("Waiting... %ds    ", remaining);
+        digitalWrite(wifiLedPin, HIGH); // LED ON
       } else {
         lcd.print("                "); // Blink off
+        digitalWrite(wifiLedPin, LOW);  // LED OFF
       }
       
       Serial.print(".");
@@ -340,8 +342,10 @@ void connectToWiFiWithUI() {
         lcd.setCursor(0, 3);
         if ((millis() / 500) % 2 == 0) {
           lcd.print("Waiting...      ");
+          digitalWrite(wifiLedPin, HIGH); // LED ON
         } else {
           lcd.print("                ");
+          digitalWrite(wifiLedPin, LOW);  // LED OFF
         }
         delay(200);
      }
