@@ -64,6 +64,7 @@
                     </div>
                     <div class="hidden md:flex items-center space-x-8 text-sm font-semibold ml-auto">
                         <span class="text-gray-400 cursor-not-allowed">Home</span>
+                        <span class="text-gray-400 cursor-not-allowed">About</span>
                         <span class="text-gray-400 cursor-not-allowed">Sensors</span>
                         <span class="text-gray-400 cursor-not-allowed">Services</span>
                         <span class="text-gray-400 cursor-not-allowed">Contact</span>
