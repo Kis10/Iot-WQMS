@@ -13,7 +13,7 @@
                 top: 0;
                 width: 100%;
                 margin: 0;
-                padding: 20px;
+                padding: 40px; /* Increased padding provided space */
                 box-shadow: none !important;
                 border: none !important;
                 overflow: visible !important;
@@ -27,6 +27,31 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
+
+            /* Fixed Header Logo/Text */
+            .print-header-fixed {
+                position: fixed;
+                top: 20px;
+                left: 40px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .print-header-fixed img {
+                width: 40px;
+                height: 40px;
+            }
+            .print-header-fixed span {
+                font-size: 1.25rem; /* text-xl */
+                font-weight: 700; /* font-bold */
+                color: #374151; /* text-gray-700 */
+                letter-spacing: 0.05em; /* tracking-wider */
+            }
+
+            /* Center specific text */
+            .text-center-important {
+                text-align: center !important;
+            }
         }
     </style>
 
@@ -35,16 +60,25 @@
             <div id="printable-content" class="bg-white overflow-hidden shadow-sm sm:rounded-lg relative min-h-[800px] flex flex-col">
                 <div class="p-8 bg-white border-b border-gray-200 flex-grow flex flex-col">
                     
-
-
                     <!-- Report Header -->
-                    <div class="flex flex-col md:flex-row justify-between items-center mb-8 border-b-2 border-gray-100 pb-6">
-                        <div class="flex items-center gap-3 mb-4 md:mb-0">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-8 border-b-2 border-gray-100 pb-6 pt-10">
+                         <!-- Fixed Logo for Print (Hidden on screen, Visible on Print via Fixed Position) -->
+                        <div class="print-header-fixed hidden print:flex">
+                            <img src="{{ asset('img/logo/logo-wq.png') }}" alt="AquaSense Logo">
+                            <span>AQUASENSE</span>
+                        </div>
+
+                         <!-- Regular Logo for Screen Only -->
+                        <div class="flex items-center gap-3 mb-4 md:mb-0 print:hidden">
                             <img src="{{ asset('img/logo/logo-wq.png') }}" alt="AquaSense Logo" class="w-12 h-12 object-contain">
                             <span class="text-2xl font-bold text-gray-700 tracking-wider">AQUASENSE</span>
                         </div>
-                        <div class="max-w-md text-center md:text-right">
-                            <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide text-justify">IoT-based Water Quality Monitoring System for Aquaculture</h3>
+                        
+                        <div class="w-full text-center print:mt-12">
+                            <h3 class="text-sm font-semibold text-gray-900 tracking-wide text-center md:text-right print:text-center-important">
+                                IoT-based Water Quality Monitoring System for <br>
+                                <span class="block text-center mt-1">Aquaculture</span>
+                            </h3>
                         </div>
                     </div>
 
