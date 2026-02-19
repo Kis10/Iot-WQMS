@@ -1,29 +1,12 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Reading Details') }}
-        </h2>
-    </x-slot>
+
 
     <div class="py-12">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg relative min-h-[800px] flex flex-col">
                 <div class="p-8 bg-white border-b border-gray-200 flex-grow flex flex-col">
                     
-                    <!-- Top Actions: Buttons -->
-                    <div class="flex justify-end mb-8 print:hidden">
-                        <div class="flex gap-2">
-                            <a href="{{ route('history') }}" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center shadow-sm">
-                                Back
-                            </a>
-                            <button onclick="window.print()" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 flex items-center shadow-md">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-                                </svg>
-                                Print
-                            </button>
-                        </div>
-                    </div>
+
 
                     <!-- Report Header -->
                     <div class="flex flex-col md:flex-row justify-between items-center mb-8 border-b-2 border-gray-100 pb-6">
