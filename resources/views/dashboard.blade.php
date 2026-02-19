@@ -494,13 +494,15 @@
             const refreshButtonMobile = document.getElementById('refreshDashboardMobile');
             
             if (refreshButton) {
-                refreshButton.addEventListener('click', function() {
+                refreshButton.addEventListener('click', function(e) {
+                    e.preventDefault(); // Prevent default link behavior if any
                     refreshDashboard();
                 });
             }
             
             if (refreshButtonMobile) {
-                refreshButtonMobile.addEventListener('click', function() {
+                refreshButtonMobile.addEventListener('click', function(e) {
+                    e.preventDefault();
                     refreshDashboard();
                 });
             }
