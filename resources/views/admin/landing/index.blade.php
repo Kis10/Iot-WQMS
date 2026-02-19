@@ -80,11 +80,11 @@
                 <template x-if="heroBgPreview">
                     <img :src="heroBgPreview" class="w-full h-full object-cover opacity-40">
                 </template>
-                <template x-if="!heroBgPreview && data.hero_bg && data.hero_bg.value">
-                    <img :src="data.hero_bg.value.startsWith('http') ? data.hero_bg.value : (
-                        data.hero_bg.value.startsWith('/') ? data.hero_bg.value : (
-                        data.hero_bg.value.startsWith('img/') ? '/' + data.hero_bg.value :
-                        '/storage/' + data.hero_bg.value
+                <template x-if="!heroBgPreview && data.hero_bg && (data.hero_bg.image || data.hero_bg.value)">
+                    <img :src="(data.hero_bg.image || data.hero_bg.value).startsWith('http') ? (data.hero_bg.image || data.hero_bg.value) : (
+                        (data.hero_bg.image || data.hero_bg.value).startsWith('/') ? (data.hero_bg.image || data.hero_bg.value) : (
+                        (data.hero_bg.image || data.hero_bg.value).startsWith('img/') ? '/' + (data.hero_bg.image || data.hero_bg.value) :
+                        '/storage/' + (data.hero_bg.image || data.hero_bg.value)
                     ))"
                          class="w-full h-full object-cover opacity-40"
                          onerror="this.style.display='none'">
@@ -928,11 +928,16 @@
                     const formData = new FormData();
 
                     for (const key in this.data) {
-                        if (key !== 'hero_bg' && !key.endsWith('_img')) {
+                        // Check if key is related to images (ends with _img or _img_hover, or is hero_bg)
+                        const isImageKey = key === 'hero_bg' || key.endsWith('_img') || key.endsWith('_img_hover');
+
+                        // Save text values (exclude image keys)
+                        if (!isImageKey) {
                              formData.append(key, this.data[key].value);
                         }
-                        // Handle generic image URL values stored in data
-                         if (key.endsWith('_img') && this.data[key].value && !this.files[key]) {
+                        
+                        // Handle generic image URL values stored in data (if no file is selected)
+                        if (isImageKey && key !== 'hero_bg' && this.data[key].value && !this.files[key]) {
                             formData.append(key + '_url', this.data[key].value);
                         }
                     }
