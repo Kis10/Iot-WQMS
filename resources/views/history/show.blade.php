@@ -135,7 +135,7 @@
                     <div class="mt-auto text-center border-t border-gray-200 pt-6">
                         <div class="flex items-center justify-center gap-2 mb-2">
                             <img src="{{ asset('img/logo/logo-wq.png') }}" alt="AquaSense Logo" class="w-6 h-6 object-contain opacity-70">
-                            <span class="text-lg font-bold text-gray-500 uppercase tracking-widest">AQUASENSE</span>
+                            <span class="text-lg font-bold text-gray-700 tracking-wider">AquaSense</span>
                         </div>
                         <p class="text-sm text-gray-500 mb-1">© 2026 AquaSense. All rights reserved.</p>
                         <p class="text-sm text-gray-500 font-medium">Developed by: Kirstine A. Sanchez, Dannica J. Besinio and Joy Mae A. Samra</p>

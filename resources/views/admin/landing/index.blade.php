@@ -328,7 +328,7 @@
                     <div class="flex justify-center items-center gap-3 mb-6">
                         <img src="{{ asset('img/logo/logo-wq.png') }}" alt="Logo" class="h-8 w-auto grayscale opacity-50" />
                         <span @dblclick="makeEditable($event)" @blur="stopEditing($event, 'footer_brand')" @input="syncContent($event, 'footer_brand')"
-                              class="editable-hover text-gray-400 font-bold tracking-tight text-xl uppercase" x-text="data.footer_brand.value"></span>
+                              class="editable-hover text-lg font-bold text-gray-700 tracking-wider" x-text="data.footer_brand.value"></span>
                     </div>
                     <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'footer_copyright')" @input="syncContent($event, 'footer_copyright')"
                        class="editable-hover text-gray-500 text-sm mb-4" x-text="data.footer_copyright.value"></p>
@@ -435,7 +435,7 @@
                 contact_location_label: { value: "Our Location" },
                 contact_location: { value: "Po-Ok, Hinoba-an, Negros Occidental" },
 
-                footer_brand: { value: "AQUASENSE" },
+                footer_brand: { value: "AquaSense" },
                 footer_copyright: { value: "\u00a9 2026 AquaSense. All rights reserved." },
                 footer_devs: { value: "Developed by: Kirstine A. Sanchez, Dannica J. Besinio and Joy Mae A. Samra" }
             };

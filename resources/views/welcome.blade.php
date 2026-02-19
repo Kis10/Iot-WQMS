@@ -274,9 +274,9 @@
                 <div class="text-center">
                     <div class="flex justify-center items-center gap-3 mb-6">
                         <img src="{{ asset('img/logo/logo-wq.png') }}" alt="Logo" class="h-8 w-auto grayscale opacity-50" />
-                        <span class="text-gray-400 font-bold tracking-tight text-xl uppercase">{{ $contents['footer_brand']->value ?? config('app.name', 'AquaSense') }}</span>
+                        <span class="text-lg font-bold text-gray-700 tracking-wider">AquaSense</span>
                     </div>
-                    <p class="text-gray-500 text-sm mb-4">{{ $contents['footer_copyright']->value ?? '© ' . date('Y') . ' ' . config('app.name', 'AquaSense') . '. All rights reserved.' }}</p>
+                    <p class="text-gray-500 text-sm mb-4">{{ $contents['footer_copyright']->value ?? '© ' . date('Y') . ' AquaSense. All rights reserved.' }}</p>
                     <p class="text-sm font-medium text-gray-500 mt-2">
                         {{ $contents['footer_devs']->value ?? 'Developed by: Kirstine A. Sanchez, Dannica J. Besinio and Joy Mae A. Samra' }}
                     </p>
