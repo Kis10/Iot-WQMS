@@ -490,12 +490,9 @@
                     // Always update Chart (Real-time 5s)
                     appendReading(reading);
 
-                    // Throttle Gauges (Every 30s)
-                    const now = Date.now();
-                    if (now - lastKnobUpdate > 30000) {
-                        updateGauges(reading);
-                        lastKnobUpdate = now;
-                    }
+                    // Update Gauges immediately (Real-time)
+                    updateGauges(reading);
+                    lastKnobUpdate = now;
                 });
 
                 // 2. Listen for ANALYSIS (Every 5 mins)

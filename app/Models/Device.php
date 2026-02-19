@@ -10,6 +10,7 @@ class Device extends Model
     protected $fillable = [
         'device_id',
         'species',
+        'location',
     ];
 
     public function readings(): HasMany

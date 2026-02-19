@@ -62,7 +62,8 @@
                     <!-- Info: Device & Date -->
                     <div class="mb-8 pl-2">
                         <p class="text-sm text-gray-600 mb-1"><span class="font-semibold text-gray-800 w-20 inline-block">Device:</span> {{ $reading->device_id }}</p>
-                        <p class="text-sm text-gray-600"><span class="font-semibold text-gray-800 w-20 inline-block">Date:</span> {{ $reading->created_at->setTimezone('Asia/Manila')->format('M j, Y g:i A') }}</p>
+                        <p class="text-sm text-gray-600 mb-1"><span class="font-semibold text-gray-800 w-20 inline-block">Date:</span> {{ $reading->created_at->setTimezone('Asia/Manila')->format('M j, Y g:i A') }}</p>
+                        <p class="text-sm text-gray-600"><span class="font-semibold text-gray-800 w-20 inline-block">Location:</span> {{ $reading->device->location ?? 'Not Set' }}</p>
                     </div>
 
                     <!-- Data Table -->
@@ -130,6 +131,29 @@
                             </tbody>
                         </table>
                     </div>
+                    
+                    <!-- AI Analysis Section -->
+                    @if($reading->waterAnalyses->isNotEmpty())
+                        <div class="mb-8 p-6 bg-blue-50 rounded-xl border border-blue-100">
+                            <h4 class="text-sm font-bold text-blue-900 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                Analyzed by AI
+                            </h4>
+                            <p class="text-gray-700 leading-relaxed font-medium">
+                                {{ $reading->waterAnalyses->first()->ai_insight }}
+                            </p>
+                            @if($reading->waterAnalyses->first()->recommendations)
+                                <div class="mt-4 pt-4 border-t border-blue-200/50">
+                                    <h5 class="text-xs font-bold text-blue-800 uppercase mb-2">Recommendations:</h5>
+                                    <ul class="list-disc list-inside space-y-1 text-sm text-blue-900/80">
+                                        @foreach($reading->waterAnalyses->first()->recommendations as $rec)
+                                            <li>{{ $rec }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
                     
                     <!-- Footer -->
                     <div class="mt-auto text-center border-t border-gray-200 pt-6">
