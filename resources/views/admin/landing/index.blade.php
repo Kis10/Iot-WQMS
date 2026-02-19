@@ -682,10 +682,7 @@
                     this.data[key].value = el.innerText;
                 },
 
-                // Sync on every keystroke so data stays current
-                syncContent(e, key) {
-                    this.data[key].value = e.target.innerText;
-                },
+
 
                 // HTML Aware Editing (For Hero Title)
                 // We do NOT sync on input to avoid x-html re-rendering cursor jumps
@@ -988,3 +985,4 @@
         }
     </script>
 </x-app-layout>
+
