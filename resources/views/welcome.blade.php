@@ -333,7 +333,7 @@
                         </div>
                         <h4 class="text-xl font-bold mb-2" style="color: #0D1A63;">{{ $contents['contact_email_label']->value ?? 'Email Address' }}</h4>
                         @php $email = $contents['contact_email']->value ?? 'kirstinesanchez9@gmail.com'; @endphp
-                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ $email }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition font-medium block">
+                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ $email }}" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-[#0D1A63] transition font-medium block">
                             {{ $email }}
                         </a>
                     </div>
@@ -345,7 +345,7 @@
                         <h4 class="text-xl font-bold mb-2" style="color: #0D1A63;">{{ $contents['contact_phone_label']->value ?? 'Mobile Number' }}</h4>
                         @php $phones = explode("\n", $contents['contact_phone']->value ?? "09207327946\n09151003714"); @endphp
                         @foreach($phones as $phone)
-                            <a href="tel:{{ trim($phone) }}" class="text-blue-600 hover:text-blue-800 transition font-medium block">{{ trim($phone) }}</a>
+                            <a href="tel:{{ trim($phone) }}" class="text-gray-500 hover:text-[#0D1A63] transition font-medium block">{{ trim($phone) }}</a>
                         @endforeach
                     </div>
                     
@@ -355,7 +355,7 @@
                         </div>
                         <h4 class="text-xl font-bold mb-2" style="color: #0D1A63;">{{ $contents['contact_location_label']->value ?? 'Our Location' }}</h4>
                         @php $location = $contents['contact_location']->value ?? 'Po-Ok, Hinoba-an, Negros Occidental'; @endphp
-                        <a id="dynamic-location" href="https://www.google.com/maps/search/?api=1&query={{ urlencode($location) }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition font-medium block">
+                        <a id="dynamic-location" href="https://www.google.com/maps/search/?api=1&query={{ urlencode($location) }}" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-[#0D1A63] transition font-medium block">
                             {{ $location }}
                         </a>
                     </div>

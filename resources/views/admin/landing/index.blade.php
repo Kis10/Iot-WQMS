@@ -351,7 +351,7 @@
                         <h4 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_email_label')" @input="syncContent($event, 'contact_email_label')"
                             class="editable-hover text-xl font-bold mb-2" style="color: #0D1A63;" x-text="data.contact_email_label.value"></h4>
                         <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_email')" @input="syncContent($event, 'contact_email')"
-                           class="editable-hover text-blue-600 font-medium" x-text="data.contact_email.value"></p>
+                           class="editable-hover text-gray-500 font-medium" x-text="data.contact_email.value"></p>
                     </div>
                     <!-- Phone -->
                     <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm group hover:-translate-y-2 transition-all duration-300">
@@ -361,7 +361,7 @@
                         <h4 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_phone_label')" @input="syncContent($event, 'contact_phone_label')"
                             class="editable-hover text-xl font-bold mb-2" style="color: #0D1A63;" x-text="data.contact_phone_label.value"></h4>
                         <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_phone')" @input="syncContent($event, 'contact_phone')"
-                           class="editable-hover text-blue-600 font-medium" style="white-space: pre-line;" x-text="data.contact_phone.value"></p>
+                           class="editable-hover text-gray-500 font-medium" style="white-space: pre-line;" x-text="data.contact_phone.value"></p>
                     </div>
                     <!-- Location -->
                     <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm group hover:-translate-y-2 transition-all duration-300">
@@ -371,7 +371,7 @@
                         <h4 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_location_label')" @input="syncContent($event, 'contact_location_label')"
                             class="editable-hover text-xl font-bold mb-2" style="color: #0D1A63;" x-text="data.contact_location_label.value"></h4>
                         <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_location')" @input="syncContent($event, 'contact_location')"
-                           class="editable-hover text-blue-600 font-medium" x-text="data.contact_location.value"></p>
+                           class="editable-hover text-gray-500 font-medium" x-text="data.contact_location.value"></p>
                     </div>
                 </div>
             </div>
