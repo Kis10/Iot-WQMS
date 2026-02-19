@@ -130,7 +130,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.691.383a4 4 0 01-2.573.344l-2.387-.477a2 2 0 00-1.022.547l-.736.736a2 2 0 000 2.828l.736.736a2 2 0 001.022.547l2.387.477a6 6 0 003.86-.517l.691-.383a4 4 0 012.573-.344l2.387.477a2 2 0 001.022-.547l.736-.736a2 2 0 000-2.828l-.736-.736z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['sensor1_title']->value ?? 'pH Sensor' }}</h3>
+                        <h3 class="text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['sensor1_title']->value ?? 'pH Sensor' }}</h3>
                         <p class="text-gray-600 text-sm leading-relaxed">{{ $contents['sensor1_desc']->value ?? 'Measures the acidity or alkalinity of the water to ensure a healthy environment for aquatic life.' }}</p>
                     </div>
 
@@ -145,7 +145,7 @@
                                 <circle cx="9" cy="13" r="0.5" fill="currentColor"></circle>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['sensor2_title']->value ?? 'Turbidity' }}</h3>
+                        <h3 class="text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['sensor2_title']->value ?? 'Turbidity' }}</h3>
                         <p class="text-gray-600 text-sm leading-relaxed">{{ $contents['sensor2_desc']->value ?? 'Detects water clarity by measuring suspended particles, crucial for accurate quality assessment.' }}</p>
                     </div>
 
@@ -160,7 +160,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v6"></path>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['sensor3_title']->value ?? 'TDS Sensor' }}</h3>
+                        <h3 class="text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['sensor3_title']->value ?? 'TDS Sensor' }}</h3>
                         <p class="text-gray-600 text-sm leading-relaxed">{{ $contents['sensor3_desc']->value ?? 'Monitors the concentration of dissolved substances, indicating the overall purity of the water.' }}</p>
                     </div>
 
@@ -172,7 +172,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9h4m-4 4h4"></path>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['sensor4_title']->value ?? 'Temperature' }}</h3>
+                        <h3 class="text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['sensor4_title']->value ?? 'Temperature' }}</h3>
                         <p class="text-gray-600 text-sm leading-relaxed">{{ $contents['sensor4_desc']->value ?? 'Tracks water temperature to prevent thermal stress and maintain optimal growth rates for fish.' }}</p>
                     </div>
 
@@ -183,7 +183,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a7 7 0 007-7c0-3.866-7-11-7-11s-7 7.134-7 11a7 7 0 007 7z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['sensor5_title']->value ?? 'Humidity' }}</h3>
+                        <h3 class="text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['sensor5_title']->value ?? 'Humidity' }}</h3>
                         <p class="text-gray-600 text-sm leading-relaxed">{{ $contents['sensor5_desc']->value ?? 'Monitors air moisture levels around the pond, affecting evaporation and equipment safety.' }}</p>
                     </div>
                 </div>
@@ -202,21 +202,21 @@
                     <div class="flex gap-8 items-start">
                         <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">{{ $contents['service1_num']->value ?? '01' }}</div>
                         <div>
-                            <h4 class="text-2xl font-bold text-gray-900 mb-3 tracking-tight">{{ $contents['service1_title']->value ?? 'Automated Data Collection' }}</h4>
+                            <h4 class="text-2xl font-bold mb-3 tracking-tight" style="color: #0D1A63;">{{ $contents['service1_title']->value ?? 'Automated Data Collection' }}</h4>
                             <p class="text-gray-600 leading-relaxed text-lg">{{ $contents['service1_desc']->value ?? 'Continuous background data harvesting from a pond, simultaneously without manual intervention.' }}</p>
                         </div>
                     </div>
                     <div class="flex gap-8 items-start">
                         <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">{{ $contents['service2_num']->value ?? '02' }}</div>
                         <div>
-                            <h4 class="text-2xl font-bold text-gray-900 mb-3 tracking-tight">{{ $contents['service2_title']->value ?? 'Smart Alert Notifications' }}</h4>
+                            <h4 class="text-2xl font-bold mb-3 tracking-tight" style="color: #0D1A63;">{{ $contents['service2_title']->value ?? 'Smart Alert Notifications' }}</h4>
                             <p class="text-gray-600 leading-relaxed text-lg">{{ $contents['service2_desc']->value ?? 'Instant Alert notifications when water parameters exceed safe threshold limits for your specific fish species.' }}</p>
                         </div>
                     </div>
                     <div class="flex gap-8 items-start">
                         <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">{{ $contents['service3_num']->value ?? '03' }}</div>
                         <div>
-                            <h4 class="text-2xl font-bold text-gray-900 mb-3 tracking-tight">{{ $contents['service3_title']->value ?? 'AI Condition Analysis' }}</h4>
+                            <h4 class="text-2xl font-bold mb-3 tracking-tight" style="color: #0D1A63;">{{ $contents['service3_title']->value ?? 'AI Condition Analysis' }}</h4>
                             <p class="text-gray-600 leading-relaxed text-lg">{{ $contents['service3_desc']->value ?? 'Advanced algorithms that analyze patterns to predict water quality health and recommend corrective actions.' }}</p>
                         </div>
                     </div>
@@ -249,7 +249,7 @@
                                 <img src="{{ asset($contents['team1_img_hover']->image) }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white">
                             @endif
                         </div>
-                        <h3 class="text-lg font-bold text-gray-900 mb-1">{{ $contents['team1_name']->value ?? 'Kirstine A. Sanchez' }}</h3>
+                        <h3 class="text-lg font-bold mb-1" style="color: #0D1A63;">{{ $contents['team1_name']->value ?? 'Kirstine A. Sanchez' }}</h3>
                         <p class="text-blue-600 font-medium text-xs uppercase tracking-wide mb-4">{{ $contents['team1_role']->value ?? 'Web/Arduino Developer' }}</p>
                         <p class="text-gray-500 text-sm leading-relaxed">{{ $contents['team1_desc']->value ?? 'Spearheads the hardware integration and full-stack web development.' }}</p>
                     </div>
@@ -269,7 +269,7 @@
                                 <img src="{{ asset($contents['team2_img_hover']->image) }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white">
                             @endif
                         </div>
-                        <h3 class="text-lg font-bold text-gray-900 mb-1">{{ $contents['team2_name']->value ?? 'Dannica J. Besinio' }}</h3>
+                        <h3 class="text-lg font-bold mb-1" style="color: #0D1A63;">{{ $contents['team2_name']->value ?? 'Dannica J. Besinio' }}</h3>
                         <p class="text-blue-600 font-medium text-xs uppercase tracking-wide mb-4">{{ $contents['team2_role']->value ?? 'Documenter' }}</p>
                         <p class="text-gray-500 text-sm leading-relaxed">{{ $contents['team2_desc']->value ?? 'Ensures comprehensive documentation of system processes and user guides.' }}</p>
                     </div>
@@ -289,7 +289,7 @@
                                 <img src="{{ asset($contents['team3_img_hover']->image) }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white">
                             @endif
                         </div>
-                        <h3 class="text-lg font-bold text-gray-900 mb-1">{{ $contents['team3_name']->value ?? 'Joy Mae A. Samra' }}</h3>
+                        <h3 class="text-lg font-bold mb-1" style="color: #0D1A63;">{{ $contents['team3_name']->value ?? 'Joy Mae A. Samra' }}</h3>
                         <p class="text-blue-600 font-medium text-xs uppercase tracking-wide mb-4">{{ $contents['team3_role']->value ?? 'Documenter' }}</p>
                         <p class="text-gray-500 text-sm leading-relaxed">{{ $contents['team3_desc']->value ?? 'Focuses on research, technical writing, and system validation.' }}</p>
                     </div>
@@ -309,7 +309,7 @@
                                 <img src="{{ asset($contents['team4_img_hover']->image) }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white">
                             @endif
                         </div>
-                        <h3 class="text-lg font-bold text-gray-900 mb-1">{{ $contents['team4_name']->value ?? 'Jonas D. Parraño' }}</h3>
+                        <h3 class="text-lg font-bold mb-1" style="color: #0D1A63;">{{ $contents['team4_name']->value ?? 'Jonas D. Parraño' }}</h3>
                         <p class="text-blue-600 font-medium text-xs uppercase tracking-wide mb-4">{{ $contents['team4_role']->value ?? 'System Analyst / Capstone Adviser' }}</p>
                         <p class="text-gray-500 text-sm leading-relaxed">{{ $contents['team4_desc']->value ?? 'Provides expert guidance on system architecture and project direction.' }}</p>
                     </div>
@@ -331,7 +331,7 @@
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         </div>
-                        <h4 class="text-xl font-bold text-gray-900 mb-2">{{ $contents['contact_email_label']->value ?? 'Email Address' }}</h4>
+                        <h4 class="text-xl font-bold mb-2" style="color: #0D1A63;">{{ $contents['contact_email_label']->value ?? 'Email Address' }}</h4>
                         @php $email = $contents['contact_email']->value ?? 'kirstinesanchez9@gmail.com'; @endphp
                         <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ $email }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition font-medium block">
                             {{ $email }}
@@ -342,7 +342,7 @@
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                         </div>
-                        <h4 class="text-xl font-bold text-gray-900 mb-2">{{ $contents['contact_phone_label']->value ?? 'Mobile Number' }}</h4>
+                        <h4 class="text-xl font-bold mb-2" style="color: #0D1A63;">{{ $contents['contact_phone_label']->value ?? 'Mobile Number' }}</h4>
                         @php $phones = explode("\n", $contents['contact_phone']->value ?? "09207327946\n09151003714"); @endphp
                         @foreach($phones as $phone)
                             <a href="tel:{{ trim($phone) }}" class="text-blue-600 hover:text-blue-800 transition font-medium block">{{ trim($phone) }}</a>
@@ -353,7 +353,7 @@
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         </div>
-                        <h4 class="text-xl font-bold text-gray-900 mb-2">{{ $contents['contact_location_label']->value ?? 'Our Location' }}</h4>
+                        <h4 class="text-xl font-bold mb-2" style="color: #0D1A63;">{{ $contents['contact_location_label']->value ?? 'Our Location' }}</h4>
                         @php $location = $contents['contact_location']->value ?? 'Po-Ok, Hinoba-an, Negros Occidental'; @endphp
                         <a id="dynamic-location" href="https://www.google.com/maps/search/?api=1&query={{ urlencode($location) }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 transition font-medium block">
                             {{ $location }}
