@@ -476,33 +476,18 @@
 
             let lastKnobUpdate = 0;
 
-            if (window.Ably) {
-                const ably = new Ably.Realtime({
-                    authUrl: '{{ route("ably.auth") }}',
-                    authMethod: 'POST',
-                    authHeaders: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                });
-                const channel = ably.channels.get('{{ config('services.ably.channel', 'water-readings') }}');
-                
-                // 1. Listen for READINGS
-                channel.subscribe('reading', message => {
-                    const reading = message.data || {};
-                    // Always update Chart (Real-time 5s)
-                    appendReading(reading);
+            // Listen for Global Reading Event (from App Layout Ably)
+            window.addEventListener('new-reading', function(event) {
+                 const reading = event.detail;
+                 if (reading) {
+                     // Always update Chart (Real-time 5s)
+                     appendReading(reading);
 
-                    // Update Gauges immediately (Real-time)
-                    updateGauges(reading);
-                    lastKnobUpdate = now;
-                });
-
-                // 2. Listen for ANALYSIS (Every 5 mins)
-                channel.subscribe('analysis', message => {
-                    const analysis = message.data || {};
-                    showPopup(analysis); // This handles sound + 60s fade automatically
-                });
-            }
+                     // Update Gauges immediately (Real-time)
+                     updateGauges(reading);
+                     lastKnobUpdate = Date.now();
+                 }
+            });
 
             // Refresh dashboard functionality
             const refreshButton = document.getElementById('refreshDashboard');

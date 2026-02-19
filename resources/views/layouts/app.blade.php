@@ -146,6 +146,12 @@
                         // Dispatch Global Event for Dashboard Popup
                         window.dispatchEvent(new CustomEvent('new-analysis', { detail: analysis }));
                     });
+
+                    channel.subscribe('reading', (message) => {
+                         const reading = message.data;
+                         // Dispatch Global Event for Dashboard Chart/Gauges
+                         window.dispatchEvent(new CustomEvent('new-reading', { detail: reading }));
+                    });
                 }
             })();
         </script>
