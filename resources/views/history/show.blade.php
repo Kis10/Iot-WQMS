@@ -1,9 +1,38 @@
 <x-app-layout>
-
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-content, #printable-content * {
+                visibility: visible;
+            }
+            #printable-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 20px;
+                box-shadow: none !important;
+                border: none !important;
+                overflow: visible !important;
+            }
+            /* Hide Sidebar, Header, Footer, and other UI elements explicitly just in case */
+            nav, aside, footer, header {
+                display: none !important;
+            }
+            /* Ensure background colors print */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
 
     <div class="py-12">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg relative min-h-[800px] flex flex-col">
+            <div id="printable-content" class="bg-white overflow-hidden shadow-sm sm:rounded-lg relative min-h-[800px] flex flex-col">
                 <div class="p-8 bg-white border-b border-gray-200 flex-grow flex flex-col">
                     
 
