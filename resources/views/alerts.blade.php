@@ -5,7 +5,7 @@
 
             
             <div class="grid grid-cols-1 gap-6 mb-8">
-            <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="bg-white rounded-lg shadow overflow-hidden min-h-[600px]">
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead class="bg-gray-50 border-b border-gray-200">

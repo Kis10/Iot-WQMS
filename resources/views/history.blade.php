@@ -2,7 +2,7 @@
     <div class="py-12">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
-            <div class="">
+            <div class="bg-white rounded-lg shadow overflow-hidden min-h-[600px]">
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead class="bg-gray-50 border-b border-gray-200">
@@ -46,8 +46,13 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="px-6 py-4 text-center text-gray-500 text-sm">
-                                        No readings recorded yet.
+                                    <td colspan="4" class="px-6 py-4 text-center text-gray-500 text-sm">
+                                        <div class="flex flex-col items-center">
+                                            <svg class="w-12 h-12 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m9 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            No readings recorded yet.
+                                        </div>
                                     </td>
                                 </tr>
                             @endforelse
