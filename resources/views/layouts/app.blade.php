@@ -136,11 +136,15 @@
                     });
                     const channel = ably.channels.get('{{ config('services.ably.channel', 'water-readings') }}');
                     
-                    channel.subscribe('analysis', () => {
+                    channel.subscribe('analysis', (message) => {
+                        const analysis = message.data;
                         if (audioEl) {
                             audioEl.currentTime = 0;
                             audioEl.play().catch(e => console.error('Global play failed:', e));
                         }
+                        
+                        // Dispatch Global Event for Dashboard Popup
+                        window.dispatchEvent(new CustomEvent('new-analysis', { detail: analysis }));
                     });
                 }
             })();

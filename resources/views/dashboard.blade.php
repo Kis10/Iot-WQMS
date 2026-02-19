@@ -877,6 +877,15 @@
                 positionPopup(nextX, nextY, false);
             });
 
+            // Listen for Global Analysis Event (from App Layout Ably)
+            window.addEventListener('new-analysis', function(event) {
+                const analysis = event.detail;
+                if (analysis) {
+                    showPopup(analysis);
+                    saveState(popupLastShownKey, analysis.id);
+                }
+            });
+
             function endDrag(event) {
                 if (!dragState || dragState.pointerId !== event.pointerId) return;
                 popupHandle.releasePointerCapture(event.pointerId);
