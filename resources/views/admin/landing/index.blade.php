@@ -438,7 +438,7 @@
     <!-- ================================ -->
     <!-- Image Crop/Adjust Modal          -->
     <!-- ================================ -->
-    <div x-show="showCropModal" x-cloak class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-sm" x-transition>
+    <div x-show="showCropModal" x-cloak class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-sm" x-transition style="display: none;">
         <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg mx-4 flex flex-col h-[90vh] md:h-auto">
             <h3 class="text-lg font-bold text-gray-900 mb-2">Adjust Image</h3>
             <p class="text-gray-500 text-sm mb-4">Drag to reposition and use the slider to zoom.</p>
@@ -639,7 +639,7 @@
                         const reader = new FileReader();
                         reader.onload = (evt) => {
                             this.cropImageSrc = evt.target.result;
-                            this.showCropModal = true;
+                            this.$nextTick(() => { this.showCropModal = true; });
                         };
                         reader.readAsDataURL(file);
                     }
