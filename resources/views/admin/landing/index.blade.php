@@ -44,6 +44,68 @@
             </button>
         </div>
 
+        <!-- Floating Text Editor Toolbar -->
+        <div x-show="activeElement" x-transition.opacity.duration.200ms
+             class="fixed top-24 left-1/2 -translate-x-1/2 z-[100] bg-white rounded-xl shadow-2xl border border-gray-200 p-2 flex items-center gap-2 overflow-x-auto max-w-[90vw] no-scrollbar">
+            
+            <!-- Font Handling (ExecCommand doesn't support generic font families easily without values, simplifying to Serif/Sans/Mono or keeping generic) -->
+            <!-- Font Size -->
+            <div class="flex items-center border-r border-gray-200 pr-2 gap-1">
+                <button @mousedown.prevent="format('decreaseFontSize')" class="p-1.5 hover:bg-gray-100 rounded text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                </button>
+                <span class="text-xs font-bold text-gray-500 w-8 text-center" x-text="currentFontSize + 'px'"></span>
+                <button @mousedown.prevent="format('increaseFontSize')" class="p-1.5 hover:bg-gray-100 rounded text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                </button>
+            </div>
+
+            <!-- Color -->
+            <div class="flex items-center border-r border-gray-200 pr-2 pl-2 relative">
+                <input type="color" @input="format('foreColor', $event.target.value)" class="w-8 h-8 rounded cursor-pointer border-none p-0 overflow-hidden" title="Text Color">
+            </div>
+
+            <!-- Styles -->
+            <div class="flex items-center border-r border-gray-200 pr-2 pl-2 gap-1">
+                <button @mousedown.prevent="format('bold')" :class="{ 'bg-blue-100 text-blue-600': isBold, 'hover:bg-gray-100 text-gray-600': !isBold }" class="p-2 rounded transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 4h8a4 4 0 014 4 4 4 0 01-4 4H6V4zm0 8h9a4 4 0 014 4 4 4 0 01-4 4H6v-12"></path></svg>
+                </button>
+                <button @mousedown.prevent="format('italic')" :class="{ 'bg-blue-100 text-blue-600': isItalic, 'hover:bg-gray-100 text-gray-600': !isItalic }" class="p-2 rounded transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16"></path></svg> <!-- Use generic I icon -->
+                    <span class="font-serif italic font-bold">I</span>
+                </button>
+                <button @mousedown.prevent="format('underline')" :class="{ 'bg-blue-100 text-blue-600': isUnderline, 'hover:bg-gray-100 text-gray-600': !isUnderline }" class="p-2 rounded transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 4v6a6 6 0 0012 0V4M4 20h16"></path></svg>
+                </button>
+                <button @mousedown.prevent="format('strikeThrough')" class="p-2 hover:bg-gray-100 rounded text-gray-600" title="Strikethrough">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5v14"></path></svg>
+                </button>
+            </div>
+
+            <!-- Alignment & Lists -->
+            <div class="flex items-center border-r border-gray-200 pr-2 pl-2 gap-1">
+                <button @mousedown.prevent="format('justifyLeft')" class="p-2 hover:bg-gray-100 rounded text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h16"></path></svg>
+                </button>
+                <button @mousedown.prevent="format('justifyCenter')" class="p-2 hover:bg-gray-100 rounded text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+                <button @mousedown.prevent="format('justifyRight')" class="p-2 hover:bg-gray-100 rounded text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M10 12h10M4 18h16"></path></svg>
+                </button>
+                <button @mousedown.prevent="format('insertUnorderedList')" class="p-2 hover:bg-gray-100 rounded text-gray-600" title="Bullet List">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16M4 6.01l.01-.011"></path></svg> <!-- Generic List -->
+                </button>
+            </div>
+
+            <!-- Misc -->
+            <div class="flex items-center pl-2 gap-1">
+                 <button @mousedown.prevent="format('removeFormat')" class="p-2 hover:bg-red-50 text-red-500 rounded transition" title="Clear Formatting">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+            </div>
+        </div>
+
         <!-- Scrollable container matching alerts page -->
         <div class="bg-white rounded-lg shadow overflow-hidden">
         <div class="landing-editor overflow-y-auto" style="max-height: calc(100vh - 140px);">
@@ -637,6 +699,59 @@
                 saving: false,
                 showSuccess: false,
                 currentUploadKey: 'hero_bg',
+                
+                // Toolbar State
+                activeElement: null,
+                currentFontSize: 16,
+                isBold: false,
+                isItalic: false,
+                isUnderline: false,
+
+                format(cmd, value) {
+                    if (!this.activeElement) return;
+
+                    if (cmd === 'increaseFontSize' || cmd === 'decreaseFontSize') {
+                        // Use execCommand 'fontSize' (1-7) for persistence inside innerHTML
+                        // Map pixels to 1-7 scale loosely: 1=10, 2=13, 3=16, 4=18, 5=24, 6=32, 7=48
+                        const sizes = [10, 13, 16, 18, 24, 32, 48];
+                        const currentStyle = window.getComputedStyle(this.activeElement); // or selection
+                        const currentPx = parseFloat(currentStyle.fontSize);
+                        
+                        // Find closest index
+                        let idx = sizes.findIndex(s => s >= currentPx);
+                        if (idx === -1) idx = 2; // default to roughly 16px
+                        
+                        let newIdx = cmd === 'increaseFontSize' ? idx + 1 : idx - 1;
+                        if (newIdx < 0) newIdx = 0;
+                        if (newIdx > 6) newIdx = 6;
+                        
+                        document.execCommand('styleWithCSS', false, false); // Use <font size> for compatibility or true for styles
+                        document.execCommand('fontSize', false, newIdx + 1); // 1-based
+                        
+                        this.currentFontSize = sizes[newIdx];
+                    } else if (cmd === 'foreColor') {
+                         document.execCommand('styleWithCSS', false, true);
+                         document.execCommand('foreColor', false, value);
+                    } else {
+                        document.execCommand(cmd, false, value);
+                    }
+                    
+                    this.activeElement.focus();
+                    this.updateToolbarState();
+                },
+
+                updateToolbarState() {
+                    if (!this.activeElement) return;
+                    
+                    // Update Font Size Display
+                    const style = window.getComputedStyle(this.activeElement);
+                    this.currentFontSize = Math.round(parseFloat(style.fontSize));
+
+                    // Update Formatting Buttons
+                    this.isBold = document.queryCommandState('bold');
+                    this.isItalic = document.queryCommandState('italic');
+                    this.isUnderline = document.queryCommandState('underline');
+                },
 
                 // Crop State
                 showCropModal: false,
@@ -667,19 +782,31 @@
                     const el = e.target;
                     el.setAttribute('contenteditable', 'true');
                     el.focus();
-                    // Select all text for easy replacement
-                    const range = document.createRange();
-                    range.selectNodeContents(el);
-                    const sel = window.getSelection();
-                    sel.removeAllRanges();
-                    sel.addRange(range);
+                    
+                    // Toolbar Support
+                    this.activeElement = el;
+                    this.updateToolbarState();
+                    el.addEventListener('keyup', () => this.updateToolbarState());
+                    el.addEventListener('mouseup', () => this.updateToolbarState());
+                    el.addEventListener('click', () => this.updateToolbarState());
+
+                    // Select all text for easy replacement (optional, maybe distracting for rich text?)
+                    // Let's keep it for now but maybe remove if annoying
+                    // const range = document.createRange();
+                    // range.selectNodeContents(el);
+                    // const sel = window.getSelection();
+                    // sel.removeAllRanges();
+                    // sel.addRange(range);
                 },
 
                 // Stop editing and sync the value back
                 stopEditing(e, key) {
                     const el = e.target;
                     el.removeAttribute('contenteditable');
-                    this.data[key].value = el.innerText;
+                    // Save innerHTML to preserve formatting (Bold, Italic, etc.)
+                    this.data[key].value = el.innerHTML;
+                    
+                    this.activeElement = null; // Hide Toolbar
                 },
 
 
@@ -690,6 +817,12 @@
                     const el = e.target;
                     el.setAttribute('contenteditable', 'true');
                     el.focus();
+                    
+                    // Toolbar Support
+                    this.activeElement = el;
+                    this.updateToolbarState();
+                    el.addEventListener('keyup', () => this.updateToolbarState());
+                    el.addEventListener('mouseup', () => this.updateToolbarState());
                 },
                 
                 stopEditingHtml(e, key) {
@@ -697,6 +830,7 @@
                     el.removeAttribute('contenteditable');
                     // Save innerHTML to preserve spans/formatting
                     this.data[key].value = el.innerHTML;
+                    this.activeElement = null;
                 },
 
                 handleFileSelect(e) {
