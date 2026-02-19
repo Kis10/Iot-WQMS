@@ -928,29 +928,34 @@
                     const formData = new FormData();
 
                     for (const key in this.data) {
-                        // Check if key is related to images (ends with _img or _img_hover, or is hero_bg)
+                        // Check if key is related to images
                         const isImageKey = key === 'hero_bg' || key.endsWith('_img') || key.endsWith('_img_hover');
 
-                        // Save text values (exclude image keys)
+                        // Save text values (ALWAYS send text to keep them updated)
                         if (!isImageKey) {
                              formData.append(key, this.data[key].value);
                         }
-                        
-                        // Handle generic image URL values stored in data (if no file is selected)
-                        if (isImageKey && key !== 'hero_bg' && this.data[key].value && !this.files[key]) {
-                            formData.append(key + '_url', this.data[key].value);
-                        }
                     }
 
+                    // Explicitly handle Hero BG Change
                     if (this.heroBgFile) {
                         formData.append('hero_bg_file', this.heroBgFile);
-                    } else if (this.data.hero_bg.image && this.data.hero_bg.image.startsWith('http')) {
-                        formData.append('hero_bg_url', this.data.hero_bg.image);
+                    } else if (this.heroBgPreview && this.heroBgPreview.startsWith('http')) {
+                        // Only if it's a new URL (preview is set)
+                        formData.append('hero_bg_url', this.heroBgPreview);
                     }
 
-                    // Append Generic Files
+                    // Append ONLY New Image Files
                     for (const key in this.files) {
                         formData.append(key + '_file', this.files[key]);
+                    }
+
+                    // Append ONLY New Image URLs (if any were set via modal)
+                    // We can track this by checking if previews exist but no file
+                    for (const key in this.previews) {
+                        if (key !== 'hero_bg' && !this.files[key] && this.previews[key].startsWith('http')) {
+                             formData.append(key + '_url', this.previews[key]);
+                        }
                     }
 
                     formData.append('_method', 'PUT');
