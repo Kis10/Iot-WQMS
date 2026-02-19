@@ -707,28 +707,21 @@
                 isItalic: false,
                 isUnderline: false,
 
+                init() {
+                    console.log('Landing Editor Initialized');
+                },
+
                 format(cmd, value) {
                     if (!this.activeElement) return;
-
+                    console.log('Formatting:', cmd, value); 
+                    
                     if (cmd === 'increaseFontSize' || cmd === 'decreaseFontSize') {
-                        // Use execCommand 'fontSize' (1-7) for persistence inside innerHTML
-                        // Map pixels to 1-7 scale loosely: 1=10, 2=13, 3=16, 4=18, 5=24, 6=32, 7=48
-                        const sizes = [10, 13, 16, 18, 24, 32, 48];
-                        const currentStyle = window.getComputedStyle(this.activeElement); // or selection
-                        const currentPx = parseFloat(currentStyle.fontSize);
-                        
-                        // Find closest index
-                        let idx = sizes.findIndex(s => s >= currentPx);
-                        if (idx === -1) idx = 2; // default to roughly 16px
-                        
-                        let newIdx = cmd === 'increaseFontSize' ? idx + 1 : idx - 1;
-                        if (newIdx < 0) newIdx = 0;
-                        if (newIdx > 6) newIdx = 6;
-                        
-                        document.execCommand('styleWithCSS', false, false); // Use <font size> for compatibility or true for styles
-                        document.execCommand('fontSize', false, newIdx + 1); // 1-based
-                        
-                        this.currentFontSize = sizes[newIdx];
+                        // Handle Font Size (Apply to whole block for consistency)
+                        const currentStyle = window.getComputedStyle(this.activeElement);
+                        let currentSize = parseFloat(currentStyle.fontSize);
+                        let newSize = cmd === 'increaseFontSize' ? currentSize + 2 : currentSize - 2;
+                        this.activeElement.style.fontSize = newSize + 'px';
+                        this.currentFontSize = Math.round(newSize);
                     } else if (cmd === 'foreColor') {
                          document.execCommand('styleWithCSS', false, true);
                          document.execCommand('foreColor', false, value);
@@ -751,6 +744,16 @@
                     this.isBold = document.queryCommandState('bold');
                     this.isItalic = document.queryCommandState('italic');
                     this.isUnderline = document.queryCommandState('underline');
+                },
+                
+                // Highlight Active Element
+                setActive(el) {
+                    if (this.activeElement) {
+                        this.activeElement.style.outline = 'none';
+                    }
+                    this.activeElement = el;
+                    this.activeElement.style.outline = '2px solid #3b82f6'; // Blue outline
+                    this.updateToolbarState();
                 },
 
                 // Crop State
@@ -784,25 +787,18 @@
                     el.focus();
                     
                     // Toolbar Support
-                    this.activeElement = el;
-                    this.updateToolbarState();
+                    this.setActive(el);
                     el.addEventListener('keyup', () => this.updateToolbarState());
                     el.addEventListener('mouseup', () => this.updateToolbarState());
                     el.addEventListener('click', () => this.updateToolbarState());
-
-                    // Select all text for easy replacement (optional, maybe distracting for rich text?)
-                    // Let's keep it for now but maybe remove if annoying
-                    // const range = document.createRange();
-                    // range.selectNodeContents(el);
-                    // const sel = window.getSelection();
-                    // sel.removeAllRanges();
-                    // sel.addRange(range);
                 },
 
                 // Stop editing and sync the value back
                 stopEditing(e, key) {
                     const el = e.target;
                     el.removeAttribute('contenteditable');
+                    el.style.outline = 'none'; // Clear outline
+                    
                     // Save innerHTML to preserve formatting (Bold, Italic, etc.)
                     this.data[key].value = el.innerHTML;
                     
@@ -812,15 +808,13 @@
 
 
                 // HTML Aware Editing (For Hero Title)
-                // We do NOT sync on input to avoid x-html re-rendering cursor jumps
                 makeEditableHtml(e) {
                     const el = e.target;
                     el.setAttribute('contenteditable', 'true');
                     el.focus();
                     
                     // Toolbar Support
-                    this.activeElement = el;
-                    this.updateToolbarState();
+                    this.setActive(el);
                     el.addEventListener('keyup', () => this.updateToolbarState());
                     el.addEventListener('mouseup', () => this.updateToolbarState());
                 },
@@ -828,6 +822,8 @@
                 stopEditingHtml(e, key) {
                     const el = e.target;
                     el.removeAttribute('contenteditable');
+                    el.style.outline = 'none';
+                    
                     // Save innerHTML to preserve spans/formatting
                     this.data[key].value = el.innerHTML;
                     this.activeElement = null;
