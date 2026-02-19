@@ -106,7 +106,7 @@
                     <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-sm font-bold mb-6">
                         {{ $contents['mission_badge']->value ?? 'OUR MISSION' }}
                     </div>
-                    <h2 class="text-4xl font-bold text-gray-900 mb-8 tracking-tight">{{ $contents['mission_title']->value ?? 'The Future of Aquaculture Management' }}</h2>
+                    <h2 class="text-4xl font-bold mb-8 tracking-tight" style="color: #0D1A63;">{{ $contents['mission_title']->value ?? 'The Future of Aquaculture Management' }}</h2>
                     <p class="text-xl text-gray-600 leading-relaxed font-light">
                         {{ $contents['mission_text']->value ?? 'Our system is designed to provide farmers with a robust, reliable, and user-friendly platform for monitoring vital aquatic conditions. By leveraging the power of IoT, we help eliminate the guesswork, reduce risks, and maximize productivity in aquaculture operations.' }}
                     </p>
@@ -118,7 +118,7 @@
         <section id="features" class="py-24 bg-gray-50 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16 fade-in-up">
-                    <h2 class="text-4xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['sensors_title']->value ?? 'Integrated Sensor Technology' }}</h2>
+                    <h2 class="text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['sensors_title']->value ?? 'Integrated Sensor Technology' }}</h2>
                     <p class="text-gray-500 text-lg">{{ $contents['sensors_subtitle']->value ?? 'Our system utilizes five high-precision sensors to capture every critical metric.' }}</p>
                 </div>
 
@@ -194,7 +194,7 @@
         <section id="services" class="py-24 bg-white overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16 fade-in-up">
-                    <h2 class="text-4xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['services_title']->value ?? 'Our Services' }}</h2>
+                    <h2 class="text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['services_title']->value ?? 'Our Services' }}</h2>
                     <p class="text-gray-500 text-lg">{{ $contents['services_subtitle']->value ?? 'We provide end-to-end solutions for aquaculture technology integration.' }}</p>
                 </div>
 
@@ -228,7 +228,7 @@
         <section id="about" class="py-24 bg-gray-50 overflow-hidden border-t border-gray-100">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16 fade-in-up">
-                    <h2 class="text-4xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['about_title']->value ?? 'Meet the Team' }}</h2>
+                    <h2 class="text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['about_title']->value ?? 'Meet the Team' }}</h2>
                     <p class="text-gray-500 text-lg max-w-2xl mx-auto">{{ $contents['about_subtitle']->value ?? 'The dedicated minds behind AquaSense, working together to revolutionize aquaculture monitoring.' }}</p>
                 </div>
 
@@ -322,7 +322,7 @@
         <section id="contact" class="py-24 bg-white overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-20 fade-in-up">
-                    <h2 class="text-4xl font-bold text-gray-900 mb-4 tracking-tight">{{ $contents['contact_title']->value ?? 'Contact Us' }}</h2>
+                    <h2 class="text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['contact_title']->value ?? 'Contact Us' }}</h2>
                     <p class="text-gray-500 text-lg">{{ $contents['contact_subtitle']->value ?? 'Have questions? We\'re here to help you optimize your aquaculture operations.' }}</p>
                 </div>
 

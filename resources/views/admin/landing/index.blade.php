@@ -135,7 +135,7 @@
 
                     <!-- Title -->
                     <h2 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'mission_title')" @input="syncContent($event, 'mission_title')"
-                        class="editable-hover text-4xl font-bold text-gray-900 tracking-tight mb-8"
+                        class="editable-hover text-4xl font-bold tracking-tight mb-8" style="color: #0D1A63;"
                         x-text="data.mission_title.value"></h2>
 
                     <!-- Text -->
@@ -151,7 +151,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
                     <h2 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensors_title')" @input="syncContent($event, 'sensors_title')"
-                        class="editable-hover text-4xl font-bold text-gray-900 tracking-tight mb-4"
+                        class="editable-hover text-4xl font-bold tracking-tight mb-4" style="color: #0D1A63;"
                         x-text="data.sensors_title.value"></h2>
                     <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'sensors_subtitle')" @input="syncContent($event, 'sensors_subtitle')"
                        class="editable-hover text-gray-500 text-lg"
@@ -223,7 +223,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
                     <h2 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'services_title')" @input="syncContent($event, 'services_title')"
-                        class="editable-hover text-4xl font-bold text-gray-900 tracking-tight mb-4"
+                        class="editable-hover text-4xl font-bold tracking-tight mb-4" style="color: #0D1A63;"
                         x-text="data.services_title.value"></h2>
                     <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'services_subtitle')" @input="syncContent($event, 'services_subtitle')"
                        class="editable-hover text-gray-500 text-lg"
@@ -279,7 +279,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
                     <h2 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'about_title')" @input="syncContent($event, 'about_title')"
-                        class="editable-hover text-4xl font-bold text-gray-900 mb-4 tracking-tight"
+                        class="editable-hover text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;"
                         x-text="data.about_title.value"></h2>
                     <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'about_subtitle')" @input="syncContent($event, 'about_subtitle')"
                        class="editable-hover text-gray-500 text-lg max-w-2xl mx-auto"
@@ -335,7 +335,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-20">
                     <h2 @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_title')" @input="syncContent($event, 'contact_title')"
-                        class="editable-hover text-4xl font-bold text-gray-900 tracking-tight mb-4"
+                        class="editable-hover text-4xl font-bold tracking-tight mb-4" style="color: #0D1A63;"
                         x-text="data.contact_title.value"></h2>
                     <p @dblclick="makeEditable($event)" @blur="stopEditing($event, 'contact_subtitle')" @input="syncContent($event, 'contact_subtitle')"
                        class="editable-hover text-gray-500 text-lg"
