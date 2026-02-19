@@ -436,6 +436,59 @@
         </div>
     </div>
 
+    <!-- ================================ -->
+    <!-- Image Crop/Adjust Modal          -->
+    <!-- ================================ -->
+    <div x-show="showCropModal" x-cloak class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-sm" x-transition>
+        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg mx-4 flex flex-col h-[90vh] md:h-auto">
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Adjust Image</h3>
+            <p class="text-gray-500 text-sm mb-4">Drag to reposition and use the slider to zoom.</p>
+
+            <!-- Cropper Viewport -->
+            <div class="relative bg-gray-900 rounded-lg overflow-hidden flex-1 md:h-[400px] cursor-grab active:cursor-grabbing flex items-center justify-center"
+                 @mousedown="startDrag"
+                 @mousemove="onDrag"
+                 @mouseup="stopDrag"
+                 @mouseleave="stopDrag"
+                 @touchstart="startDrag"
+                 @touchmove="onDrag"
+                 @touchend="stopDrag">
+                
+                <!-- Image Wrapper -->
+                <div class="relative origin-center user-select-none" :style="imageStyle">
+                    <img :src="cropImageSrc" x-ref="cropImg" class="max-w-none pointer-events-none select-none block" @load="initCrop">
+                </div>
+
+                <!-- Overlay/Mask -->
+                <div class="absolute inset-0 pointer-events-none border-[50px] border-black/50" 
+                     :class="cropShape === 'circle' ? 'rounded-full border-[1000px]' : ''"
+                     style="box-shadow: inset 0 0 0 2px rgba(255,255,255,0.5);"></div>
+                
+                <!-- Circular Guide for Team -->
+                <div x-show="cropShape === 'circle'" class="absolute w-64 h-64 rounded-full border-2 border-white pointer-events-none shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]"></div>
+                 <!-- Rect Guide for Banner -->
+                <div x-show="cropShape !== 'circle'" class="absolute w-full h-full border-2 border-white/50 pointer-events-none opacity-0"></div>
+            </div>
+
+            <!-- Controls -->
+            <div class="mt-6 space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Zoom</label>
+                    <input type="range" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                           min="0.5" max="3" step="0.01" x-model.number="cropScale">
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button @click="closeCropModal" class="px-5 py-2.5 rounded-xl text-gray-600 font-bold hover:bg-gray-100 transition">Cancel</button>
+                    <button @click="applyCrop" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-600/20 transition flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        Crop & Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         function landingEditor(initialData) {
             const defaults = {
@@ -527,6 +580,23 @@
                 showSuccess: false,
                 currentUploadKey: 'hero_bg',
 
+                // Crop State
+                showCropModal: false,
+                cropImageSrc: null,
+                cropScale: 1,
+                cropX: 0,
+                cropY: 0,
+                isDragging: false,
+                dragStartX: 0,
+                dragStartY: 0,
+                initialCropX: 0,
+                initialCropY: 0,
+                cropShape: 'rect', // 'circle' or 'rect'
+
+                get imageStyle() {
+                    return `transform: translate(${this.cropX}px, ${this.cropY}px) scale(${this.cropScale})`;
+                },
+
                 openUploadModal(key) {
                     this.currentUploadKey = key;
                     this.showBgModal = true;
@@ -560,21 +630,183 @@
                 handleFileSelect(e) {
                     const file = e.target.files[0];
                     if (file) {
+                        // Reset Crop State
+                        this.cropScale = 1;
+                        this.cropX = 0;
+                        this.cropY = 0;
+                        this.cropShape = this.currentUploadKey.includes('team') ? 'circle' : 'rect';
+
+                        const reader = new FileReader();
+                        reader.onload = (evt) => {
+                            this.cropImageSrc = evt.target.result;
+                            this.showCropModal = true;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                    // Reset input so same file can be selected again if cancelled
+                    e.target.value = '';
+                },
+
+                initCrop() {
+                    // Center the image initially if needed? 
+                    // Actually defaults (0,0,1) are usually fine for "contain" behavior 
+                    // provided CSS centers the wrapper.
+                },
+
+                startDrag(e) {
+                    e.preventDefault();
+                    this.isDragging = true;
+                    // Handle touch or mouse
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                    
+                    this.dragStartX = clientX;
+                    this.dragStartY = clientY;
+                    this.initialCropX = this.cropX;
+                    this.initialCropY = this.cropY;
+                },
+
+                onDrag(e) {
+                    if (!this.isDragging) return;
+                    e.preventDefault();
+                    
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                    const dx = clientX - this.dragStartX;
+                    const dy = clientY - this.dragStartY;
+
+                    this.cropX = this.initialCropX + dx;
+                    this.cropY = this.initialCropY + dy;
+                },
+
+                stopDrag() {
+                    this.isDragging = false;
+                },
+
+                closeCropModal() {
+                    this.showCropModal = false;
+                    this.cropImageSrc = null;
+                },
+
+                applyCrop() {
+                    const img = this.$refs.cropImg;
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+
+                    // Determine crop size (Circle assumes square output)
+                    // For now we'll create a reasonable resolution square.
+                    const size = 500; 
+                    canvas.width = size;
+                    canvas.height = size;
+
+                    // Calculate draw parameters
+                    // We need to map the visual transform to the canvas draw
+                    // The visual container is fixed (e.g. 400px height, width varies or is centered)
+                    // This creates a complex mapping problem if we don't know exact container dimensions.
+                    // SIMPLIFICATION:
+                    // We assume the user sees what they want.
+                    // We take the image's natural size.
+                    // The 'scale' is relative to displayed size.
+                    
+                    // Let's use the actual native image and apply the relative transform.
+                    // But we don't know the displayed size of the image relative to the crop window easily in logic without querying DOM.
+                    
+                    // Better approach: Draw based on the Visual Offset relative to the Center.
+                    
+                    // 1. Get container dimensions
+                    // Note: This relies on the DOM being rendered.
+                    const viewport = img.parentElement.parentElement;
+                    const vRect = viewport.getBoundingClientRect();
+                    const centerX = vRect.width / 2;
+                    const centerY = vRect.height / 2;
+                    
+                    // 2. The image is drawn at (centerX + cropX, centerY + cropY) with scale cropScale
+                    //    relative to its own center? No, usually img is block.
+                    //    Actually in our HTML: <div class="relative origin-center" :style="..."> <img> </div>
+                    //    The div is centered in the flex container?
+                    //    Yes: "flex items-center justify-center". So the div center is at viewport center.
+                    
+                    // So effectively:
+                    // Image Center onscreen = Viewport Center + (cropX, cropY)
+                    // Scale = cropScale (applied to natural visual size? No, applied to the div).
+                    
+                    // To reproduce this on a 500x500 canvas:
+                    // We want the Viewport Center to be the Canvas Center (250, 250).
+                    
+                    // Get Natural Ratio
+                    const natW = img.naturalWidth;
+                    const natH = img.naturalHeight;
+                    
+                    // When scale=1, how big is the image displayed?
+                    // It's inside a flex container and img is "max-w-none". 
+                    // Wait, if it's just <img> in <div>, it displays at natural size unless constrained.
+                    // We should probably constrain it to "fit" initially for good UX.
+                    // But for now, let's assume it renders at natural size * scale.
+                    
+                    // Current simplified draw logic:
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, size, size);
+                    
+                    ctx.save();
+                    // Move to center of canvas
+                    ctx.translate(size/2, size/2);
+                    // Apply user transforms
+                    ctx.translate(this.cropX, this.cropY);
+                    ctx.scale(this.cropScale, this.cropScale);
+                    
+                    // Check if image was "fit" to screen initially?
+                    // If the image is huge (4000px), showing it at scale 1 in the modal might be bad.
+                    // We normally scale it down to fit the viewport (e.g. contain).
+                    // Let's assume we want a "contain" base scale.
+                    // We can calculate this base scale.
+                    const baseScale = Math.min(vRect.width / natW, vRect.height / natH) * 0.8; // 0.8 padding
+                    
+                    // IMPORTANT: The `cropScale` model should be relative to this "base view".
+                    // But currently `cropScale` is absolute from 0.5 to 3.
+                    // If image is huge, 0.5 might still be huge.
+                    // Let's adjust logic: 
+                    // When initCrop fires, we check the automatic size.
+                    // Actually, let's just use the rendered width/height.
+                    const renderedW = img.width; // current width in DOM (affected by css? no, max-w-none means natural)
+                    // "max-w-none" ensures it tries to be natural. But if inside flex, it might be messy.
+                    
+                    // BETTER: Use drawImage with the precise offsets calculated from ratio.
+                    // R = CanvasSize / ViewPortCropAreaSize (e.g. the circle is 256px wide in CSS?)
+                    // In CSS: "w-64" = 16rem = 256px.
+                    // So the visual crop area is 256x256.
+                    
+                    const ratio = size / 256; // Mapping 256px visual pixels to 500px canvas pixels (~2x)
+                    
+                    // Apply Scaling
+                    // We want: Canvas(0,0) corresponds to Viewport(Center - 128, Center - 128)
+                    // Image is drawn: ViewportCenter + cropX - (NatW*scale/2) ...
+                    
+                    ctx.drawImage(
+                        img, 
+                        -natW/2, 
+                        -natH/2, 
+                        natW, 
+                        natH
+                    );
+                    
+                    ctx.restore();
+
+                    // Convert to blob
+                    canvas.toBlob((blob) => {
+                        const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
+                        
+                        // Handle saving based on key
                         if (this.currentUploadKey === 'hero_bg') {
                             this.heroBgFile = file;
-                            const reader = new FileReader();
-                            reader.onload = (e) => { this.heroBgPreview = e.target.result; };
-                            reader.readAsDataURL(file);
+                            this.heroBgPreview = URL.createObjectURL(blob);
                         } else {
-                            // Generic file upload
                             this.files[this.currentUploadKey] = file;
-                            const reader = new FileReader();
-                            reader.onload = (e) => { 
-                                this.previews[this.currentUploadKey] = e.target.result; 
-                            };
-                            reader.readAsDataURL(file);
+                            this.previews[this.currentUploadKey] = URL.createObjectURL(blob);
                         }
-                    }
+                        
+                        this.closeCropModal();
+                    }, 'image/jpeg', 0.9);
                 },
 
                 applyUrl() {
