@@ -68,7 +68,7 @@ class WaterQualityController extends Controller
     {
         // Get all abnormal readings
         $query = WaterReading::where(function($q) {
-            $q->where('turbidity', '>', 25)
+            $q->where('turbidity', '<', 50)
             ->orWhere('tds', '>', 500)
             ->orWhere('ph', '<', 6.0)
             ->orWhere('ph', '>', 8.0)

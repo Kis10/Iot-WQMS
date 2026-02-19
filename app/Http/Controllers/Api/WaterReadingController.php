@@ -132,13 +132,14 @@ class WaterReadingController extends Controller
         $temp = $reading->temperature;
 
         // 1. Analyze Turbidity (Clarity)
-        if ($turbidity < 25) { 
+        // High % is Clear (Good), Low % is Muddy (Bad)
+        if ($turbidity < 50) { 
             $riskScore += 40; 
-            $details[] = "Water is too muddy";
+            $details[] = "Water is too muddy (" . $turbidity . "%)";
             $recommendations[] = "Perform a partial water change based on Clarity."; 
-        } elseif ($turbidity < 50) { 
+        } elseif ($turbidity < 75) { 
             $riskScore += 20; 
-            $details[] = "Water is a bit cloudy";
+            $details[] = "Water is a bit cloudy (" . $turbidity . "%)";
             $recommendations[] = "Check filtration system.";
         }
 
