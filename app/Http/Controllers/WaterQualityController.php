@@ -59,7 +59,8 @@ class WaterQualityController extends Controller
     // Show single history reading details
     public function show(WaterReading $reading)
     {
-        return view('history.show', compact('reading'));
+        $location = \App\Models\LandingContent::where('key', 'contact_location')->value('value') ?? 'Po-Ok, Hinoba-an, Negros Occidental';
+        return view('history.show', compact('reading', 'location'));
     }
 
     // Alerts

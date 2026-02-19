@@ -63,7 +63,7 @@
                     <div class="mb-8 pl-2">
                         <p class="text-sm text-gray-600 mb-1"><span class="font-semibold text-gray-800 w-20 inline-block">Device:</span> {{ $reading->device_id }}</p>
                         <p class="text-sm text-gray-600 mb-1"><span class="font-semibold text-gray-800 w-20 inline-block">Date:</span> {{ $reading->created_at->setTimezone('Asia/Manila')->format('M j, Y g:i A') }}</p>
-                        <p class="text-sm text-gray-600"><span class="font-semibold text-gray-800 w-20 inline-block">Location:</span> {{ $reading->device->location ?? 'Not Set' }}</p>
+                        <p class="text-sm text-gray-600"><span class="font-semibold text-gray-800 w-20 inline-block">Location:</span> {{ $location }}</p>
                     </div>
 
                     <!-- Data Table -->
