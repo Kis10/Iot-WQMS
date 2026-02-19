@@ -151,7 +151,7 @@
 
                     <!-- Sensor 3: TDS -->
                     <div class="sensor-card bg-white p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-8">
-                        <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-gray-900 group-hover:text-white transition-all duration-300 shadow-sm">
+                        <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.691.383a4 4 0 01-2.573.344l-2.387-.477a2 2 0 00-1.022.547l-.736.736a2 2 0 000 2.828l.736.736a2 2 0 001.022.547l2.387.477a6 6 0 003.86-.517l.691-.383a4 4 0 012.573-.344l2.387.477a2 2 0 001.022-.547l.736-.736a2 2 0 000-2.828l-.736-.736z"></path>
                                 <circle cx="12" cy="14" r="1.5" fill="currentColor"></circle>
@@ -166,7 +166,7 @@
 
                     <!-- Sensor 4: Temperature -->
                     <div class="sensor-card bg-white p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-8">
-                        <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-gray-900 group-hover:text-white transition-all duration-300 shadow-sm">
+                        <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19c-1.657 0-3-1.343-3-3V6a3 3 0 116 0v10c0 1.657-1.343 3-3 3z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9h4m-4 4h4"></path>
@@ -178,7 +178,7 @@
 
                     <!-- Sensor 5: Humidity -->
                     <div class="sensor-card bg-white p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-8">
-                        <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-gray-900 group-hover:text-white transition-all duration-300 shadow-sm">
+                        <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a7 7 0 007-7c0-3.866-7-11-7-11s-7 7.134-7 11a7 7 0 007 7z"></path>
                             </svg>
@@ -327,8 +327,8 @@
                 </div>
 
                 <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center fade-in-up">
-                    <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm">
-                        <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6">
+                    <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm group hover:-translate-y-2 transition-all duration-300">
+                        <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         </div>
                         <h4 class="text-xl font-bold mb-2" style="color: #0D1A63;">{{ $contents['contact_email_label']->value ?? 'Email Address' }}</h4>
@@ -338,8 +338,8 @@
                         </a>
                     </div>
                     
-                    <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm">
-                        <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6">
+                    <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm group hover:-translate-y-2 transition-all duration-300">
+                        <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                         </div>
                         <h4 class="text-xl font-bold mb-2" style="color: #0D1A63;">{{ $contents['contact_phone_label']->value ?? 'Mobile Number' }}</h4>
@@ -349,8 +349,8 @@
                         @endforeach
                     </div>
                     
-                    <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm">
-                        <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6">
+                    <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm group hover:-translate-y-2 transition-all duration-300">
+                        <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         </div>
                         <h4 class="text-xl font-bold mb-2" style="color: #0D1A63;">{{ $contents['contact_location_label']->value ?? 'Our Location' }}</h4>
