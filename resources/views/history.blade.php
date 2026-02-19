@@ -9,6 +9,7 @@
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Device</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Modified</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     <label class="inline-flex items-center gap-2">
                                         <span>Delete</span>
@@ -21,11 +22,14 @@
                             @forelse($readings as $reading)
                                 <!-- Data Row -->
                                 <tr class="hover:bg-gray-50 transition duration-150 cursor-pointer" onclick="if(!event.target.closest('input') && !event.target.closest('label')) window.location='{{ route('history.show', $reading) }}'">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600 hover:text-indigo-900">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-black hover:text-gray-700">
                                         {{ $reading->device_id ?? 'N/A' }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         {{ $reading->created_at ? $reading->created_at->setTimezone('Asia/Manila')->format('M j, Y g:i A') : 'N/A' }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        {{ number_format(strlen($reading->toJson()) / 1024, 2, ',', '.') }} KB
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         <label class="inline-flex items-center cursor-pointer">
