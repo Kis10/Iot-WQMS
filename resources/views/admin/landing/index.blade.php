@@ -438,50 +438,85 @@
     <!-- ================================ -->
     <!-- Image Crop/Adjust Modal          -->
     <!-- ================================ -->
+    <!-- ================================ -->
+    <!-- Image Crop/Adjust Modal          -->
+    <!-- ================================ -->
     <div x-show="showCropModal" x-cloak class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-sm" x-transition style="display: none;">
-        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg mx-4 flex flex-col h-[90vh] md:h-auto">
-            <h3 class="text-lg font-bold text-gray-900 mb-2">Adjust Image</h3>
-            <p class="text-gray-500 text-sm mb-4">Drag to reposition and use the slider to zoom.</p>
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden w-[95%] max-w-4xl flex flex-col max-h-[90vh]">
+            
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white z-10">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900">Adjust Image</h3>
+                    <p class="text-gray-500 text-sm">Drag to position • Scroll or set slider to zoom</p>
+                </div>
+                <button @click="closeCropModal" class="text-gray-400 hover:text-gray-600 transition p-2 rounded-full hover:bg-gray-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
 
             <!-- Cropper Viewport -->
-            <div class="relative bg-gray-900 rounded-lg overflow-hidden flex-1 md:h-[400px] cursor-grab active:cursor-grabbing flex items-center justify-center"
+            <div class="relative flex-1 bg-slate-900 overflow-hidden cursor-grab active:cursor-grabbing group min-h-[400px]"
                  @mousedown="startDrag"
                  @mousemove="onDrag"
                  @mouseup="stopDrag"
                  @mouseleave="stopDrag"
                  @touchstart="startDrag"
                  @touchmove="onDrag"
-                 @touchend="stopDrag">
+                 @touchend="stopDrag"
+                 @wheel.prevent="handleWheel"
+                 x-ref="viewport">
                 
+                <!-- Checkerboard Pattern for Transparency -->
+                <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#4d4d4d 1px, transparent 1px); background-size: 20px 20px;"></div>
+
                 <!-- Image Wrapper -->
-                <div class="relative origin-center user-select-none" :style="imageStyle">
-                    <img :src="cropImageSrc" x-ref="cropImg" class="max-w-none pointer-events-none select-none block" @load="initCrop">
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                     <div class="relative origin-center user-select-none transition-transform duration-75" :style="imageStyle">
+                        <img :src="cropImageSrc" x-ref="cropImg" class="max-w-none shadow-2xl pointer-events-none select-none block" @load="initCrop">
+                    </div>
                 </div>
 
                 <!-- Overlay/Mask -->
-                <div class="absolute inset-0 pointer-events-none border-[50px] border-black/50" 
-                     :class="cropShape === 'circle' ? 'rounded-full border-[1000px]' : ''"
-                     style="box-shadow: inset 0 0 0 2px rgba(255,255,255,0.5);"></div>
-                
-                <!-- Circular Guide for Team -->
-                <div x-show="cropShape === 'circle'" class="absolute w-64 h-64 rounded-full border-2 border-white pointer-events-none shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]"></div>
-                 <!-- Rect Guide for Banner -->
-                <div x-show="cropShape !== 'circle'" class="absolute w-full h-full border-2 border-white/50 pointer-events-none opacity-0"></div>
+                <!-- The mask is essentially a giant border around a transparent hole -->
+                <div class="absolute inset-0 pointer-events-none z-10 flex items-center justify-center">
+                    <div class="relative" :class="cropShape === 'circle' ? 'w-64 h-64 rounded-full' : 'w-[90%] h-[70%] border-white/50 border-2'">
+                        <!-- Darken outside -->
+                        <div class="absolute -inset-[100vh] border-[100vh] border-black/60 scale-[2]" 
+                             :class="cropShape === 'circle' ? 'rounded-[50%]' : ''"></div>
+                        
+                        <!-- Guidelines -->
+                        <div class="absolute inset-0 border-2 border-white/80 shadow-sm" :class="cropShape === 'circle' ? 'rounded-full' : ''"></div>
+                        
+                        <!-- Grid Lines (Rule of Thirds) - Optional, mainly for rect -->
+                        <div x-show="cropShape !== 'circle'" class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-30">
+                            <div class="flex-1 border-b border-white"></div>
+                            <div class="flex-1 border-b border-white"></div>
+                            <div class="flex-1"></div>
+                        </div>
+                        <div x-show="cropShape !== 'circle'" class="absolute inset-0 flex flex-row justify-between pointer-events-none opacity-30">
+                            <div class="flex-1 border-r border-white"></div>
+                            <div class="flex-1 border-r border-white"></div>
+                            <div class="flex-1"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Controls -->
-            <div class="mt-6 space-y-4">
-                <div>
-                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Zoom</label>
-                    <input type="range" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                           min="0.5" max="3" step="0.01" x-model.number="cropScale">
+            <div class="px-6 py-4 bg-white border-t border-gray-100 z-10">
+                <div class="flex items-center gap-4 mb-4">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
+                    <input type="range" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                           :min="minScale" :max="maxScale" step="0.01" x-model.number="cropScale">
+                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path></svg>
                 </div>
 
-                <div class="flex justify-end gap-3 pt-2">
-                    <button @click="closeCropModal" class="px-5 py-2.5 rounded-xl text-gray-600 font-bold hover:bg-gray-100 transition">Cancel</button>
-                    <button @click="applyCrop" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-600/20 transition flex items-center gap-2">
+                <div class="flex justify-end gap-3">
+                    <button @click="closeCropModal" class="px-6 py-2.5 rounded-xl text-gray-600 font-bold hover:bg-gray-100 transition border border-gray-200 hover:border-gray-300">Cancel</button>
+                    <button @click="applyCrop" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-600/20 transition flex items-center gap-2 transform active:scale-95">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        Crop & Save
+                        Apply Crop
                     </button>
                 </div>
             </div>
@@ -584,6 +619,8 @@
                 showCropModal: false,
                 cropImageSrc: null,
                 cropScale: 1,
+                minScale: 0.1,
+                maxScale: 3,
                 cropX: 0,
                 cropY: 0,
                 isDragging: false,
@@ -648,15 +685,33 @@
                 },
 
                 initCrop() {
-                    // Center the image initially if needed? 
-                    // Actually defaults (0,0,1) are usually fine for "contain" behavior 
-                    // provided CSS centers the wrapper.
+                    const img = this.$refs.cropImg;
+                    const viewport = this.$refs.viewport;
+                    
+                    // Wait for layout
+                    this.$nextTick(() => {
+                        const vw = viewport.clientWidth;
+                        const vh = viewport.clientHeight;
+                        const iw = img.naturalWidth;
+                        const ih = img.naturalHeight;
+
+                        // Calculate fit scale (contain)
+                        const scaleW = vw / iw;
+                        const scaleH = vh / ih;
+                        const fitScale = Math.min(scaleW, scaleH) * 0.8; // 0.8 to leave some room
+
+                        this.minScale = fitScale * 0.5; // Allow zooming out a bit more than fit
+                        this.maxScale = Math.max(fitScale * 5, 2); // Allow 5x zoom or at least 2x
+                        
+                        this.cropScale = fitScale;
+                        this.cropX = 0;
+                        this.cropY = 0;
+                    });
                 },
 
                 startDrag(e) {
                     e.preventDefault();
                     this.isDragging = true;
-                    // Handle touch or mouse
                     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
                     
@@ -684,6 +739,12 @@
                     this.isDragging = false;
                 },
 
+                handleWheel(e) {
+                    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                    const newScale = Math.max(this.minScale, Math.min(this.maxScale, this.cropScale + delta * this.cropScale));
+                    this.cropScale = newScale;
+                },
+
                 closeCropModal() {
                     this.showCropModal = false;
                     this.cropImageSrc = null;
@@ -694,104 +755,111 @@
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
 
-                    // Determine crop size (Circle assumes square output)
-                    // For now we'll create a reasonable resolution square.
-                    const size = 500; 
-                    canvas.width = size;
-                    canvas.height = size;
+                    // Circle shape target size
+                    // For circle (team), we want square output. 
+                    // For rect (hero), we want 16:9 or similar? 
+                    // Let's stick to the visual aspect ratio.
+                    
+                    let targetWidth = 500;
+                    let targetHeight = 500;
+                    
+                    if (this.cropShape !== 'circle') {
+                        // Rect shape (Hero BG) - usually strict 16:9 is best for hero, or wide.
+                        // Our visual guide is 90% w, 70% h.
+                        // Let's measure the user's visual guide aspect ratio?
+                        // It's dynamic in css.
+                        // Let's just default to a standard high-res landscape for hero.
+                        targetWidth = 1920;
+                        targetHeight = 1080;
+                    }
 
-                    // Calculate draw parameters
-                    // We need to map the visual transform to the canvas draw
-                    // The visual container is fixed (e.g. 400px height, width varies or is centered)
-                    // This creates a complex mapping problem if we don't know exact container dimensions.
-                    // SIMPLIFICATION:
-                    // We assume the user sees what they want.
-                    // We take the image's natural size.
-                    // The 'scale' is relative to displayed size.
-                    
-                    // Let's use the actual native image and apply the relative transform.
-                    // But we don't know the displayed size of the image relative to the crop window easily in logic without querying DOM.
-                    
-                    // Better approach: Draw based on the Visual Offset relative to the Center.
-                    
-                    // 1. Get container dimensions
-                    // Note: This relies on the DOM being rendered.
-                    const viewport = img.parentElement.parentElement;
+                    canvas.width = targetWidth;
+                    canvas.height = targetHeight;
+
+                    // 1. Calculate the Visual Metrics
+                    const viewport = this.$refs.viewport;
                     const vRect = viewport.getBoundingClientRect();
                     const centerX = vRect.width / 2;
                     const centerY = vRect.height / 2;
+
+                    // Locate the "Mask/Hole" in the viewport
+                    // Circle: w-64 h-64 (16rem = 256px) centered.
+                    // Rect: 90% w, 70% h centered.
+                    let maskW, maskH;
+
+                    if (this.cropShape === 'circle') {
+                        maskW = 256; 
+                        maskH = 256;
+                    } else {
+                        maskW = vRect.width * 0.9;
+                        maskH = vRect.height * 0.7;
+                    }
+
+                    // 2. Draw Logic
+                    // We want to draw the portion of the image that is visible under the Mask into the Canvas.
+                    // Mapping: Mask TopLeft in Viewport -> Canvas(0,0)
+                    //          Mask BottomRight in Viewport -> Canvas(W,H)
                     
-                    // 2. The image is drawn at (centerX + cropX, centerY + cropY) with scale cropScale
-                    //    relative to its own center? No, usually img is block.
-                    //    Actually in our HTML: <div class="relative origin-center" :style="..."> <img> </div>
-                    //    The div is centered in the flex container?
-                    //    Yes: "flex items-center justify-center". So the div center is at viewport center.
+                    // The image is at: ViewportCenter + (cropX, cropY)
+                    // Image Scale: cropScale (visual scale)
                     
-                    // So effectively:
-                    // Image Center onscreen = Viewport Center + (cropX, cropY)
-                    // Scale = cropScale (applied to natural visual size? No, applied to the div).
+                    // Calculate Image Position relative to Mask TopLeft
+                    // Mask TopLeft relative to Viewport = (Center - Mask/2)
+                    const maskX = centerX - maskW/2;
+                    const maskY = centerY - maskH/2;
                     
-                    // To reproduce this on a 500x500 canvas:
-                    // We want the Viewport Center to be the Canvas Center (250, 250).
-                    
-                    // Get Natural Ratio
+                    // Image Position (visual top-left of image element) relative to Viewport
+                    // The img is centered in the div, and div is translated.
+                    // Img Natural Width/Height * Scale
                     const natW = img.naturalWidth;
                     const natH = img.naturalHeight;
                     
-                    // When scale=1, how big is the image displayed?
-                    // It's inside a flex container and img is "max-w-none". 
-                    // Wait, if it's just <img> in <div>, it displays at natural size unless constrained.
-                    // We should probably constrain it to "fit" initially for good UX.
-                    // But for now, let's assume it renders at natural size * scale.
+                    // Visual Width/Height
+                    const visW = natW * this.cropScale;
+                    const visH = natH * this.cropScale;
                     
-                    // Current simplified draw logic:
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.fillRect(0, 0, size, size);
+                    // Image Center relative to Viewport = Center + CropOffset
+                    const imgCenterX = centerX + this.cropX;
+                    const imgCenterY = centerY + this.cropY;
                     
-                    ctx.save();
-                    // Move to center of canvas
-                    ctx.translate(size/2, size/2);
-                    // Apply user transforms
-                    ctx.translate(this.cropX, this.cropY);
-                    ctx.scale(this.cropScale, this.cropScale);
+                    // Image TopLeft relative to Viewport
+                    const imgX = imgCenterX - visW/2;
+                    const imgY = imgCenterY - visH/2;
                     
-                    // Check if image was "fit" to screen initially?
-                    // If the image is huge (4000px), showing it at scale 1 in the modal might be bad.
-                    // We normally scale it down to fit the viewport (e.g. contain).
-                    // Let's assume we want a "contain" base scale.
-                    // We can calculate this base scale.
-                    const baseScale = Math.min(vRect.width / natW, vRect.height / natH) * 0.8; // 0.8 padding
+                    // 3. Offset into Image
+                    // Where does the Mask start relative to the Image?
+                    // deltaX = MaskX - ImgX
+                    const deltaX = maskX - imgX;
+                    const deltaY = maskY - imgY;
                     
-                    // IMPORTANT: The `cropScale` model should be relative to this "base view".
-                    // But currently `cropScale` is absolute from 0.5 to 3.
-                    // If image is huge, 0.5 might still be huge.
-                    // Let's adjust logic: 
-                    // When initCrop fires, we check the automatic size.
-                    // Actually, let's just use the rendered width/height.
-                    const renderedW = img.width; // current width in DOM (affected by css? no, max-w-none means natural)
-                    // "max-w-none" ensures it tries to be natural. But if inside flex, it might be messy.
+                    // So we want to copy from (deltaX, deltaY) with width (maskW), height (maskH)
+                    // FROM the SCALED image.
                     
-                    // BETTER: Use drawImage with the precise offsets calculated from ratio.
-                    // R = CanvasSize / ViewPortCropAreaSize (e.g. the circle is 256px wide in CSS?)
-                    // In CSS: "w-64" = 16rem = 256px.
-                    // So the visual crop area is 256x256.
+                    // Converting effectively to SOURCE coordinates (Unscaled Image):
+                    // sourceX = deltaX / scale
+                    // sourceY = deltaY / scale
+                    // sourceW = maskW / scale
+                    // sourceH = maskH / scale
                     
-                    const ratio = size / 256; // Mapping 256px visual pixels to 500px canvas pixels (~2x)
+                    const sX = deltaX / this.cropScale;
+                    const sY = deltaY / this.cropScale;
+                    const sW = maskW / this.cropScale;
+                    const sH = maskH / this.cropScale;
                     
-                    // Apply Scaling
-                    // We want: Canvas(0,0) corresponds to Viewport(Center - 128, Center - 128)
-                    // Image is drawn: ViewportCenter + cropX - (NatW*scale/2) ...
+                    // Draw to Canvas
+                    // Canvas size is fixed (targetWidth, targetHeight).
+                    // We draw the source rect -> canvas rect.
+                    
+                    // Fill background (white/black?)
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0,0, targetWidth, targetHeight);
                     
                     ctx.drawImage(
-                        img, 
-                        -natW/2, 
-                        -natH/2, 
-                        natW, 
-                        natH
+                        img,
+                        sX, sY, sW, sH,    // Source
+                        0, 0, targetWidth, targetHeight // Dest
                     );
                     
-                    ctx.restore();
-
                     // Convert to blob
                     canvas.toBlob((blob) => {
                         const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
