@@ -28,6 +28,7 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+        <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
     </head>
     <body class="font-sans antialiased">
         <div class="flex h-screen bg-gray-100 flex-col">
@@ -104,5 +105,45 @@
             </script>
             @endif
         @endauth
+        <audio id="globalAiSound" src="{{ asset('sounds/ai.mp3') }}" preload="auto"></audio>
+        <script>
+            (function() {
+                // Global Audio Unlock
+                const audioEl = document.getElementById('globalAiSound');
+                let audioUnlocked = false;
+
+                function unlockAudio() {
+                    if (audioUnlocked || !audioEl) return;
+                    const playPromise = audioEl.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(() => {
+                            audioEl.pause();
+                            audioEl.currentTime = 0;
+                            audioUnlocked = true;
+                            ['click', 'touchstart', 'keydown'].forEach(e => document.removeEventListener(e, unlockAudio));
+                            // console.log('Global AI Audio unlocked');
+                        }).catch(() => {});
+                    }
+                }
+                ['click', 'touchstart', 'keydown'].forEach(e => document.addEventListener(e, unlockAudio));
+
+                // Global Ably Listener for Sound
+                if (window.Ably) {
+                    const ably = new Ably.Realtime({
+                        authUrl: '{{ route("ably.auth") }}',
+                        authMethod: 'POST',
+                        authHeaders: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+                    });
+                    const channel = ably.channels.get('{{ config('services.ably.channel', 'water-readings') }}');
+                    
+                    channel.subscribe('analysis', () => {
+                        if (audioEl) {
+                            audioEl.currentTime = 0;
+                            audioEl.play().catch(e => console.error('Global play failed:', e));
+                        }
+                    });
+                }
+            })();
+        </script>
     </body>
 </html>

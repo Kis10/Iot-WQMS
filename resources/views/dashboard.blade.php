@@ -202,7 +202,9 @@
 
     <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {{-- Ably script removed, handled globally in app.blade.php --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('waterQualityChart').getContext('2d');
@@ -551,40 +553,6 @@
             }
         });
     </script>
-    <audio id="aiNotificationSound" src="{{ asset('sounds/ai.mp3') }}" preload="auto"></audio>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Audio Context Unlock Logic
-            const audioEl = document.getElementById('aiNotificationSound');
-            let audioUnlocked = false;
-
-            function unlockAudio() {
-                if (audioUnlocked || !audioEl) return;
-                
-                // Try to play and immediately pause to unlock audio capability
-                const playPromise = audioEl.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        audioEl.pause();
-                        audioEl.currentTime = 0;
-                        audioUnlocked = true;
-                        // Remove listeners once unlocked
-                        document.removeEventListener('click', unlockAudio);
-                        document.removeEventListener('touchstart', unlockAudio);
-                        document.removeEventListener('keydown', unlockAudio);
-                        console.log('Audio playback unlocked successfully.');
-                    }).catch(error => {
-                        // console.log('Audio unlock failed (will retry on next interaction):', error);
-                    });
-                }
-            }
-
-            // Listen for any user interaction
-            document.addEventListener('click', unlockAudio);
-            document.addEventListener('touchstart', unlockAudio);
-            document.addEventListener('keydown', unlockAudio);
-
             const dashboardContainer = document.getElementById('dashboardContainer');
             const popup = document.getElementById('aiAnalysisPopup');
             const popupHandle = document.getElementById('aiPopupHandle');
@@ -804,8 +772,8 @@
                 popup.classList.remove('opacity-0', 'pointer-events-none');
                 popup.classList.add('opacity-100', 'pointer-events-auto');
 
-                if (playSound && sound) {
-                    sound.play().catch(e => console.log('Audio play failed:', e));
+                if (false && sound) {
+                    // Global script handles sound
                 }
 
                 scheduleHide(expiresAt);
