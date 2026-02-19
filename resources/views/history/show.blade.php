@@ -28,29 +28,10 @@
                 print-color-adjust: exact !important;
             }
 
-            /* Fixed Header Logo/Text */
-            .print-header-fixed {
-                position: fixed;
-                top: 20px;
-                left: 40px;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            .print-header-fixed img {
-                width: 40px;
-                height: 40px;
-            }
-            .print-header-fixed span {
-                font-size: 1.25rem; /* text-xl */
-                font-weight: 700; /* font-bold */
-                color: #374151; /* text-gray-700 */
-                letter-spacing: 0.05em; /* tracking-wider */
-            }
-
-            /* Center specific text */
-            .text-center-important {
-                text-align: center !important;
+            /* Ensure background colors print */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
         }
     </style>
@@ -61,21 +42,17 @@
                 <div class="p-8 bg-white border-b border-gray-200 flex-grow flex flex-col">
                     
                     <!-- Report Header -->
-                    <div class="flex flex-col md:flex-row justify-between items-center mb-8 border-b-2 border-gray-100 pb-6 pt-10">
-                         <!-- Fixed Logo for Print (Hidden on screen, Visible on Print via Fixed Position) -->
-                        <div class="print-header-fixed hidden print:flex">
-                            <img src="{{ asset('img/logo/logo-wq.png') }}" alt="AquaSense Logo">
-                            <span>AQUASENSE</span>
-                        </div>
-
-                         <!-- Regular Logo for Screen Only -->
-                        <div class="flex items-center gap-3 mb-4 md:mb-0 print:hidden">
-                            <img src="{{ asset('img/logo/logo-wq.png') }}" alt="AquaSense Logo" class="w-12 h-12 object-contain">
-                            <span class="text-2xl font-bold text-gray-700 tracking-wider">AQUASENSE</span>
+                    <div class="relative flex flex-col items-center mb-12 border-b-2 border-gray-100 pb-8 pt-6 header-container">
+                         <!-- Fixed Logo (Visible on both Screen and Print) -->
+                         <!-- Using absolute positioning for the logo to keep it top-left relative to the container -->
+                        <div class="absolute top-0 left-0 flex items-center gap-3">
+                            <img src="{{ asset('img/logo/logo-wq.png') }}" alt="AquaSense Logo" class="w-10 h-10 object-contain">
+                            <span class="text-xl font-bold text-gray-700 tracking-wider">AQUASENSE</span>
                         </div>
                         
-                        <div class="w-full text-center print:mt-12">
-                            <h3 class="text-sm font-semibold text-gray-900 tracking-wide text-center md:text-right print:text-center-important">
+                        <!-- Centered Title -->
+                        <div class="w-full text-center mt-12">
+                            <h3 class="text-base font-bold text-gray-900 tracking-wide text-center">
                                 IoT-based Water Quality Monitoring System for <br>
                                 <span class="block text-center mt-1">Aquaculture</span>
                             </h3>
