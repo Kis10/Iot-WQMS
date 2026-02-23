@@ -50,9 +50,9 @@
     <body class="antialiased text-gray-900 bg-gray-50 overflow-x-hidden">
         
         <!-- Animated Navbar -->
-        <nav class="fixed top-0 w-full z-50 transition-all duration-300 glass border-b border-gray-100 py-4" x-data="{ atTop: true }" @scroll.window="atTop = (window.pageYOffset > 50 ? false : true)">
+        <nav class="fixed top-0 w-full z-50 transition-all duration-300 glass border-b border-gray-100 py-4" x-data="{ atTop: true, mobileOpen: false }" @scroll.window="atTop = (window.pageYOffset > 50 ? false : true)">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center w-full">
+                <div class="flex items-center justify-between w-full">
                     <!-- Brand (Far Left) -->
                     <div class="flex items-center gap-3">
                         <a href="/" class="flex items-center gap-3">
@@ -63,7 +63,7 @@
                         </a>
                     </div>
                     
-                    <!-- Nav Links (Right) -->
+                    <!-- Desktop Nav Links (Right) -->
                     <div class="hidden md:flex items-center space-x-8 text-sm font-semibold ml-auto">
                         <a href="#home" class="text-gray-600 hover:text-blue-600 transition tracking-wide">Home</a>
                         <a href="#about" class="text-gray-600 hover:text-blue-600 transition tracking-wide">About</a>
@@ -71,6 +71,36 @@
                         <a href="#services" class="text-gray-600 hover:text-blue-600 transition tracking-wide">Services</a>
                         <a href="#contact" class="text-gray-600 hover:text-blue-600 transition tracking-wide">Contact</a>
                     </div>
+
+                    <!-- Mobile Hamburger Button (Right) -->
+                    <button @click="mobileOpen = !mobileOpen" class="md:hidden ml-auto p-2 rounded-lg hover:bg-gray-100 transition focus:outline-none" aria-label="Toggle Navigation">
+                        <!-- Hamburger Icon (show when closed) -->
+                        <svg x-show="!mobileOpen" class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                        <!-- X Icon (show when open) -->
+                        <svg x-show="mobileOpen" x-cloak class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Nav Menu (Slide Down) -->
+            <div x-show="mobileOpen" x-cloak
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 -translate-y-2"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 -translate-y-2"
+                 class="md:hidden border-t border-gray-100 mt-4 pt-4 pb-2 px-4">
+                <div class="flex flex-col space-y-3">
+                    <a href="#home" @click="mobileOpen = false" class="text-gray-700 hover:text-blue-600 font-semibold text-base py-2 px-3 rounded-lg hover:bg-blue-50 transition">Home</a>
+                    <a href="#about" @click="mobileOpen = false" class="text-gray-700 hover:text-blue-600 font-semibold text-base py-2 px-3 rounded-lg hover:bg-blue-50 transition">About</a>
+                    <a href="#features" @click="mobileOpen = false" class="text-gray-700 hover:text-blue-600 font-semibold text-base py-2 px-3 rounded-lg hover:bg-blue-50 transition">Sensors</a>
+                    <a href="#services" @click="mobileOpen = false" class="text-gray-700 hover:text-blue-600 font-semibold text-base py-2 px-3 rounded-lg hover:bg-blue-50 transition">Services</a>
+                    <a href="#contact" @click="mobileOpen = false" class="text-gray-700 hover:text-blue-600 font-semibold text-base py-2 px-3 rounded-lg hover:bg-blue-50 transition">Contact</a>
                 </div>
             </div>
         </nav>
