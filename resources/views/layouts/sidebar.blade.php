@@ -1,5 +1,10 @@
-<aside class="w-64 bg-white border-r flex flex-col">
-    <div class="p-6 text-xl font-bold border-b">Water Quality System</div>
+<aside class="w-64 bg-white border-r flex flex-col h-full">
+    <div class="p-6 text-xl font-bold border-b flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg overflow-hidden shadow-sm bg-white p-0.5">
+            <img src="{{ asset('img/logo/logo-wq.png') }}" alt="Logo" class="w-full h-full object-contain" />
+        </div>
+        <span>AquaSense</span>
+    </div>
 
     <nav class="flex-1 px-4 mt-4 space-y-2">
         <a href="{{ route('dashboard') }}" class="block px-4 py-2 rounded hover:bg-gray-100 {{ request()->routeIs('dashboard') ? 'font-bold bg-gray-100' : '' }}">Dashboard</a>

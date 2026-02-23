@@ -4,6 +4,13 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
+                <!-- Mobile Sidebar Toggle (Logo) -->
+                <button @click="$dispatch('toggle-sidebar')" class="md:hidden flex items-center mr-3">
+                    <div class="w-8 h-8 rounded-lg overflow-hidden shadow-sm bg-white p-0.5 border border-gray-200">
+                        <img src="{{ asset('img/logo/logo-wq.png') }}" alt="Menu" class="w-full h-full object-contain" />
+                    </div>
+                </button>
+
                 <!-- Dashboard Text -->
                 <div class="shrink-0 flex items-center">
                     <span class="font-semibold text-gray-800">

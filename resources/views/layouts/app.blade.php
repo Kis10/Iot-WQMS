@@ -31,11 +31,39 @@
         <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
     </head>
     <body class="font-sans antialiased">
-        <div class="flex h-screen bg-gray-100 flex-col">
+        <div class="flex h-screen bg-gray-100 flex-col" x-data="{ sidebarOpen: false }" @toggle-sidebar.window="sidebarOpen = !sidebarOpen">
             <!-- Main Container -->
             <div class="flex flex-1 overflow-hidden">
-                <!-- Sidebar -->
-                <x-sidebar />
+                
+                <!-- Mobile Sidebar Overlay (backdrop) -->
+                <div x-show="sidebarOpen" 
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     @click="sidebarOpen = false"
+                     class="fixed inset-0 bg-black/50 z-40 md:hidden"
+                     x-cloak></div>
+
+                <!-- Sidebar: hidden on mobile, shown on desktop -->
+                <div class="hidden md:flex">
+                    <x-sidebar />
+                </div>
+
+                <!-- Mobile Sidebar (overlay with fade) -->
+                <div x-show="sidebarOpen"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 -translate-x-full"
+                     x-transition:enter-end="opacity-100 translate-x-0"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-x-0"
+                     x-transition:leave-end="opacity-0 -translate-x-full"
+                     class="fixed inset-y-0 left-0 z-50 md:hidden"
+                     x-cloak>
+                    <x-sidebar />
+                </div>
 
                 <!-- Main Content -->
                 <div class="flex-1 flex flex-col overflow-hidden">
