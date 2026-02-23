@@ -132,7 +132,6 @@
                 })();
             </script>
             @endif
-        @auth
             <x-sound-controls />
         @endauth
 
