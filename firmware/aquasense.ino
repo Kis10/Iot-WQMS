@@ -42,7 +42,7 @@ DallasTemperature waterTempSensor(&oneWire);
 
 /************ SENSOR VARIABLES ************/
 float slope = -7.575;
-float offset = 28.84;
+float offset = 31.64; // 'Software Cheat' Offset for Pond Water Isolation
 float tdsFactor = 0.5;
 const int numSamples = 10;
 
@@ -183,6 +183,9 @@ unsigned long initStartTime = 0;
 
 void setup() {
   Serial.begin(115200);
+  delay(1000);
+  Serial.println("\n\n--- AQUASENSE SYSTEM STARTING ---");
+  Serial.print("Baseline Offset: "); Serial.println(offset);
 
   // Initialize pins
   pinMode(buzzerPin, OUTPUT);
@@ -383,6 +386,7 @@ void performSingleReadingAndSend() {
       delay(10); 
     }
     float pHVoltage = (pHAvg / 20.0) * (3.3 / 4095.0);
+    Serial.print("DEBUG: pH Voltage = "); Serial.println(pHVoltage, 3);
     float pHVal = slope * pHVoltage + offset;
     
     // --- STEP 4: READ TURBIDITY ---
