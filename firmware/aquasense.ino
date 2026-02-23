@@ -363,12 +363,13 @@ void connectToWiFiWithUI() {
 }
 
 void performSingleReadingAndSend() {
-    // --- STEP 1: FORCE TDS & TURBIDITY OFF NOISE ---
-    digitalWrite(tdsPowerPin, LOW); 
-    digitalWrite(turbidityPowerPin, LOW);
+    // --- STEP 1: DUAL-WIRE ISOLATION (Software Trick) ---
+    // Setting to INPUT effectively "unplugs" the pin to prevent ground leakage
+    pinMode(tdsPowerPin, INPUT); 
+    pinMode(turbidityPowerPin, INPUT);
     
-    // Extended silence to allow electrical charge in conductive tap water to dissipate
-    delay(2000); 
+    // Maximum silence for conductive tap water
+    delay(2500); 
     
     // --- STEP 2: READ WATER TEMPERATURE (DS18B20) ---
     waterTempSensor.requestTemperatures();
@@ -394,6 +395,7 @@ void performSingleReadingAndSend() {
     float pHVal = slope * pHVoltage + offset;
     
     // --- STEP 4: READ TURBIDITY ---
+    pinMode(turbidityPowerPin, OUTPUT);
     digitalWrite(turbidityPowerPin, HIGH);
     delay(1000); // Warmup
     long turbSum = 0;
@@ -407,6 +409,7 @@ void performSingleReadingAndSend() {
     clarity = constrain(clarity, 0, 100);
 
     // --- STEP 5: READ TDS ---
+    pinMode(tdsPowerPin, OUTPUT);
     digitalWrite(tdsPowerPin, HIGH);
     delay(1000); // Warmup
     long tdsAvg = 0;
