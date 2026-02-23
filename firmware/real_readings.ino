@@ -7,7 +7,7 @@ const int tdsPowerPin = 26; // Digital Output (TDS Power Switch)
 
 // YOUR CALIBRATION VARIABLES
 float slope = -7.575;
-float offset = 25.34;
+float offset = 28.84;
 float tdsFactor = 0.5;
 
 void setup() {

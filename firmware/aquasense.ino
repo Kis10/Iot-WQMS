@@ -42,7 +42,7 @@ DallasTemperature waterTempSensor(&oneWire);
 
 /************ SENSOR VARIABLES ************/
 float slope = -7.575;
-float offset = 25.34;
+float offset = 28.84;
 float tdsFactor = 0.5;
 const int numSamples = 10;
 
