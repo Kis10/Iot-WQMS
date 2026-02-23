@@ -109,7 +109,7 @@
 
         <!-- Dynamic Hero Section (Refined Visibility) -->
         <!-- Dynamic Hero Section (Refined Visibility) -->
-        <section id="home" class="relative min-h-[85vh] flex items-center justify-center bg-slate-900 overflow-hidden pt-32 pb-20">
+        <section id="home" class="relative min-h-[85vh] flex items-center justify-center bg-slate-900 overflow-hidden pt-24 sm:pt-32 pb-12 sm:pb-20">
             <!-- Dynamic Background Image -->
             @if(isset($contents['hero_bg']) && $contents['hero_bg']->image)
                  <div class="absolute inset-0 z-0">
@@ -121,10 +121,10 @@
             <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
                 <div class="fade-in-up visible">
                     <br><br>
-                    <h1 class="text-5xl md:text-7xl lg:text-8xl font-black text-white mb-8 leading-tight tracking-tight">
+                    <h1 class="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 sm:mb-8 leading-tight tracking-tight">
                         {!! $contents['hero_title']->value ?? 'IoT-Based Water Quality <br> <span class="gradient-text">Monitoring System</span>' !!}
                     </h1>
-                    <p class="text-xl md:text-2xl text-blue-100 mb-12 max-w-3xl mx-auto font-medium leading-relaxed opacity-90">
+                    <p class="text-base sm:text-xl md:text-2xl text-blue-100 mb-8 sm:mb-12 max-w-3xl mx-auto font-medium leading-relaxed opacity-90 px-2">
                         {{ $contents['hero_subtitle']->value ?? 'Ensuring a sustainable aquaculture environment through high-precision IoT sensors and real-time data analytics.' }}
                     </p>
                 </div>
@@ -132,14 +132,14 @@
         </section>
 
         <!-- General Caption Section -->
-        <section class="py-24 bg-white overflow-hidden">
+        <section class="py-12 sm:py-24 bg-white overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <div class="max-w-3xl mx-auto fade-in-up">
                     <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-sm font-bold mb-6">
                         {{ $contents['mission_badge']->value ?? 'OUR MISSION' }}
                     </div>
-                    <h2 class="text-4xl font-bold mb-8 tracking-tight" style="color: #0D1A63;">{{ $contents['mission_title']->value ?? 'The Future of Aquaculture Management' }}</h2>
-                    <p class="text-xl text-gray-600 leading-relaxed font-light">
+                    <h2 class="text-2xl sm:text-4xl font-bold mb-6 sm:mb-8 tracking-tight" style="color: #0D1A63;">{{ $contents['mission_title']->value ?? 'The Future of Aquaculture Management' }}</h2>
+                    <p class="text-base sm:text-xl text-gray-600 leading-relaxed font-light">
                         {{ $contents['mission_text']->value ?? 'Our system is designed to provide farmers with a robust, reliable, and user-friendly platform for monitoring vital aquatic conditions. By leveraging the power of IoT, we help eliminate the guesswork, reduce risks, and maximize productivity in aquaculture operations.' }}
                     </p>
                 </div>
@@ -147,16 +147,16 @@
         </section>
 
         <!-- Sensor Features Section -->
-        <section id="features" class="py-24 bg-gray-50 overflow-hidden">
+        <section id="features" class="py-12 sm:py-24 bg-gray-50 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16 fade-in-up">
-                    <h2 class="text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['sensors_title']->value ?? 'Integrated Sensor Technology' }}</h2>
+                    <h2 class="text-2xl sm:text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['sensors_title']->value ?? 'Integrated Sensor Technology' }}</h2>
                     <p class="text-gray-500 text-lg">{{ $contents['sensors_subtitle']->value ?? 'Our system utilizes five high-precision sensors to capture every critical metric.' }}</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-12">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-12">
                     <!-- Sensor 1: pH -->
-                    <div class="sensor-card bg-white p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-8">
+                    <div class="sensor-card bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-4 sm:mb-8">
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-gray-900 group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.691.383a4 4 0 01-2.573.344l-2.387-.477a2 2 0 00-1.022.547l-.736.736a2 2 0 000 2.828l.736.736a2 2 0 001.022.547l2.387.477a6 6 0 003.86-.517l.691-.383a4 4 0 012.573-.344l2.387.477a2 2 0 001.022-.547l.736-.736a2 2 0 000-2.828l-.736-.736z"></path>
@@ -167,7 +167,7 @@
                     </div>
 
                     <!-- Sensor 2: Turbidity -->
-                    <div class="sensor-card bg-white p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-8">
+                    <div class="sensor-card bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-4 sm:mb-8">
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-gray-900 group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -182,7 +182,7 @@
                     </div>
 
                     <!-- Sensor 3: TDS -->
-                    <div class="sensor-card bg-white p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-8">
+                    <div class="sensor-card bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-4 sm:mb-8">
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.691.383a4 4 0 01-2.573.344l-2.387-.477a2 2 0 00-1.022.547l-.736.736a2 2 0 000 2.828l.736.736a2 2 0 001.022.547l2.387.477a6 6 0 003.86-.517l.691-.383a4 4 0 012.573-.344l2.387.477a2 2 0 001.022-.547l.736-.736a2 2 0 000-2.828l-.736-.736z"></path>
@@ -197,7 +197,7 @@
                     </div>
 
                     <!-- Sensor 4: Temperature -->
-                    <div class="sensor-card bg-white p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-8">
+                    <div class="sensor-card bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-4 sm:mb-8">
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19c-1.657 0-3-1.343-3-3V6a3 3 0 116 0v10c0 1.657-1.343 3-3 3z"></path>
@@ -209,7 +209,7 @@
                     </div>
 
                     <!-- Sensor 5: Humidity -->
-                    <div class="sensor-card bg-white p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-8">
+                    <div class="sensor-card bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-4 sm:mb-8">
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a7 7 0 007-7c0-3.866-7-11-7-11s-7 7.134-7 11a7 7 0 007 7z"></path>
@@ -223,33 +223,33 @@
         </section>
 
         <!-- Services Section -->
-        <section id="services" class="py-24 bg-white overflow-hidden">
+        <section id="services" class="py-12 sm:py-24 bg-white overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16 fade-in-up">
-                    <h2 class="text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['services_title']->value ?? 'Our Services' }}</h2>
+                    <h2 class="text-2xl sm:text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['services_title']->value ?? 'Our Services' }}</h2>
                     <p class="text-gray-500 text-lg">{{ $contents['services_subtitle']->value ?? 'We provide end-to-end solutions for aquaculture technology integration.' }}</p>
                 </div>
 
                 <div class="max-w-4xl mx-auto space-y-12 fade-in-up">
-                    <div class="flex gap-8 items-start">
+                    <div class="flex gap-4 sm:gap-8 items-start">
                         <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">{{ $contents['service1_num']->value ?? '01' }}</div>
                         <div>
-                            <h4 class="text-2xl font-bold mb-3 tracking-tight" style="color: #0D1A63;">{{ $contents['service1_title']->value ?? 'Automated Data Collection' }}</h4>
-                            <p class="text-gray-600 leading-relaxed text-lg">{{ $contents['service1_desc']->value ?? 'Continuous background data harvesting from a pond, simultaneously without manual intervention.' }}</p>
+                            <h4 class="text-lg sm:text-2xl font-bold mb-2 sm:mb-3 tracking-tight" style="color: #0D1A63;">{{ $contents['service1_title']->value ?? 'Automated Data Collection' }}</h4>
+                            <p class="text-gray-600 leading-relaxed text-sm sm:text-lg">{{ $contents['service1_desc']->value ?? 'Continuous background data harvesting from a pond, simultaneously without manual intervention.' }}</p>
                         </div>
                     </div>
-                    <div class="flex gap-8 items-start">
+                    <div class="flex gap-4 sm:gap-8 items-start">
                         <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">{{ $contents['service2_num']->value ?? '02' }}</div>
                         <div>
-                            <h4 class="text-2xl font-bold mb-3 tracking-tight" style="color: #0D1A63;">{{ $contents['service2_title']->value ?? 'Smart Alert Notifications' }}</h4>
-                            <p class="text-gray-600 leading-relaxed text-lg">{{ $contents['service2_desc']->value ?? 'Instant Alert notifications when water parameters exceed safe threshold limits for your specific fish species.' }}</p>
+                            <h4 class="text-lg sm:text-2xl font-bold mb-2 sm:mb-3 tracking-tight" style="color: #0D1A63;">{{ $contents['service2_title']->value ?? 'Smart Alert Notifications' }}</h4>
+                            <p class="text-gray-600 leading-relaxed text-sm sm:text-lg">{{ $contents['service2_desc']->value ?? 'Instant Alert notifications when water parameters exceed safe threshold limits for your specific fish species.' }}</p>
                         </div>
                     </div>
-                    <div class="flex gap-8 items-start">
+                    <div class="flex gap-4 sm:gap-8 items-start">
                         <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">{{ $contents['service3_num']->value ?? '03' }}</div>
                         <div>
-                            <h4 class="text-2xl font-bold mb-3 tracking-tight" style="color: #0D1A63;">{{ $contents['service3_title']->value ?? 'AI Condition Analysis' }}</h4>
-                            <p class="text-gray-600 leading-relaxed text-lg">{{ $contents['service3_desc']->value ?? 'Advanced algorithms that analyze patterns to predict water quality health and recommend corrective actions.' }}</p>
+                            <h4 class="text-lg sm:text-2xl font-bold mb-2 sm:mb-3 tracking-tight" style="color: #0D1A63;">{{ $contents['service3_title']->value ?? 'AI Condition Analysis' }}</h4>
+                            <p class="text-gray-600 leading-relaxed text-sm sm:text-lg">{{ $contents['service3_desc']->value ?? 'Advanced algorithms that analyze patterns to predict water quality health and recommend corrective actions.' }}</p>
                         </div>
                     </div>
                 </div>
@@ -257,14 +257,14 @@
         </section>
 
         <!-- About / Team Section -->
-        <section id="about" class="py-24 bg-gray-50 overflow-hidden border-t border-gray-100">
+        <section id="about" class="py-12 sm:py-24 bg-gray-50 overflow-hidden border-t border-gray-100">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16 fade-in-up">
-                    <h2 class="text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['about_title']->value ?? 'Meet the Team' }}</h2>
+                    <h2 class="text-2xl sm:text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['about_title']->value ?? 'Meet the Team' }}</h2>
                     <p class="text-gray-500 text-lg max-w-2xl mx-auto">{{ $contents['about_subtitle']->value ?? 'The dedicated minds behind AquaSense, working together to revolutionize aquaculture monitoring.' }}</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 fade-in-up">
+                <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 fade-in-up">
                     
                     <!-- Team Member 1 -->
                     <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
@@ -351,14 +351,14 @@
         </section>
 
         <!-- Contact Us Section -->
-        <section id="contact" class="py-24 bg-white overflow-hidden">
+        <section id="contact" class="py-12 sm:py-24 bg-white overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-20 fade-in-up">
-                    <h2 class="text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['contact_title']->value ?? 'Contact Us' }}</h2>
+                    <h2 class="text-2xl sm:text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['contact_title']->value ?? 'Contact Us' }}</h2>
                     <p class="text-gray-500 text-lg">{{ $contents['contact_subtitle']->value ?? 'Have questions? We\'re here to help you optimize your aquaculture operations.' }}</p>
                 </div>
 
-                <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center fade-in-up">
+                <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-12 text-center fade-in-up">
                     <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm group hover:-translate-y-2 transition-all duration-300">
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
