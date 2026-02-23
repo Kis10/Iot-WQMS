@@ -136,7 +136,7 @@
         @endauth
 
         <audio id="globalAiSound" src="{{ asset('sounds/ai.mp3') }}" preload="auto"></audio>
-        <audio id="globalAlertSound" src="{{ asset('sounds/alert.mp3') }}" preload="auto"></audio>
+        <audio id="globalAlertSound" src="{{ asset('sounds/error.mp3') }}" preload="auto"></audio>
         <script>
             (function() {
                 // Global Audio Elements
