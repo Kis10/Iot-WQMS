@@ -108,7 +108,7 @@
                                         <span>Turbidity: {{ $analysis->waterReading->turbidity }} NTU</span>
                                         <span>TDS: {{ $analysis->waterReading->tds }} mg/L</span>
                                         <span>pH: {{ $analysis->waterReading->ph }}</span>
-                                        <span>Temp: {{ $analysis->waterReading->temperature }}°C</span>
+                                        <span>Water Temp: {{ $analysis->waterReading->temperature }}°C</span>
                                     </div>
                                 </div>
                                 

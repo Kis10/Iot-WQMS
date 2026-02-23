@@ -151,10 +151,10 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16 fade-in-up">
                     <h2 class="text-2xl sm:text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['sensors_title']->value ?? 'Integrated Sensor Technology' }}</h2>
-                    <p class="text-gray-500 text-lg">{{ $contents['sensors_subtitle']->value ?? 'Our system utilizes five high-precision sensors to capture every critical metric.' }}</p>
+                    <p class="text-gray-500 text-lg">{{ $contents['sensors_subtitle']->value ?? 'Our system utilizes four high-precision sensors to capture every critical metric.' }}</p>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-12">
+                <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-12">
                     <!-- Sensor 1: pH -->
                     <div class="sensor-card bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-4 sm:mb-8">
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-gray-900 group-hover:text-white transition-all duration-300 shadow-sm">
@@ -206,17 +206,6 @@
                         </div>
                         <h3 class="text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['sensor4_title']->value ?? 'Temperature' }}</h3>
                         <p class="text-gray-600 text-sm leading-relaxed">{{ $contents['sensor4_desc']->value ?? 'Tracks water temperature to prevent thermal stress and maintain optimal growth rates for fish.' }}</p>
-                    </div>
-
-                    <!-- Sensor 5: Humidity -->
-                    <div class="sensor-card bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-4 sm:mb-8">
-                        <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300 shadow-sm">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a7 7 0 007-7c0-3.866-7-11-7-11s-7 7.134-7 11a7 7 0 007 7z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['sensor5_title']->value ?? 'Humidity' }}</h3>
-                        <p class="text-gray-600 text-sm leading-relaxed">{{ $contents['sensor5_desc']->value ?? 'Monitors air moisture levels around the pond, affecting evaporation and equipment safety.' }}</p>
                     </div>
                 </div>
             </div>

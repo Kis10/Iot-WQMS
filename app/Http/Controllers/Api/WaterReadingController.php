@@ -32,7 +32,6 @@ class WaterReadingController extends Controller
             'tds' => ['required', 'numeric'],
             'ph' => ['required', 'numeric'],
             'temperature' => ['nullable', 'numeric'],
-            'humidity' => ['required', 'numeric'],
             'no_water_detected' => ['nullable', 'boolean'],
         ]);
 
@@ -54,7 +53,6 @@ class WaterReadingController extends Controller
             'tds' => $validated['tds'],
             'ph' => $validated['ph'],
             'temperature' => $validated['temperature'] ?? null,
-            'humidity' => $validated['humidity'] ?? null,
             'no_water_detected' => $validated['no_water_detected'] ?? false,
         ];
 
@@ -90,7 +88,6 @@ class WaterReadingController extends Controller
                     'tds' => (float) $reading->tds,
                     'ph' => (float) $reading->ph,
                     'temperature' => (float) $reading->temperature,
-                    'humidity' => (float) $reading->humidity,
                     'created_at' => $reading->created_at?->toIso8601String(),
                 ]);
 

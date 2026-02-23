@@ -22,12 +22,8 @@
             <input type="text" name="tds" value="500">
         </div>
         <div>
-            <label>Temperature:</label>
+            <label>Water Temp:</label>
             <input type="text" name="temperature" value="25.0">
-        </div>
-        <div>
-            <label>Humidity:</label>
-            <input type="text" name="humidity" value="50.0">
         </div>
         <button type="submit">Send Reading</button>
     </form>

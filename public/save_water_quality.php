@@ -14,13 +14,12 @@ if ($conn->connect_error) {
 $device_id = isset($_POST['device_id']) ? $_POST['device_id'] : 'Unknown';
 $turbidity = isset($_POST['turbidity']) ? floatval($_POST['turbidity']) : 0;
 $tds = isset($_POST['tds']) ? floatval($_POST['tds']) : 0;
-$ph = isset($_POST['ph']) ? floatval($_POST['ph']) : (isset($_POST['ph']) ? floatval($_POST['ph']) : 0);
+$ph = isset($_POST['ph']) ? floatval($_POST['ph']) : 0;
 $temperature = isset($_POST['temperature']) ? floatval($_POST['temperature']) : 0;
-$humidity = isset($_POST['humidity']) ? floatval($_POST['humidity']) : 0;
 
 // Insert data into database
-$sql = "INSERT INTO water_readings (device_id, turbidity, tds, ph, temperature, humidity, created_at, updated_at) 
-        VALUES ('$device_id', $turbidity, $tds, $ph, $temperature, $humidity, NOW(), NOW())";
+$sql = "INSERT INTO water_readings (device_id, turbidity, tds, ph, temperature, created_at, updated_at) 
+        VALUES ('$device_id', $turbidity, $tds, $ph, $temperature, NOW(), NOW())";
 
 if ($conn->query($sql) === TRUE) {
     http_response_code(200);
@@ -32,8 +31,7 @@ if ($conn->query($sql) === TRUE) {
             'turbidity' => $turbidity,
             'tds' => $tds,
             'ph' => $ph,
-            'temperature' => $temperature,
-            'humidity' => $humidity
+            'temperature' => $temperature
         ]
     ]);
 } else {

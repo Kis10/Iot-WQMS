@@ -45,7 +45,7 @@ class WaterQualityController extends Controller
         $query = WaterReading::query();
 
         // sort_by (sensor) and order
-        if ($request->has('sort_by') && in_array($request->sort_by, ['ph', 'turbidity', 'tds', 'temperature', 'humidity', 'created_at'])) {
+        if ($request->has('sort_by') && in_array($request->sort_by, ['ph', 'turbidity', 'tds', 'temperature', 'created_at'])) {
             $order = $request->get('order', 'desc');
             $query->orderBy($request->sort_by, $order);
         } else {
@@ -77,7 +77,7 @@ class WaterQualityController extends Controller
         });
 
         // Sorting
-        if ($request->has('sort_by') && in_array($request->sort_by, ['ph', 'turbidity', 'tds', 'temperature', 'humidity', 'created_at'])) {
+        if ($request->has('sort_by') && in_array($request->sort_by, ['ph', 'turbidity', 'tds', 'temperature', 'created_at'])) {
             $order = $request->get('order', 'desc');
             $query->orderBy($request->sort_by, $order);
         } else {
@@ -98,7 +98,6 @@ class WaterQualityController extends Controller
             'tds'         => 'required|numeric',
             'ph'          => 'required|numeric',
             'temperature' => 'required|numeric',
-            'humidity'    => 'required|numeric',
         ]);
 
         Device::firstOrCreate(
@@ -121,7 +120,6 @@ class WaterQualityController extends Controller
                     'tds' => (float) $reading->tds,
                     'ph' => (float) $reading->ph,
                     'temperature' => (float) $reading->temperature,
-                    'humidity' => (float) $reading->humidity,
                     'created_at' => $reading->created_at?->toIso8601String(),
                 ]);
             } catch (\Throwable $e) {

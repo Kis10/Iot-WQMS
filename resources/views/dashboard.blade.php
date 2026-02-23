@@ -2,7 +2,7 @@
     <div class="py-12">
         <div id="dashboardContainer" class="max-w-none mx-auto px-4 sm:px-6 lg:px-8 relative">
             <!-- Measurement Cards Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Turbidity Card -->
                 <div class="bg-white rounded-lg shadow p-3 hover:shadow-lg transition duration-200 w-full min-w-0">
                     <h3 class="text-gray-700 text-[11px] font-semibold mb-2">Turbidity</h3>
@@ -65,7 +65,7 @@
 
                 <!-- Temperature Card -->
                 <div class="bg-white rounded-lg shadow p-3 hover:shadow-lg transition duration-200 w-full min-w-0">
-                    <h3 class="text-gray-700 text-[11px] font-semibold mb-2">Temperature</h3>
+                    <h3 class="text-gray-700 text-[11px] font-semibold mb-2">Water Temp</h3>
                     <div class="flex justify-center">
                         <svg class="w-24 h-24" viewBox="0 0 120 120">
                             <!-- Background Circle -->
@@ -82,26 +82,7 @@
                     </div>
                     <p class="text-center text-gray-500 text-[11px] mt-2">°C</p>
                 </div>
-
-                <!-- Humidity Card -->
-                <div class="bg-white rounded-lg shadow p-3 hover:shadow-lg transition duration-200 w-full min-w-0">
-                    <h3 class="text-gray-700 text-[11px] font-semibold mb-2">Humidity</h3>
-                    <div class="flex justify-center">
-                        <svg class="w-24 h-24" viewBox="0 0 120 120">
-                            <!-- Background Circle -->
-                            <circle cx="60" cy="60" r="50" fill="none" stroke="#e5e7eb" stroke-width="8"/>
-                            <!-- Progress Circle -->
-                            <circle id="gauge-humid-circle" cx="60" cy="60" r="50" fill="none" stroke="#0ea5e9" stroke-width="8" 
-                                stroke-dasharray="{{ (($latest?->humidity ?? 0) / 100) * 314.1 }}, 314.1" stroke-dashoffset="0" stroke-linecap="round"
-                                transform="rotate(-90 60 60)"/>
-                            <!-- Center Value -->
-                            <text id="gauge-humid-text" x="60" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#374151">
-                                {{ round($latest?->humidity ?? 0, 1) }}
-                            </text>
-                        </svg>
-                    </div>
-                    <p class="text-center text-gray-500 text-[11px] mt-2">%</p>
-                </div>            </div>
+            </div>
 
             <!-- Spacing Divider -->
             <div class="my-8"></div>
@@ -242,8 +223,7 @@
                 turbidity: [],
                 tds: [],
                 ph: [],
-                temp: [],
-                humid: []
+                temp: []
             };
 
             // ONLY load backend data if dashboard is NOT cleared
@@ -261,8 +241,7 @@
                     turbidity: backendData.map(r => r.turbidity || 0),
                     tds: backendData.map(r => r.tds || 0),
                     ph: backendData.map(r => r.ph || 0),
-                    temp: backendData.map(r => r.temperature || 0),
-                    humid: backendData.map(r => r.humidity || 0)
+                    temp: backendData.map(r => r.temperature || 0)
                 };
 
                 // Check LocalStorage for "Continued" real-time session
@@ -274,7 +253,6 @@
                     initialData.tds = savedState.datasetsData[1] || [];
                     initialData.ph = savedState.datasetsData[2] || [];
                     initialData.temp = savedState.datasetsData[3] || [];
-                    initialData.humid = savedState.datasetsData[4] || [];
                 }
             } else {
                 console.log('Dashboard is in CLEARED state. Waiting for new data.');
@@ -328,7 +306,7 @@
                             pointHoverRadius: 6
                         },
                         {
-                            label: 'Temperature (Â°C)',
+                            label: 'Water Temp (°C)',
                             data: initialData.temp,
                             borderColor: '#f59e0b',
                             backgroundColor: 'rgba(245, 158, 11, 0.05)',
@@ -340,22 +318,7 @@
                             pointBorderColor: '#fff',
                             pointBorderWidth: 2,
                             pointHoverRadius: 6
-                        },
-                        {
-                            label: 'Humidity (%)',
-                            data: initialData.humid,
-                            borderColor: '#0ea5e9',
-                            backgroundColor: 'rgba(14, 165, 233, 0.05)',
-                            borderWidth: 2,
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#0ea5e9',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2,
-                            pointHoverRadius: 6
-                        }
-                    ]
+                        ]
                 },
                 options: {
                     responsive: true,
@@ -435,7 +398,6 @@
                 chart.data.datasets[1].data.push(reading.tds || 0);
                 chart.data.datasets[2].data.push(reading.ph || 0);
                 chart.data.datasets[3].data.push(reading.temperature || 0);
-                chart.data.datasets[4].data.push(reading.humidity || 0);
 
                 // Limit points if too many (optional, keeping 50 for performance)
                 if (chart.data.labels.length > 20) {
@@ -481,9 +443,6 @@
 
                 updateCircle('gauge-temp-circle', reading.temperature || 0, 50);
                 updateText('gauge-temp-text', reading.temperature || 0);
-
-                updateCircle('gauge-humid-circle', reading.humidity || 0, 100);
-                updateText('gauge-humid-text', reading.humidity || 0);
             }
 
             // Restore Gauges on Load
@@ -501,8 +460,7 @@
                     turbidity: 0,
                     tds: 0,
                     ph: 0,
-                    temperature: 0,
-                    humidity: 0
+                    temperature: 0
                 });
             }
 
@@ -558,8 +516,7 @@
                     turbidity: 0,
                     tds: 0,
                     ph: 0,
-                    temperature: 0,
-                    humidity: 0
+                    temperature: 0
                 };
                 // Pass false to avoid saving zero-reading to storage immediately
                 // Actually updateGauges saves to storage. We should manually clear storage AFTER calling it.

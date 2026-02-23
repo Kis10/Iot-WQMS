@@ -1,5 +1,6 @@
 /************ LIBRARIES ************/
-#include <DHT.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
@@ -25,35 +26,25 @@ const int pHPin        = 34; // Analog Input
 const int tdsPin       = 35; // Analog Input
 const int turbidityPin = 32; // Analog Input
 const int buzzerPin    = 25; // Digital Output
-const int dhtPin       = 4;  // Digital I/O
+const int ds18b20Pin   = 15; // DS18B20 Water Temperature Sensor
 const int powerLedPin  = 27; // Digital Output (PN2222A 6E)
 const int wifiLedPin   = 13; // Digital Output
 
-// ★★★ NEW: TDS POWER CONTROL (GPIO 26) ★★★
+// TDS POWER CONTROL (GPIO 26)
 const int tdsPowerPin  = 26; 
 
-// ★★★ NEW: TURBIDITY POWER CONTROL (GPIO 14) ★★★
+// TURBIDITY POWER CONTROL (GPIO 14)
 const int turbidityPowerPin = 14; 
 
-/************ DHT22 SETUP ************/
-#define DHTTYPE DHT22
-DHT dht(dhtPin, DHTTYPE);
+/************ DS18B20 WATER TEMPERATURE SETUP ************/
+OneWire oneWire(ds18b20Pin);
+DallasTemperature waterTempSensor(&oneWire);
 
 /************ SENSOR VARIABLES ************/
 float slope = -7.575;
 float offset = 25.34;
 float tdsFactor = 0.5;
 const int numSamples = 10;
-const int turbiditySmooth = 5;
-int turbidityHistory[turbiditySmooth];
-float temperature = 25.0;
-float humidity = 50.0;
-
-/************ TIMING VARIABLES ************/
-unsigned long lastWiFiCheck = 0;
-const unsigned long wifiCheckInterval = 30000;
-unsigned long lastDataSend = 0;
-const unsigned long dataSendInterval = 5000;
 
 /************ NON-BLOCKING SOUND SYSTEM ************/
 unsigned long soundStartTime = 0;
@@ -221,8 +212,8 @@ void setup() {
   // 🎵 SYSTEM READY SOUND
   startSound(SOUND_READY);
   
-  // Sensors Init
-  dht.begin();
+  // DS18B20 Water Temperature Sensor Init
+  waterTempSensor.begin();
   delay(1000);
   analogReadResolution(12);
 
@@ -272,9 +263,8 @@ void loop() {
           lcd.setCursor(0,3);
           lcd.printf("Countdown: %ds    ", remainingSeconds);
           
-          // Background read DHT for warmup (optional)
-          dht.readHumidity();
-          dht.readTemperature();
+          // Background read DS18B20 for warmup
+          waterTempSensor.requestTemperatures();
           
           delay(100);
       } else {
@@ -378,12 +368,15 @@ void performSingleReadingAndSend() {
     digitalWrite(turbidityPowerPin, LOW);
     delay(500);
     
-    // Read DHT
-    float h = dht.readHumidity();
-    float t = dht.readTemperature();
-    if (isnan(h) || isnan(t)) { h = 50.0; t = 25.0; } // Fallback
+    // --- STEP 2: READ WATER TEMPERATURE (DS18B20) ---
+    waterTempSensor.requestTemperatures();
+    float waterTemp = waterTempSensor.getTempCByIndex(0);
+    if (waterTemp == DEVICE_DISCONNECTED_C || waterTemp < -50.0) {
+      waterTemp = 25.0; // Fallback if sensor error
+      Serial.println("[DS18B20] Sensor error, using fallback 25.0C");
+    }
 
-    // --- STEP 2: READ pH ---
+    // --- STEP 3: READ pH ---
     long pHAvg = 0;
     for(int i = 0; i < 20; i++) { 
       pHAvg += analogRead(pHPin); 
@@ -392,7 +385,7 @@ void performSingleReadingAndSend() {
     float pHVoltage = (pHAvg / 20.0) * (3.3 / 4095.0);
     float pHVal = slope * pHVoltage + offset;
     
-    // --- STEP 3: READ TURBIDITY ---
+    // --- STEP 4: READ TURBIDITY ---
     digitalWrite(turbidityPowerPin, HIGH);
     delay(1000); // Warmup
     long turbSum = 0;
@@ -405,7 +398,7 @@ void performSingleReadingAndSend() {
     int clarity = map(turbRaw, 0, 2100, 0, 100); 
     clarity = constrain(clarity, 0, 100);
 
-    // --- STEP 4: READ TDS ---
+    // --- STEP 5: READ TDS ---
     digitalWrite(tdsPowerPin, HIGH);
     delay(1000); // Warmup
     long tdsAvg = 0;
@@ -416,17 +409,14 @@ void performSingleReadingAndSend() {
     digitalWrite(tdsPowerPin, LOW);
     float tdsVolt = (tdsAvg / 20.0) * (3.3 / 4095.0);
     
-    // Calculate TDS
-    float compCoeff = 1.0 + 0.02 * (t - 25.0);
+    // Calculate TDS with actual water temperature compensation
+    float compCoeff = 1.0 + 0.02 * (waterTemp - 25.0);
     float compVolt = tdsVolt / compCoeff;
     float tdsVal = (133.42 * pow(compVolt, 3) - 255.86 * pow(compVolt, 2) + 857.39 * compVolt) * tdsFactor;
 
     // --- SEND DATA ---
-    sendToRailway(pHVal, clarity, tdsVal, t, h); // This plays 'Data Sent' tone (one beep)
+    sendToRailway(pHVal, clarity, tdsVal, waterTemp);
 
-    // Wait for the 'Data Sent' sound to finish inside sendToRailway if blocking, or play custom sound here
-    // Requirement: "buzzer will beep 4 times in 2s saying 'data sent!'"
-    
     lcd.clear();
     lcd.setCursor(0,1);
     lcd.print("    DATA SENT!    ");
@@ -444,7 +434,7 @@ void performSingleReadingAndSend() {
     // --- FREEZE RESULT ON LCD ---
     lcd.clear();
     lcd.setCursor(0,0);
-    lcd.printf("T:%.1f H:%d%%", t, (int)h);
+    lcd.printf("WaterTemp:%.1fC", waterTemp);
     lcd.setCursor(0,1);
     lcd.printf("pH:%.2f", pHVal);
     lcd.setCursor(9,1);
@@ -457,7 +447,7 @@ void performSingleReadingAndSend() {
 
 
 /************ SEND DATA ************/
-void sendToRailway(float pH, int turbidity, float tds, float temp, float humid) {
+void sendToRailway(float pH, int turbidity, float tds, float waterTemp) {
   WiFiClientSecure client;
   client.setInsecure();
   HTTPClient http;
@@ -475,8 +465,7 @@ void sendToRailway(float pH, int turbidity, float tds, float temp, float humid) 
     jsonPayload += "\"turbidity\":" + String(turbidity) + ",";
     jsonPayload += "\"tds\":" + String(tds, 1) + ",";
     jsonPayload += "\"ph\":" + String(pH, 2) + ",";
-    jsonPayload += "\"temperature\":" + String(temp, 1) + ",";
-    jsonPayload += "\"humidity\":" + String(humid, 1) + ",";
+    jsonPayload += "\"temperature\":" + String(waterTemp, 1) + ",";
     jsonPayload += "\"no_water_detected\": false";
     jsonPayload += "}";
     

@@ -18,7 +18,6 @@ class WaterReading extends Model
         'tds',
         'ph',
         'temperature',
-        'humidity',
         'no_water_detected',
     ];
 
@@ -27,7 +26,6 @@ class WaterReading extends Model
         'tds' => 'decimal:2',
         'ph' => 'decimal:2',
         'temperature' => 'decimal:2',
-        'humidity' => 'decimal:2',
         'no_water_detected' => 'boolean',
     ];
 

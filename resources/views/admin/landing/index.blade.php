@@ -217,7 +217,7 @@
                 </div>
 
                 <!-- Sensor Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-12">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
                     <!-- pH -->
                     <div class="sensor-card bg-white p-8 rounded-2xl border border-gray-100 transition-all duration-300 group mb-8">
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300 shadow-sm">
@@ -260,17 +260,6 @@
                             class="editable-hover text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;" x-html="data.sensor4_title.value" :style="data.sensor4_title.style || ''"></h3>
                         <p @click="makeEditable($event)" @blur="stopEditing($event, 'sensor4_desc')"
                            class="editable-hover text-gray-600 text-sm leading-relaxed" x-html="data.sensor4_desc.value" :style="data.sensor4_desc.style || ''"></p>
-                    </div>
-
-                    <!-- Humidity -->
-                    <div class="sensor-card bg-white p-8 rounded-2xl border border-gray-100 transition-all duration-300 group mb-8">
-                        <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300 shadow-sm">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21a7 7 0 007-7c0-3.866-7-11-7-11s-7 7.134-7 11a7 7 0 007 7z"></path></svg>
-                        </div>
-                        <h3 @click="makeEditable($event)" @blur="stopEditing($event, 'sensor5_title')"
-                            class="editable-hover text-xl font-bold mb-4 tracking-tight" style="color: #0D1A63;" x-html="data.sensor5_title.value" :style="data.sensor5_title.style || ''"></h3>
-                        <p @click="makeEditable($event)" @blur="stopEditing($event, 'sensor5_desc')"
-                           class="editable-hover text-gray-600 text-sm leading-relaxed" x-html="data.sensor5_desc.value" :style="data.sensor5_desc.style || ''"></p>
                     </div>
                 </div>
             </div>
@@ -617,7 +606,7 @@
                 mission_text: { value: "Our system is designed to provide farmers with a robust, reliable, and user-friendly platform for monitoring vital aquatic conditions. By leveraging the power of IoT, we help eliminate the guesswork, reduce risks, and maximize productivity in aquaculture operations." },
 
                 sensors_title: { value: "Integrated Sensor Technology" },
-                sensors_subtitle: { value: "Our system utilizes five high-precision sensors to capture every critical metric." },
+                sensors_subtitle: { value: "Our system utilizes four high-precision sensors to capture every critical metric." },
 
                 sensor1_title: { value: "pH Sensor" },
                 sensor1_desc: { value: "Measures the acidity or alkalinity of the water to ensure a healthy environment for aquatic life." },
@@ -627,8 +616,6 @@
                 sensor3_desc: { value: "Monitors the concentration of dissolved substances, indicating the overall purity of the water." },
                 sensor4_title: { value: "Temperature" },
                 sensor4_desc: { value: "Tracks water temperature to prevent thermal stress and maintain optimal growth rates for fish." },
-                sensor5_title: { value: "Humidity" },
-                sensor5_desc: { value: "Monitors air moisture levels around the pond, affecting evaporation and equipment safety." },
 
                 services_title: { value: "Our Services" },
                 services_subtitle: { value: "We provide end-to-end solutions for aquaculture technology integration." },

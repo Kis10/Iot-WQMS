@@ -55,10 +55,10 @@
                                     
                                     if ($alert->temperature < 15 || $alert->temperature > 32) {
                                         if ($alert->temperature > 32) {
-                                            $alertTypes[] = ['param' => 'Temperature', 'value' => $alert->temperature . '°C', 'status' => 'Dangerous', 'effect' => 'Can cause mortality quickly', 'severity' => 'critical'];
+                                            $alertTypes[] = ['param' => 'Water Temp', 'value' => $alert->temperature . '°C', 'status' => 'Dangerous', 'effect' => 'Can cause mortality quickly', 'severity' => 'critical'];
                                             $severityLevel = 'critical';
                                         } elseif ($alert->temperature < 15) {
-                                            $alertTypes[] = ['param' => 'Temperature', 'value' => $alert->temperature . '°C', 'status' => 'Cold', 'effect' => 'Metabolism slows, feeding decreases', 'severity' => 'warning'];
+                                            $alertTypes[] = ['param' => 'Water Temp', 'value' => $alert->temperature . '°C', 'status' => 'Cold', 'effect' => 'Metabolism slows, feeding decreases', 'severity' => 'warning'];
                                         }
                                     }
                                 @endphp
