@@ -363,12 +363,11 @@ void connectToWiFiWithUI() {
 }
 
 void performSingleReadingAndSend() {
-    // --- STEP 1: DUAL-WIRE ISOLATION (Software Trick) ---
-    // Setting to INPUT effectively "unplugs" the pin to prevent ground leakage
-    pinMode(tdsPowerPin, INPUT); 
-    pinMode(turbidityPowerPin, INPUT);
+    // --- STEP 1: FORCE TDS & TURBIDITY OFF NOISE ---
+    digitalWrite(tdsPowerPin, LOW); 
+    digitalWrite(turbidityPowerPin, LOW);
     
-    // Maximum silence for conductive tap water
+    // Silence for conductive tap water stability
     delay(2500); 
     
     // --- STEP 2: READ WATER TEMPERATURE (DS18B20) ---
