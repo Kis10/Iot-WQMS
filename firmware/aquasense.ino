@@ -363,12 +363,10 @@ void connectToWiFiWithUI() {
 }
 
 void performSingleReadingAndSend() {
-    // --- STEP 1: FORCE TDS & TURBIDITY OFF NOISE ---
+    // --- STEP 1: FORCE NOISE SOURCES OFF ---
     digitalWrite(tdsPowerPin, LOW); 
     digitalWrite(turbidityPowerPin, LOW);
-    
-    // Silence for conductive tap water stability
-    delay(2500); 
+    delay(1000); // 1s silence
     
     // --- STEP 2: READ WATER TEMPERATURE (DS18B20) ---
     waterTempSensor.requestTemperatures();
@@ -379,22 +377,15 @@ void performSingleReadingAndSend() {
     }
 
     // --- STEP 3: READ pH ---
-    // Clear the ADC buffer and let the sensor settle
-    for(int i = 0; i < 10; i++) { 
-        analogRead(pHPin); 
-        delay(20); 
-    }
-    
     long pHAvg = 0;
-    for(int i = 0; i < 30; i++) { 
+    for(int i = 0; i < 20; i++) { 
       pHAvg += analogRead(pHPin); 
-      delay(20); 
+      delay(10); 
     }
-    float pHVoltage = (pHAvg / 30.0) * (3.3 / 4095.0);
+    float pHVoltage = (pHAvg / 20.0) * (3.3 / 4095.0);
     float pHVal = slope * pHVoltage + offset;
     
     // --- STEP 4: READ TURBIDITY ---
-    pinMode(turbidityPowerPin, OUTPUT);
     digitalWrite(turbidityPowerPin, HIGH);
     delay(1000); // Warmup
     long turbSum = 0;
@@ -408,7 +399,6 @@ void performSingleReadingAndSend() {
     clarity = constrain(clarity, 0, 100);
 
     // --- STEP 5: READ TDS ---
-    pinMode(tdsPowerPin, OUTPUT);
     digitalWrite(tdsPowerPin, HIGH);
     delay(1000); // Warmup
     long tdsAvg = 0;
