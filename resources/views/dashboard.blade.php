@@ -318,7 +318,7 @@
                             pointBorderColor: '#fff',
                             pointBorderWidth: 2,
                             pointHoverRadius: 6
-                        ]
+                        }]
                 },
                 options: {
                     responsive: true,
