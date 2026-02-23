@@ -7,6 +7,7 @@ use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\AblyController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\GeminiController;
 
 Route::get('/', function () {
@@ -31,6 +32,14 @@ Route::post('/logo-access', function () {
     session(['login_unlocked' => true]);
     return response()->json(['success' => true]);
 })->name('logo.access');
+
+// GET logout fallback (mobile browsers sometimes follow href as GET instead of POST form submit)
+Route::get('/logout', function () {
+    Auth::guard('web')->logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+    return redirect()->route('welcome');
+})->middleware('auth')->name('logout.get');
 
 Route::middleware(['auth'])->group(function () {
     // Landing Page CMS (Accessible by all authenticated users)
