@@ -386,28 +386,39 @@ void performSingleReadingAndSend() {
     float pHVal = slope * pHVoltage + offset;
     
     // --- STEP 4: READ TURBIDITY ---
+    pinMode(turbidityPowerPin, OUTPUT);
     digitalWrite(turbidityPowerPin, HIGH);
-    delay(1000); // Warmup
+    delay(2000); // Increased warmup for stability
+    
     long turbSum = 0;
-    for(int i = 0; i < 10; i++) { 
+    for(int i = 0; i < 15; i++) { 
       turbSum += analogRead(turbidityPin); 
-      delay(10); 
+      delay(20); 
     }
     digitalWrite(turbidityPowerPin, LOW);
-    int turbRaw = turbSum / 10;
+    
+    int turbRaw = turbSum / 15;
+    Serial.print("DEBUG: Turbidity Raw ADC = "); Serial.println(turbRaw);
+    
+    // Map Raw to Clarity: 100% is 2100 (or higher)
     int clarity = map(turbRaw, 0, 2100, 0, 100); 
     clarity = constrain(clarity, 0, 100);
 
     // --- STEP 5: READ TDS ---
+    pinMode(tdsPowerPin, OUTPUT);
     digitalWrite(tdsPowerPin, HIGH);
-    delay(1000); // Warmup
-    long tdsAvg = 0;
-    for(int i = 0; i < 20; i++) { 
-      tdsAvg += analogRead(tdsPin); 
+    delay(1500); // Longer warmup for TDS
+    
+    long tdsSum = 0;
+    for(int i = 0; i < 30; i++) { 
+      tdsSum += analogRead(tdsPin); 
       delay(10); 
     }
     digitalWrite(tdsPowerPin, LOW);
-    float tdsVolt = (tdsAvg / 20.0) * (3.3 / 4095.0);
+    
+    float tdsRawAvg = tdsSum / 30.0;
+    Serial.print("DEBUG: TDS Raw ADC = "); Serial.println(tdsRawAvg);
+    float tdsVolt = tdsRawAvg * (3.3 / 4095.0);
     
     // Calculate TDS with actual water temperature compensation
     float compCoeff = 1.0 + 0.02 * (waterTemp - 25.0);
