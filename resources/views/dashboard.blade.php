@@ -2,85 +2,85 @@
     <div class="py-12">
         <div id="dashboardContainer" class="max-w-none mx-auto px-4 sm:px-6 lg:px-8 relative">
             <!-- Measurement Cards Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <!-- Turbidity Card -->
-                <div class="bg-white rounded-lg shadow p-3 hover:shadow-lg transition duration-200 w-full min-w-0">
-                    <h3 class="text-gray-700 text-[11px] font-semibold mb-2">Turbidity</h3>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
+                    <h3 class="text-gray-500 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-3">Turbidity</h3>
                     <div class="flex justify-center">
-                        <svg class="w-24 h-24" viewBox="0 0 120 120">
+                        <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
-                            <circle cx="60" cy="60" r="50" fill="none" stroke="#e5e7eb" stroke-width="8"/>
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#f3f4f6" stroke-width="8"/>
                             <!-- Progress Circle -->
                             <circle id="gauge-turbidity-circle" cx="60" cy="60" r="50" fill="none" stroke="#4f46e5" stroke-width="8" 
                                 stroke-dasharray="{{ ($latest?->turbidity ?? 0) / 100 * 314.1 }}, 314.1" stroke-dashoffset="0" stroke-linecap="round"
                                 transform="rotate(-90 60 60)"/>
                             <!-- Center Value -->
-                            <text id="gauge-turbidity-text" x="60" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#374151">
+                            <text id="gauge-turbidity-text" x="60" y="65" text-anchor="middle" font-size="16" font-weight="bold" fill="#111827">
                                 {{ round($latest?->turbidity ?? 0, 1) }}
                             </text>
                         </svg>
                     </div>
-                    <p class="text-center text-gray-500 text-[11px] mt-2">%</p>
+                    <p class="text-center text-gray-400 text-[10px] sm:text-[11px] mt-2 font-medium">%</p>
                 </div>
 
                 <!-- TDS Card -->
-                <div class="bg-white rounded-lg shadow p-3 hover:shadow-lg transition duration-200 w-full min-w-0">
-                    <h3 class="text-gray-700 text-[11px] font-semibold mb-2">TDS</h3>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
+                    <h3 class="text-gray-500 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-3">TDS</h3>
                     <div class="flex justify-center">
-                        <svg class="w-24 h-24" viewBox="0 0 120 120">
+                        <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
-                            <circle cx="60" cy="60" r="50" fill="none" stroke="#e5e7eb" stroke-width="8"/>
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#f3f4f6" stroke-width="8"/>
                             <!-- Progress Circle -->
-                            <circle id="gauge-tds-circle" cx="60" cy="60" r="50" fill="none" stroke="#4f46e5" stroke-width="8" 
+                            <circle id="gauge-tds-circle" cx="60" cy="60" r="50" fill="none" stroke="#8b5cf6" stroke-width="8" 
                                 stroke-dasharray="{{ ($latest?->tds ?? 0) / 1000 * 314.1 }}, 314.1" stroke-dashoffset="0" stroke-linecap="round"
                                 transform="rotate(-90 60 60)"/>
                             <!-- Center Value -->
-                            <text id="gauge-tds-text" x="60" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#374151">
+                            <text id="gauge-tds-text" x="60" y="65" text-anchor="middle" font-size="16" font-weight="bold" fill="#111827">
                                 {{ round($latest?->tds ?? 0, 1) }}
                             </text>
                         </svg>
                     </div>
-                    <p class="text-center text-gray-500 text-[11px] mt-2">mg/L</p>
+                    <p class="text-center text-gray-400 text-[10px] sm:text-[11px] mt-2 font-medium">mg/L</p>
                 </div>
 
                 <!-- pH Level Card -->
-                <div class="bg-white rounded-lg shadow p-3 hover:shadow-lg transition duration-200 w-full min-w-0">
-                    <h3 class="text-gray-700 text-[11px] font-semibold mb-2">pH Level</h3>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
+                    <h3 class="text-gray-500 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-3">pH Level</h3>
                     <div class="flex justify-center">
-                        <svg class="w-24 h-24" viewBox="0 0 120 120">
+                        <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
-                            <circle cx="60" cy="60" r="50" fill="none" stroke="#e5e7eb" stroke-width="8"/>
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#f3f4f6" stroke-width="8"/>
                             <!-- Progress Circle -->
-                            <circle id="gauge-ph-circle" cx="60" cy="60" r="50" fill="none" stroke="#4f46e5" stroke-width="8" 
+                            <circle id="gauge-ph-circle" cx="60" cy="60" r="50" fill="none" stroke="#10b981" stroke-width="8" 
                                 stroke-dasharray="{{ (($latest?->ph ?? 0) / 14) * 314.1 }}, 314.1" stroke-dashoffset="0" stroke-linecap="round"
                                 transform="rotate(-90 60 60)"/>
                             <!-- Center Value -->
-                            <text id="gauge-ph-text" x="60" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#374151">
+                            <text id="gauge-ph-text" x="60" y="65" text-anchor="middle" font-size="16" font-weight="bold" fill="#111827">
                                 {{ round($latest?->ph ?? 0, 1) }}
                             </text>
                         </svg>
                     </div>
-                    <p class="text-center text-gray-500 text-[11px] mt-2">pH</p>
+                    <p class="text-center text-gray-400 text-[10px] sm:text-[11px] mt-2 font-medium">pH</p>
                 </div>
 
                 <!-- Temperature Card -->
-                <div class="bg-white rounded-lg shadow p-3 hover:shadow-lg transition duration-200 w-full min-w-0">
-                    <h3 class="text-gray-700 text-[11px] font-semibold mb-2">Water Temp</h3>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
+                    <h3 class="text-gray-500 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-3">Water Temp</h3>
                     <div class="flex justify-center">
-                        <svg class="w-24 h-24" viewBox="0 0 120 120">
+                        <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
-                            <circle cx="60" cy="60" r="50" fill="none" stroke="#e5e7eb" stroke-width="8"/>
+                            <circle cx="60" cy="60" r="50" fill="none" stroke="#f3f4f6" stroke-width="8"/>
                             <!-- Progress Circle -->
-                            <circle id="gauge-temp-circle" cx="60" cy="60" r="50" fill="none" stroke="#4f46e5" stroke-width="8" 
+                            <circle id="gauge-temp-circle" cx="60" cy="60" r="50" fill="none" stroke="#f59e0b" stroke-width="8" 
                                 stroke-dasharray="{{ (($latest?->temperature ?? 0) / 50) * 314.1 }}, 314.1" stroke-dashoffset="0" stroke-linecap="round"
                                 transform="rotate(-90 60 60)"/>
                             <!-- Center Value -->
-                            <text id="gauge-temp-text" x="60" y="65" text-anchor="middle" font-size="14" font-weight="bold" fill="#374151">
+                            <text id="gauge-temp-text" x="60" y="65" text-anchor="middle" font-size="16" font-weight="bold" fill="#111827">
                                 {{ round($latest?->temperature ?? 0, 1) }}
                             </text>
                         </svg>
                     </div>
-                    <p class="text-center text-gray-500 text-[11px] mt-2">°C</p>
+                    <p class="text-center text-gray-400 text-[10px] sm:text-[11px] mt-2 font-medium">°C</p>
                 </div>
             </div>
 

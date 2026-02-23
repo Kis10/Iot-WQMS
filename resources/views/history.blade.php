@@ -2,15 +2,16 @@
     <div class="py-12">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
-            <div class="bg-white rounded-lg shadow overflow-hidden min-h-[600px]">
-                <div class="overflow-x-auto">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden min-h-[600px]">
+                <!-- Desktop Table View -->
+                <div class="hidden sm:block overflow-x-auto">
                     <table class="w-full">
                         <thead class="bg-gray-50 border-b border-gray-200">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Device</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Modified</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-6 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Device</th>
+                                <th class="px-6 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Date Modified</th>
+                                <th class="px-6 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Size</th>
+                                <th class="px-6 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                                     <label class="inline-flex items-center gap-2">
                                         <span>Delete</span>
                                         <input type="checkbox" id="selectAllReadings" class="h-4 w-4 text-red-600 border-gray-300 rounded focus:ring-red-500">
@@ -18,17 +19,16 @@
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="bg-white divide-y divide-gray-100">
                             @forelse($readings as $reading)
-                                <!-- Data Row -->
-                                <tr class="hover:bg-gray-50 transition duration-150 cursor-pointer" onclick="if(!event.target.closest('input') && !event.target.closest('label')) window.location='{{ route('history.show', $reading) }}'">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-black hover:text-gray-700">
+                                <tr class="hover:bg-indigo-50/30 transition duration-150 cursor-pointer" onclick="if(!event.target.closest('input') && !event.target.closest('label')) window.location='{{ route('history.show', $reading) }}'">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
                                         {{ $reading->device_id ?? 'N/A' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                         {{ $reading->created_at ? $reading->created_at->setTimezone('Asia/Manila')->format('M j, Y g:i A') : 'N/A' }}
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         {{ number_format(strlen($reading->toJson()) / 1024, 2, ',', '.') }} KB
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -46,9 +46,9 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="px-6 py-4 text-center text-gray-500 text-sm">
+                                    <td colspan="4" class="px-6 py-12 text-center text-gray-400">
                                         <div class="flex flex-col items-center">
-                                            <svg class="w-12 h-12 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-12 h-12 text-gray-200 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m9 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
                                             No readings recorded yet.
@@ -58,6 +58,50 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Mobile Card View -->
+                <div class="sm:hidden divide-y divide-gray-100">
+                    @forelse($readings as $reading)
+                        <div class="p-4 hover:bg-indigo-50/20 transition-colors cursor-pointer" onclick="if(!event.target.closest('input') && !event.target.closest('label')) window.location='{{ route('history.show', $reading) }}'">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm font-bold text-gray-900">{{ $reading->device_id ?? 'N/A' }}</span>
+                                <label class="p-2 inline-flex items-center cursor-pointer">
+                                    <input type="checkbox"
+                                        class="h-5 w-5 text-red-600 border-gray-300 rounded focus:ring-red-500 delete-checkbox"
+                                        data-reading-id="{{ $reading->id }}"
+                                        data-form-id="delete-form-mobile-{{ $reading->id }}">
+                                </label>
+                                <form id="delete-form-mobile-{{ $reading->id }}" action="{{ route('history.destroy', $reading) }}" method="POST" class="hidden">
+                                    @csrf
+                                    @method('DELETE')
+                                </form>
+                            </div>
+                            <div class="flex justify-between items-end">
+                                <div class="space-y-1">
+                                    <div class="flex items-center text-xs text-gray-500">
+                                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        {{ $reading->created_at ? $reading->created_at->setTimezone('Asia/Manila')->format('M j, Y g:i A') : 'N/A' }}
+                                    </div>
+                                    <div class="flex items-center text-xs text-gray-400">
+                                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                        </svg>
+                                        {{ number_format(strlen($reading->toJson()) / 1024, 2, ',', '.') }} KB
+                                    </div>
+                                </div>
+                                <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="py-12 text-center text-gray-400 italic text-sm">
+                            No readings yet.
+                        </div>
+                    @endforelse
                 </div>
             </div>
 
