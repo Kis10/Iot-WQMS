@@ -54,16 +54,9 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between w-full">
                     <!-- Brand (Far Left) -->
-                    <div class="flex items-center gap-3" x-data="{ lastTap: 0 }">
-                        <a href="/" 
-                           @touchend.prevent="
-                               let now = Date.now();
-                               if (now - lastTap < 400) { 
-                                   window.location.href = '/login'; 
-                               }
-                               lastTap = now;
-                           "
-                           @dblclick.prevent="window.location.href='/login'"
+                    <div class="flex items-center gap-3">
+                        <a href="javascript:void(0)" 
+                           onclick="var now=Date.now(); if(now - (window._lastLogoTap||0) < 500){window.location.href='/login';} window._lastLogoTap=now;"
                            class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl overflow-hidden shadow-sm bg-white p-1">
                                 <img src="{{ asset('img/logo/logo-wq.png') }}" alt="Logo" class="w-full h-full object-contain" />
