@@ -386,44 +386,58 @@
             }
 
             function appendReading(reading) {
-                if (!reading || !reading.created_at) return;
+                if (!reading) return;
+                
+                // Fallback for missing timestamp (common in partial hardware updates)
+                if (!reading.created_at) {
+                    reading.created_at = new Date().toISOString();
+                }
 
-                // New data arrived, so we are no longer in "cleared" state
-                localStorage.removeItem('dashboardCleared');
+                // IMPORTANT: Any data arrival clears the "dashboard cleared" flag
+                if (localStorage.getItem('dashboardCleared')) {
+                    console.log('New data detected. Deactivating cleared state.');
+                    localStorage.removeItem('dashboardCleared');
+                }
 
                 chart.data.labels.push(formatTimeLabel(reading.created_at));
-                chart.data.datasets[0].data.push(reading.turbidity || 0);
-                chart.data.datasets[1].data.push(reading.tds || 0);
-                chart.data.datasets[2].data.push(reading.ph || 0);
-                chart.data.datasets[3].data.push(reading.temperature || 0);
+                chart.data.datasets[0].data.push(reading.turbidity ?? 0);
+                chart.data.datasets[1].data.push(reading.tds ?? 0);
+                chart.data.datasets[2].data.push(reading.ph ?? 0);
+                chart.data.datasets[3].data.push(reading.temperature ?? 0);
 
-                // Limit points if too many (optional, keeping 50 for performance)
                 if (chart.data.labels.length > 20) {
                     chart.data.labels.shift();
                     chart.data.datasets.forEach(ds => ds.data.shift());
                 }
 
                 chart.update('none');
-                
-                // SAVE TO STORAGE
                 saveStateToStorage(chart.data.labels, chart.data.datasets);
             }
 
-            let lastReadingState = null;
+            let lastReadingState = @json($latest);
             try {
                 const saved = localStorage.getItem(STORAGE_KEY_LATEST);
-                if (saved) lastReadingState = JSON.parse(saved);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    // Merge saved state with backend latest if saved is newer
+                    if (lastReadingState) {
+                        lastReadingState = { ...lastReadingState, ...parsed };
+                    } else {
+                        lastReadingState = parsed;
+                    }
+                }
             } catch(e) {}
 
             function updateGauges(reading, save = true) {
                 if (!reading) return;
                 
-                // Merge with last known state to handle partial updates from hardware
+                // Merge with last known state
                 if (lastReadingState) {
                     reading = { ...lastReadingState, ...reading };
                 }
                 
-                if (save && reading.created_at) {
+                if (save) {
+                     if (!reading.created_at) reading.created_at = new Date().toISOString();
                      localStorage.setItem(STORAGE_KEY_LATEST, JSON.stringify(reading));
                      lastReadingState = reading;
                 }
