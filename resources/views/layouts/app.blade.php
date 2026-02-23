@@ -132,26 +132,44 @@
                 })();
             </script>
             @endif
+        @auth
+            <x-sound-controls />
         @endauth
+
         <audio id="globalAiSound" src="{{ asset('sounds/ai.mp3') }}" preload="auto"></audio>
+        <audio id="globalAlertSound" src="{{ asset('sounds/alert.mp3') }}" preload="auto"></audio>
         <script>
             (function() {
-                // Global Audio Unlock
+                // Global Audio Elements
                 const audioEl = document.getElementById('globalAiSound');
+                const alertEl = document.getElementById('globalAlertSound');
                 let audioUnlocked = false;
 
+                // Function to get current sound settings
+                function getSoundSettings() {
+                    return {
+                        muted: localStorage.getItem('sounds_muted') === 'true',
+                        aiEnabled: localStorage.getItem('sounds_ai_enabled') !== 'false',
+                        alertEnabled: localStorage.getItem('sounds_alert_enabled') !== 'false',
+                        volume: (localStorage.getItem('sounds_volume') || 100) / 100
+                    };
+                }
+
                 function unlockAudio() {
-                    if (audioUnlocked || !audioEl) return;
-                    const playPromise = audioEl.play();
-                    if (playPromise !== undefined) {
-                        playPromise.then(() => {
-                            audioEl.pause();
-                            audioEl.currentTime = 0;
-                            audioUnlocked = true;
-                            ['click', 'touchstart', 'keydown'].forEach(e => document.removeEventListener(e, unlockAudio));
-                            // console.log('Global AI Audio unlocked');
-                        }).catch(() => {});
-                    }
+                    if (audioUnlocked) return;
+                    // Unlock both audio elements
+                    const unlockOne = (el) => {
+                        if (!el) return Promise.resolve();
+                        const p = el.play();
+                        if (p !== undefined) {
+                            return p.then(() => { el.pause(); el.currentTime = 0; }).catch(() => {});
+                        }
+                        return Promise.resolve();
+                    };
+                    Promise.all([unlockOne(audioEl), unlockOne(alertEl)]).then(() => {
+                        audioUnlocked = true;
+                        ['click', 'touchstart', 'keydown'].forEach(e => document.removeEventListener(e, unlockAudio));
+                    });
                 }
                 ['click', 'touchstart', 'keydown'].forEach(e => document.addEventListener(e, unlockAudio));
 
@@ -166,9 +184,26 @@
                     
                     channel.subscribe('analysis', (message) => {
                         const analysis = message.data;
-                        if (audioEl) {
-                            audioEl.currentTime = 0;
-                            audioEl.play().catch(e => console.error('Global play failed:', e));
+                        const riskLevel = (analysis.risk_level || '').toLowerCase();
+                        const settings = getSoundSettings();
+
+                        if (!settings.muted) {
+                            // Play AI notification sound
+                            if (audioEl && settings.aiEnabled) {
+                                audioEl.currentTime = 0;
+                                audioEl.volume = settings.volume;
+                                audioEl.play().catch(e => console.error('AI sound failed:', e));
+                            }
+
+                            // Play alert sound 0.5s after ai.mp3 for critical/high/medium risk
+                            // Increased clarity: alert sound is played if risk is not 'safe'
+                            if (alertEl && settings.alertEnabled && (riskLevel === 'critical' || riskLevel === 'high' || riskLevel === 'medium')) {
+                                setTimeout(() => {
+                                    alertEl.currentTime = 0;
+                                    alertEl.volume = settings.volume;
+                                    alertEl.play().catch(e => console.error('Alert sound failed:', e));
+                                }, 500);
+                            }
                         }
                         
                         // Dispatch Global Event for Dashboard Popup
