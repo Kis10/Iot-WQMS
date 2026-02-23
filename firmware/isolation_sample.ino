@@ -32,15 +32,18 @@ void loop() {
   
   // Force TDS OFF
   digitalWrite(tdsPowerPin, LOW);
-  delay(200); // Wait for electrical noise to dissipate (Silence)
+  delay(2000); // 2 second silence for conductive tap water
   
+  // Dummy reads to stabilize ADC
+  for(int i=0; i<10; i++) { analogRead(pHPin); delay(10); }
+
   // Read pH
   long pHSum = 0;
-  for(int i=0; i<20; i++) {
+  for(int i=0; i<30; i++) {
     pHSum += analogRead(pHPin);
-    delay(5);
+    delay(10);
   }
-  float pHVoltage = (pHSum / 20.0) * (3.3 / 4095.0);
+  float pHVoltage = (pHSum / 30.0) * (3.3 / 4095.0);
   
   // CALCULATE REAL pH
   // Formula: pH = slope * voltage + offset

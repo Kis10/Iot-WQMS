@@ -366,7 +366,9 @@ void performSingleReadingAndSend() {
     // --- STEP 1: FORCE TDS & TURBIDITY OFF NOISE ---
     digitalWrite(tdsPowerPin, LOW); 
     digitalWrite(turbidityPowerPin, LOW);
-    delay(500);
+    
+    // Extended silence to allow electrical charge in conductive tap water to dissipate
+    delay(2000); 
     
     // --- STEP 2: READ WATER TEMPERATURE (DS18B20) ---
     waterTempSensor.requestTemperatures();
@@ -377,12 +379,18 @@ void performSingleReadingAndSend() {
     }
 
     // --- STEP 3: READ pH ---
-    long pHAvg = 0;
-    for(int i = 0; i < 20; i++) { 
-      pHAvg += analogRead(pHPin); 
-      delay(10); 
+    // Clear the ADC buffer and let the sensor settle
+    for(int i = 0; i < 10; i++) { 
+        analogRead(pHPin); 
+        delay(20); 
     }
-    float pHVoltage = (pHAvg / 20.0) * (3.3 / 4095.0);
+    
+    long pHAvg = 0;
+    for(int i = 0; i < 30; i++) { 
+      pHAvg += analogRead(pHPin); 
+      delay(20); 
+    }
+    float pHVoltage = (pHAvg / 30.0) * (3.3 / 4095.0);
     float pHVal = slope * pHVoltage + offset;
     
     // --- STEP 4: READ TURBIDITY ---
