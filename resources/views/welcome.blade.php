@@ -55,7 +55,7 @@
                 <div class="flex items-center justify-between w-full">
                     <!-- Brand (Far Left) -->
                     <div class="flex items-center gap-3">
-                        <a href="/" class="flex items-center gap-3">
+                        <a href="/" @dblclick.prevent="window.location.href='/login'" class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl overflow-hidden shadow-sm bg-white p-1">
                                 <img src="{{ asset('img/logo/logo-wq.png') }}" alt="Logo" class="w-full h-full object-contain" />
                             </div>
