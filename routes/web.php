@@ -26,6 +26,12 @@ Route::post('/login-unlock', function (Illuminate\Http\Request $request) {
     return response()->json(['success' => false], 403);
 })->name('login.unlock');
 
+// Logo double-tap shortcut (mobile access)
+Route::post('/logo-access', function () {
+    session(['login_unlocked' => true]);
+    return response()->json(['success' => true]);
+})->name('logo.access');
+
 Route::middleware(['auth'])->group(function () {
     // Landing Page CMS (Accessible by all authenticated users)
     Route::prefix('admin/landing')->name('admin.landing.')->group(function () {
