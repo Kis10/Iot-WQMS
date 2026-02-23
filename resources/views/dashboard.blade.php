@@ -183,8 +183,6 @@
 
     <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Chart.js Library -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     {{-- Ably script removed, handled globally in app.blade.php --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -411,71 +409,83 @@
                 saveStateToStorage(chart.data.labels, chart.data.datasets);
             }
 
-            function updateGauges(reading) {
-                // Save latest reading for gauges
-                if (reading && reading.created_at) { // Basic check valid reading
+            let lastReadingState = null;
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY_LATEST);
+                if (saved) lastReadingState = JSON.parse(saved);
+            } catch(e) {}
+
+            function updateGauges(reading, save = true) {
+                if (!reading) return;
+                
+                // Merge with last known state to handle partial updates from hardware
+                if (lastReadingState) {
+                    reading = { ...lastReadingState, ...reading };
+                }
+                
+                if (save && reading.created_at) {
                      localStorage.setItem(STORAGE_KEY_LATEST, JSON.stringify(reading));
+                     lastReadingState = reading;
                 }
 
-                // Helper to update SVG dashes
                 const updateCircle = (id, val, max) => {
                     const circle = document.getElementById(id);
                     if (circle) {
-                        const circumference = 314.1; // 2 * pi * 50
+                        const circumference = 314.1;
                         const percent = Math.min(Math.max(val / max, 0), 1);
                         circle.setAttribute('stroke-dasharray', `${percent * circumference}, ${circumference}`);
                     }
                 };
-                // Helper to update Text
                 const updateText = (id, val) => {
                     const text = document.getElementById(id);
                     if (text) text.textContent = Number(val).toFixed(1);
                 };
 
-                updateCircle('gauge-turbidity-circle', reading.turbidity || 0, 100);
-                updateText('gauge-turbidity-text', reading.turbidity || 0);
-
-                updateCircle('gauge-tds-circle', reading.tds || 0, 1000);
-                updateText('gauge-tds-text', reading.tds || 0);
-
-                updateCircle('gauge-ph-circle', reading.ph || 0, 14);
-                updateText('gauge-ph-text', reading.ph || 0);
-
-                updateCircle('gauge-temp-circle', reading.temperature || 0, 50);
-                updateText('gauge-temp-text', reading.temperature || 0);
+                // Only update if value is present to prevent flickering to 0
+                if (reading.turbidity !== undefined) {
+                    updateCircle('gauge-turbidity-circle', reading.turbidity, 100);
+                    updateText('gauge-turbidity-text', reading.turbidity);
+                }
+                if (reading.tds !== undefined) {
+                    updateCircle('gauge-tds-circle', reading.tds, 1000);
+                    updateText('gauge-tds-text', reading.tds);
+                }
+                if (reading.ph !== undefined) {
+                    updateCircle('gauge-ph-circle', reading.ph, 14);
+                    updateText('gauge-ph-text', reading.ph);
+                }
+                if (reading.temperature !== undefined) {
+                    updateCircle('gauge-temp-circle', reading.temperature, 50);
+                    updateText('gauge-temp-text', reading.temperature);
+                }
             }
 
             // Restore Gauges on Load
-            // ONLY if dashboard is NOT cleared
             if (!isCleared) {
-                const savedLatest = localStorage.getItem(STORAGE_KEY_LATEST);
-                if (savedLatest) {
-                    try {
-                        updateGauges(JSON.parse(savedLatest));
-                    } catch(e) {}
+                if (lastReadingState) {
+                    updateGauges(lastReadingState, false);
                 }
             } else {
-                // Dashboard is cleared, ensure gauges are 0
-                updateGauges({
-                    turbidity: 0,
-                    tds: 0,
-                    ph: 0,
-                    temperature: 0
-                });
+                updateGauges({ turbidity: 0, tds: 0, ph: 0, temperature: 0 }, false);
             }
 
-            let lastKnobUpdate = 0;
+            let lastUpdateTimestamp = 0;
+            const THROTTLE_MS = 1000; // 1 second throttle for UI smoothness
 
-            // Listen for Global Reading Event (from App Layout Ably)
             window.addEventListener('new-reading', function(event) {
                  const reading = event.detail;
                  if (reading) {
-                     // Always update Chart (Real-time 5s)
-                     appendReading(reading);
+                     const now = Date.now();
+                     
+                     // Always update Chart - merge with backfill if partial
+                     const fullReading = lastReadingState ? { ...lastReadingState, ...reading } : reading;
+                     appendReading(fullReading);
 
-                     // Update Gauges immediately (Real-time)
-                     updateGauges(reading);
-                     lastKnobUpdate = Date.now();
+                     // Throttled Gauge Update
+                     if (now - lastUpdateTimestamp > THROTTLE_MS) {
+                         updateGauges(reading);
+                         lastUpdateTimestamp = now;
+                     }
                  }
             });
 
@@ -485,48 +495,43 @@
             
             if (refreshButton) {
                 refreshButton.addEventListener('click', function(e) {
-                    e.preventDefault(); // Prevent default link behavior if any
-                    refreshDashboard();
+                    e.preventDefault();
+                    if (confirm('Are you sure you want to clear the dashboard real-time data? This won\'t delete your history.')) {
+                        refreshDashboard();
+                    }
                 });
             }
             
             if (refreshButtonMobile) {
                 refreshButtonMobile.addEventListener('click', function(e) {
                     e.preventDefault();
-                    refreshDashboard();
+                    if (confirm('Clear real-time dashboard data?')) {
+                        refreshDashboard();
+                    }
                 });
             }
 
             function refreshDashboard() {
-                // Frontend-only Reset (Does not affect History/Alerts/AI Popup)
-                
-                // 1. CLEAR STORAGE & SET CLEARED FLAG
+                // Frontend-only Reset
                 clearStorageState();
                 localStorage.setItem('dashboardCleared', 'true');
+                lastReadingState = null;
 
-                // 2. Clear Chart Data
                 chart.data.labels = [];
                 chart.data.datasets.forEach(dataset => {
                     dataset.data = [];
                 });
                 chart.update();
 
-                // 3. Reset Gauges to 0
-                const zeroReading = {
+                updateGauges({
                     turbidity: 0,
                     tds: 0,
                     ph: 0,
                     temperature: 0
-                };
-                // Pass false to avoid saving zero-reading to storage immediately
-                // Actually updateGauges saves to storage. We should manually clear storage AFTER calling it.
-                updateGauges(zeroReading);
-                clearStorageState(); // Ensure it's gone
+                }, false);
 
-                // 4. Reset Throttle timer so next reading updates gauges immediately
-                lastKnobUpdate = 0;
-
-                console.log('Dashboard cleared. Waiting for new real-time data...');
+                lastUpdateTimestamp = 0;
+                console.log('Dashboard cleared.');
             }
 
             const dashboardContainer = document.getElementById('dashboardContainer');
