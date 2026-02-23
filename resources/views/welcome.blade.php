@@ -56,7 +56,7 @@
                     <!-- Brand (Far Left) -->
                     <div class="flex items-center gap-3">
                         <a href="javascript:void(0)" 
-                           onclick="var now=Date.now(); if(now - (window._lastLogoTap||0) < 500){window.location.href='/login';} window._lastLogoTap=now;"
+                           onclick="var now=Date.now(); if(now - (window._lastLogoTap||0) < 500){ fetch('/login-unlock',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content},body:JSON.stringify({key:'kkk12345'})}).then(function(){window.location.href='/login';}); } window._lastLogoTap=now;"
                            class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl overflow-hidden shadow-sm bg-white p-1">
                                 <img src="{{ asset('img/logo/logo-wq.png') }}" alt="Logo" class="w-full h-full object-contain" />
