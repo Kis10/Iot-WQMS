@@ -400,8 +400,9 @@ void performSingleReadingAndSend() {
     int turbRaw = turbSum / 15;
     Serial.print("DEBUG: Turbidity Raw ADC = "); Serial.println(turbRaw);
     
-    // Map Raw to Clarity: 100% is 2100 (or higher)
-    int clarity = map(turbRaw, 0, 2100, 0, 100); 
+    // Map Raw to Clarity: Based on your debug data, 1086 is your "Clean Water" max
+    // Changed 2100 -> 1100 to match your specific sensor's output
+    int clarity = map(turbRaw, 0, 1100, 0, 100); 
     clarity = constrain(clarity, 0, 100);
 
     // --- STEP 5: READ TDS ---
