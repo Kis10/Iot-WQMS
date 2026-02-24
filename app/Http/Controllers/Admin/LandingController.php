@@ -78,16 +78,10 @@ class LandingController extends Controller
                         $localPath = 'img/members/display/' . $filename;
                         Log::info("Stored photo in display folder: " . $localPath);
 
-                        // Upload to Cloudinary (Primary)
-                        $result = cloudinary()->upload($targetDir . '/' . $filename, [
-                            'folder' => $folder,
-                        ]);
-                        $updateData['image'] = $result->getSecurePath();
+                        // Save Local Path to Database
+                        $updateData['image'] = asset($localPath);
                     } catch (\Exception $e) {
                         Log::error("File Processing Error: " . $e->getMessage());
-                        if (isset($localPath)) {
-                            $updateData['image'] = asset($localPath);
-                        }
                     }
                 }
             } 
@@ -109,11 +103,8 @@ class LandingController extends Controller
                         $localPath = 'img/members/hover/' . $filename;
                         Log::info("Stored URL photo in hover folder: " . $localPath);
 
-                        // Upload to Cloudinary
-                        $result = cloudinary()->upload($localFullPath, [
-                            'folder' => $folder,
-                        ]);
-                        $updateData['image'] = $result->getSecurePath();
+                        // Save Local Path to Database
+                        $updateData['image'] = asset($localPath);
                     } else {
                         $updateData['image'] = $url;
                     }
