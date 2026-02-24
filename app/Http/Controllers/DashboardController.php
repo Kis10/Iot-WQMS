@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\LatestReading;
-use App\Models\WaterQualityReading;
+use App\Models\WaterReading;
+use App\Models\WaterAnalysis;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
         $latest = LatestReading::latest()->first();
+        $latestAnalysis = WaterAnalysis::latest()->first();
         
         // Check if dashboard should be reset (refreshed)
         $resetDashboard = $request->session()->get('reset_dashboard', false);
@@ -22,14 +24,15 @@ class DashboardController extends Controller
             // Return empty data for fresh start
             return view('dashboard', [
                 'latest' => null,
-                'chartData' => []
+                'chartData' => [],
+                'latestAnalysis' => $latestAnalysis
             ]);
         }
         
         // Get recent data for chart (last 20 readings)
-        $chartData = WaterQualityReading::latest()->take(20)->get()->reverse();
+        $chartData = WaterReading::latest()->take(20)->get()->reverse()->values();
 
-        return view('dashboard', compact('latest', 'chartData'));
+        return view('dashboard', compact('latest', 'chartData', 'latestAnalysis'));
     }
     
     public function refresh(Request $request)

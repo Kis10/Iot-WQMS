@@ -25,8 +25,8 @@ class WaterQualityController extends Controller
         }
 
         $latest = WaterReading::with('device')->latest()->first();
-        // Fetch last 20 readings for chart
-        $chartData = WaterReading::orderBy('created_at', 'asc')->limit(20)->get();
+        // Fetch last 20 readings for chart (latest first, then reverse for chronological chart order)
+        $chartData = WaterReading::latest()->limit(20)->get()->reverse()->values();
         $devices = Device::orderBy('device_id')->get();
         
         // Get latest AI analysis
@@ -142,9 +142,9 @@ class WaterQualityController extends Controller
 
     public function chartData()
     {
-        $chartData = WaterReading::orderBy('created_at', 'asc')->limit(20)->get();
+        $chartData = WaterReading::latest()->limit(20)->get()->reverse();
 
-        return response()->json($chartData);
+        return response()->json($chartData->values());
     }
 
     public function destroyReading(WaterReading $reading)

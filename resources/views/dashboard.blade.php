@@ -645,7 +645,6 @@
                         updateContrib('contrib-tds', info.scores.tds, info.weights.tds, 'TDS');
                     }
                 };
-internal_link:c:\xampp\htdocs\water-quality-system\resources\views\dashboard.blade.php:582-634
                 const updateCircle = (id, val, max, param) => {
                     const circle = document.getElementById(id);
                     if (circle) {
