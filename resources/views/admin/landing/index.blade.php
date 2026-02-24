@@ -469,8 +469,8 @@
                         </div>
                     </button>
 
-                    <!-- Hover Effect Upload -->
-                    <button x-show="currentUploadKey && currentUploadKey.indexOf('team') !== -1 && currentUploadKey.indexOf('_hover') === -1"
+                    <!-- Hover Effect Upload (Only show if primary photo exists) -->
+                    <button x-show="currentUploadKey && currentUploadKey.indexOf('team') !== -1 && currentUploadKey.indexOf('_hover') === -1 && (previews[currentUploadKey] || (data[currentUploadKey] && (data[currentUploadKey].image || data[currentUploadKey].value)))"
                             @click="currentUploadKey = currentUploadKey.replace('_img', '') + '_img_hover'; $refs.bgFileInput.click(); showBgModal = false;" 
                             class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition text-left">
                         <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center text-pink-600 shrink-0">
