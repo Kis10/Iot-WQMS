@@ -1109,7 +1109,10 @@
 
                     fetch('{{ route('admin.landing.update') }}', {
                         method: 'POST',
-                        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                        headers: { 
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        },
                         body: formData
                     })
                     .then(res => {
