@@ -94,6 +94,7 @@ class WaterReadingController extends Controller
                 if ($analysis) {
                     $channel->publish('analysis', [
                         'id' => $analysis->id,
+                        'water_reading_id' => $analysis->water_reading_id,
                         'risk_level' => $analysis->risk_level,
                         'ai_insight' => $analysis->ai_insight,
                         'recommendations' => $analysis->recommendations,

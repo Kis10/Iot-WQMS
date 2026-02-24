@@ -878,6 +878,20 @@
                 if (analysis) {
                     showPopup(analysis);
                     saveState(popupLastShownKey, analysis.id);
+
+                    // Auto-Print: 5-second delay after AI analysis arrives
+                    const readingId = analysis.water_reading_id;
+                    if (readingId) {
+                        setTimeout(() => {
+                            const printUrl = `/history/${readingId}`;
+                            const printWindow = window.open(printUrl, '_blank');
+                            if (printWindow) {
+                                printWindow.addEventListener('load', function() {
+                                    setTimeout(() => printWindow.print(), 500);
+                                });
+                            }
+                        }, 5000);
+                    }
                 }
             });
 
