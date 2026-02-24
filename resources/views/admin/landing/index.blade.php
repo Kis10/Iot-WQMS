@@ -340,8 +340,8 @@
                             <template x-if="previews['{{ $key }}_img']">
                                 <img :src="previews['{{ $key }}_img']" class="w-full h-full object-cover">
                             </template>
-                            <template x-if="!previews['{{ $key }}_img'] && data.{{ $key }}_img && (data.{{ $key }}_img.image || data.{{ $key }}_img.value)">
-                                <img :src="(data.{{ $key }}_img.image || data.{{ $key }}_img.value).startsWith('http') ? (data.{{ $key }}_img.image || data.{{ $key }}_img.value) : ('/' + (data.{{ $key }}_img.image || data.{{ $key }}_img.value))" class="w-full h-full object-cover">
+                            <template x-if="!previews['{{ $key }}_img'] && data.{{ $key }}_img && (data.{{ $key }}_img.image || data.{{ $key }}_img.value) && (data.{{ $key }}_img.image || data.{{ $key }}_img.value).startsWith('http')">
+                                <img :src="data.{{ $key }}_img.image || data.{{ $key }}_img.value" class="w-full h-full object-cover">
                             </template>
                             <template x-if="!previews['{{ $key }}_img'] && (!data.{{ $key }}_img || (!data.{{ $key }}_img.image && !data.{{ $key }}_img.value))">
                                 <div class="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
@@ -353,8 +353,8 @@
                             <template x-if="previews['{{ $key }}_img_hover']">
                                 <img :src="previews['{{ $key }}_img_hover']" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 z-10 bg-white">
                             </template>
-                            <template x-if="!previews['{{ $key }}_img_hover'] && data.{{ $key }}_img_hover && (data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value)">
-                                <img :src="(data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value).startsWith('http') ? (data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value) : ('/' + (data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value))" 
+                            <template x-if="!previews['{{ $key }}_img_hover'] && data.{{ $key }}_img_hover && (data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value) && (data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value).startsWith('http')">
+                                <img :src="data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value" 
                                      class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 z-10 bg-white">
                             </template>
                             
