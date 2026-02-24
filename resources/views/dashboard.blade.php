@@ -99,21 +99,21 @@
                 </div>
 
                 <div class="flex flex-wrap justify-center md:justify-end gap-3 sm:gap-6">
-                    <div class="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform" onclick="showFormulaModal('ph')">
+                    <div class="flex flex-col items-center">
                         <span id="contrib-ph" class="text-xs sm:text-base font-bold text-gray-900">pH=30.0%</span>
-                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">pH Level (30%)</span>
+                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">pH Level</span>
                     </div>
-                    <div class="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform" onclick="showFormulaModal('temp')">
+                    <div class="flex flex-col items-center">
                         <span id="contrib-temp" class="text-xs sm:text-base font-bold text-gray-900">Temp=25.0%</span>
-                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">Temperature (25%)</span>
+                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">Temperature</span>
                     </div>
-                    <div class="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform" onclick="showFormulaModal('turbidity')">
+                    <div class="flex flex-col items-center">
                         <span id="contrib-turbidity" class="text-xs sm:text-base font-bold text-gray-900">Turb=25.0%</span>
-                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">Turbidity (25%)</span>
+                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">Turbidity</span>
                     </div>
-                    <div class="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform" onclick="showFormulaModal('tds')">
+                    <div class="flex flex-col items-center">
                         <span id="contrib-tds" class="text-xs sm:text-base font-bold text-gray-900">TDS=20.0%</span>
-                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">TDS (20%)</span>
+                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">TDS</span>
                     </div>
                 </div>
             </div>
@@ -122,7 +122,7 @@
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <!-- Turbidity Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
-                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">Turbidity (25%)</h3>
+                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">Turbidity</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
@@ -146,7 +146,7 @@
 
                 <!-- TDS Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
-                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">TDS (20%)</h3>
+                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">TDS</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
@@ -170,7 +170,7 @@
 
                 <!-- pH Level Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
-                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">pH Level (30%)</h3>
+                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">pH Level</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
@@ -194,7 +194,7 @@
 
                 <!-- Temperature Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
-                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">Water Temp (25%)</h3>
+                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">Water Temp</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
@@ -579,8 +579,9 @@
                      populatePrintReport();
                 }
 
-                window.getWQIInfo = (r) => {
-                    if (!r) return null;
+                const updateOverallHealth = (r) => {
+                    if (!r) return;
+                    // Weights: pH (30%), Temp (25%), Clarity (25%), TDS (20%)
                     const weights = { ph: 0.30, temp: 0.25, turbidity: 0.25, tds: 0.20 };
                     let scores = { ph: 100, temp: 100, turbidity: 100, tds: 100 };
 
@@ -597,55 +598,42 @@
 
                     const wqi = (scores.ph * weights.ph) + (scores.temp * weights.temp) + (scores.turbidity * weights.turbidity) + (scores.tds * weights.tds);
                     
-                    let color = '#10b981';
-                    let status = 'Excellent';
-                    let msg = 'Excellent water quality. Ideal for fish growth.';
-                    let rec = 'Maintain current management practices and continue regular monitoring.';
-                    
-                    if (wqi < 60) {
-                        color = '#ef4444';
-                        status = 'Critical';
-                        msg = 'CRITICAL: Water conditions may lead to high stress or fish mortality.';
-                        rec = 'Immediate emergency action required: flush system with fresh water and increase aeration.';
-                    } else if (wqi < 85) {
-                        color = '#f59e0b';
-                        status = 'Warning';
-                        msg = 'Warning: Suboptimal conditions detected. Check sensors and water balance.';
-                        rec = 'Perform a minor water exchange and verify all sensor readings.';
-                    }
-
-                    return { wqi, color, msg, rec, status, scores, weights };
-                };
-
-                const updateOverallHealth = (r) => {
-                    const info = window.getWQIInfo(r);
-                    if (!info) return;
-                    
                     const circle = document.getElementById('overall-health-circle');
                     const text = document.getElementById('overall-health-text');
                     const desc = document.getElementById('overall-health-desc');
 
                     if (circle && text) {
                         const circumference = 282.7;
-                        const offset = circumference - (info.wqi / 100) * circumference;
+                        const offset = circumference - (wqi / 100) * circumference;
                         circle.style.transition = 'stroke-dashoffset 1s ease-in-out, stroke 1s';
                         circle.setAttribute('stroke-dashoffset', offset);
-                        circle.setAttribute('stroke', info.color);
-                        text.textContent = Math.round(info.wqi) + '%';
-                        if (desc) desc.textContent = info.msg;
+                        
+                        let color = '#10b981';
+                        let msg = 'Excellent water quality. Ideal for fish growth.';
+                        
+                        if (wqi < 60) {
+                            color = '#ef4444';
+                            msg = 'CRITICAL: Water conditions may lead to high stress/mortality.';
+                        } else if (wqi < 85) {
+                            color = '#f59e0b';
+                            msg = 'Warning: Suboptimal conditions detected. Check sensors.';
+                        }
+                        circle.setAttribute('stroke', color);
+                        text.textContent = Math.round(wqi) + '%';
+                        if (desc) desc.textContent = msg;
 
                         // Update individual contributions in UI
                         const updateContrib = (id, score, weight, prefix) => {
                             const el = document.getElementById(id);
                             if (el) el.textContent = `${prefix}=${(score * weight).toFixed(1)}%`;
                         };
-                        updateContrib('contrib-ph', info.scores.ph, info.weights.ph, 'pH');
-                        updateContrib('contrib-temp', info.scores.temp, info.weights.temp, 'Temp');
-                        updateContrib('contrib-turbidity', info.scores.turbidity, info.weights.turbidity, 'Turb');
-                        updateContrib('contrib-tds', info.scores.tds, info.weights.tds, 'TDS');
+                        updateContrib('contrib-ph', scores.ph, weights.ph, 'pH');
+                        updateContrib('contrib-temp', scores.temp, weights.temp, 'Temp');
+                        updateContrib('contrib-turbidity', scores.turbidity, weights.turbidity, 'Turb');
+                        updateContrib('contrib-tds', scores.tds, weights.tds, 'TDS');
                     }
                 };
-internal_link:c:\xampp\htdocs\water-quality-system\resources\views\dashboard.blade.php:582-634
+
                 const updateCircle = (id, val, max, param) => {
                     const circle = document.getElementById(id);
                     if (circle) {
@@ -1237,7 +1225,7 @@ internal_link:c:\xampp\htdocs\water-quality-system\resources\views\dashboard.bla
                     </tr>`;
                 }).join('');
 
-                // AI Analysis Section - REVERTED to original AI Insight
+                // AI Analysis Section
                 const aiSection = document.getElementById('printAiSection');
                 if (!analysis || !analysis.ai_insight) {
                     aiSection.innerHTML = '<p style="color:#6b7280;font-style:italic;">Awaiting AI analysis for these readings...</p>';
@@ -1266,188 +1254,10 @@ internal_link:c:\xampp\htdocs\water-quality-system\resources\views\dashboard.bla
                 window.print();
             };
 
-            window.showFormulaModal = function(paramType) {
-                const modal = document.getElementById('formulaModal');
-                const content = document.getElementById('modal-content');
-                const reading = lastReadingState;
-                if (!reading || !modal || !content) return;
-
-                const info = getWQIInfo(reading);
-                let title = '';
-                let val = 0;
-                let weight = 0;
-                let score = 0;
-                let formulaText = '';
-                let calcText = '';
-                let unit = '';
-
-                switch(paramType) {
-                    case 'ph':
-                        title = 'pH Level (30%)';
-                        val = parseFloat(reading.ph).toFixed(2);
-                        weight = info.weights.ph;
-                        score = info.scores.ph;
-                        unit = 'pH';
-                        if (reading.ph < 6.5) {
-                            formulaText = '100 - (6.5 - Current Reading) * 50';
-                            calcText = `100 - (6.5 - ${val}) * 50 = ${score.toFixed(1)}`;
-                        } else if (reading.ph > 8.5) {
-                            formulaText = '100 - (Current Reading - 8.5) * 50';
-                            calcText = `100 - (${val} - 8.5) * 50 = ${score.toFixed(1)}`;
-                        } else {
-                            formulaText = 'Optimal Range (6.5 - 8.5) = Score 100';
-                            calcText = `Current ${val} is within range = 100`;
-                        }
-                        break;
-                    case 'temp':
-                        title = 'Temperature (25%)';
-                        val = parseFloat(reading.temperature).toFixed(2);
-                        weight = info.weights.temp;
-                        score = info.scores.temp;
-                        unit = '°C';
-                        if (reading.temperature < 25) {
-                            formulaText = '100 - (25 - Current Reading) * 10';
-                            calcText = `100 - (25 - ${val}) * 10 = ${score.toFixed(1)}`;
-                        } else if (reading.temperature > 32) {
-                            formulaText = '100 - (Current Reading - 32) * 15';
-                            calcText = `100 - (${val} - 32) * 15 = ${score.toFixed(1)}`;
-                        } else {
-                            formulaText = 'Optimal Range (25°C - 32°C) = Score 100';
-                            calcText = `Current ${val}°C is within range = 100`;
-                        }
-                        break;
-                    case 'turbidity':
-                        title = 'Turbidity (25%)';
-                        val = parseFloat(reading.turbidity).toFixed(2);
-                        weight = info.weights.turbidity;
-                        score = info.scores.turbidity;
-                        unit = '%';
-                        if (reading.turbidity < 50) {
-                            formulaText = '(Current Reading / 50) * 100';
-                            calcText = `(${val} / 50) * 100 = ${score.toFixed(1)}`;
-                        } else {
-                            formulaText = 'Optimal Range (50% - 100%) = Score 100';
-                            calcText = `Current ${val}% is within range = 100`;
-                        }
-                        break;
-                    case 'tds':
-                        title = 'TDS (20%)';
-                        val = parseFloat(reading.tds).toFixed(2);
-                        weight = info.weights.tds;
-                        score = info.scores.tds;
-                        unit = 'ppm';
-                        if (reading.tds < 300) {
-                            formulaText = '(Current Reading / 300) * 100';
-                            calcText = `(${val} / 300) * 100 = ${score.toFixed(1)}`;
-                        } else if (reading.tds > 500) {
-                            formulaText = '100 - (Current Reading - 500) * 0.1';
-                            calcText = `100 - (${val} - 500) * 0.1 = ${score.toFixed(1)}`;
-                        } else {
-                            formulaText = 'Optimal Range (300 - 500 ppm) = Score 100';
-                            calcText = `Current ${val} ppm is within range = 100`;
-                        }
-                        break;
-                }
-
-                document.getElementById('modal-title-text').textContent = title;
-                content.innerHTML = `
-                    <div class="p-4 bg-gray-50 rounded-xl space-y-3 border border-gray-100">
-                        <div class="flex justify-between items-center text-sm text-gray-500 font-bold uppercase tracking-wider mb-1">
-                            <span>FAO Standard</span>
-                            <span>${paramType === 'ph' ? '6.5 - 8.5 pH' : paramType === 'temp' ? '25 - 32 °C' : paramType === 'turbidity' ? '50 - 100%' : '300 - 500 ppm'}</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600 font-medium">Real-time Reading</span>
-                            <span class="text-indigo-700 font-black text-2xl">${val}<span class="text-xs font-bold ml-1">${unit}</span></span>
-                        </div>
-                    </div>
-                    
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-[2px]">WQI Mathematical Formula</label>
-                        <div class="p-3 bg-blue-50 text-blue-900 rounded-lg font-mono text-sm border border-blue-100 flex items-center gap-3">
-                             <div class="bg-blue-600 text-white px-2 py-0.5 rounded-md text-[10px] font-bold">FX</div>
-                             <span class="font-bold underline italic tracking-tight">${formulaText}</span>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-[2px]">Solution</label>
-                        <div class="p-4 rounded-2xl border-2 border-dashed border-gray-100 bg-white space-y-4">
-                            <div class="flex gap-4">
-                                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">01</div>
-                                <div class="text-sm">
-                                    <p class="font-bold text-gray-900 mb-1">Calculate Quality Score</p>
-                                    <p class="font-mono text-xs bg-gray-50 p-2 rounded border border-gray-100 text-gray-700 leading-relaxed italic">${calcText}</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-4">
-                                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-600">02</div>
-                                <div class="text-sm">
-                                    <p class="font-bold text-gray-900 mb-1">Final Index Contribution</p>
-                                    <p class="text-gray-600">
-                                        <span class="font-mono text-xs bg-white text-gray-700">
-                                            Score (${score.toFixed(1)}) × Weight (${(weight * 100)}%) 
-                                        </span>
-                                        <br>
-                                        <span class="text-lg font-black text-indigo-600 mt-2 block tracking-tight">
-                                            Result = ${(score * weight).toFixed(1)}%
-                                        </span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 flex gap-3">
-                        <div class="text-xl">ℹ️</div>
-                        <p class="text-[11px] text-indigo-900 leading-relaxed font-medium">
-                            <b>Did you know?</b> This parameter contributes <b>${(score * weight).toFixed(1)}%</b> toward the total 100% Water Quality Index. 
-                            ${score < 100 ? 'Points are deducted because the current reading deviates from the optimal FAO range for warm-water fish farming.' : 'Perfect contribution score as the current reading is within the ideal FAO range.'}
-                        </p>
-                    </div>
-                `;
-
-                modal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            };
-
-            window.hideFormulaModal = function() {
-                document.getElementById('formulaModal').classList.add('hidden');
-                document.body.style.overflow = 'auto';
-            };
-
             initPopupPosition();
             restorePopupIfActive();
             fetchLatestAnalysis(true);
             setInterval(() => fetchLatestAnalysis(true), analysisPollIntervalMs);
         });
     </script>
-    <!-- WQI Formula Modal -->
-    <div id="formulaModal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity" aria-hidden="true" onclick="hideFormulaModal()"></div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-white/20">
-                <div class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-blue-800 px-6 py-5">
-                    <h3 class="text-lg font-black text-white flex justify-between items-center tracking-tight" id="modal-title">
-                        <div class="flex flex-col">
-                            <span class="text-[10px] text-indigo-200 uppercase tracking-[3px] font-bold mb-0.5">WQI Solution</span>
-                            <span id="modal-title-text">Parameter Calculation</span>
-                        </div>
-                        <button onclick="hideFormulaModal()" class="text-white/60 hover:text-white transition-colors bg-white/10 p-2 rounded-xl">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" /></svg>
-                        </button>
-                    </h3>
-                </div>
-                <div class="bg-white px-6 pt-6 pb-6 mt-[-10px] rounded-t-[20px] relative z-10">
-                    <div id="modal-content" class="space-y-6">
-                        <!-- Content will be injected here -->
-                    </div>
-                </div>
-                <div class="bg-gray-50/50 px-6 py-4 flex flex-col gap-2">
-                    <button type="button" class="w-full inline-flex justify-center rounded-2xl border border-gray-200 shadow-sm px-4 py-3 bg-white text-sm font-bold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition-all focus:outline-none" onclick="hideFormulaModal()">Dismiss Solution</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </x-app-layout>
