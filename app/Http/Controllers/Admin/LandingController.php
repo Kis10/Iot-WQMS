@@ -81,14 +81,15 @@ class LandingController extends Controller
                         
                         // B. Backup to Cloudinary
                         try {
+                            Log::info("Attempting Cloudinary backup for {$key}...");
                             $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), [
                                 'folder' => $folder,
                                 'public_id' => $key . '_' . time()
                             ]);
                             $updateData['value'] = $cloudinaryUpload->getSecurePath(); // Backup URL
-                            Log::info("Backup Cloudinary URL: " . $updateData['value']);
+                            Log::info("Cloudinary Backup Success: " . $updateData['value']);
                         } catch (\Exception $ce) {
-                            Log::warning("Cloudinary Backup Failed for {$key}: " . $ce->getMessage());
+                            Log::error("Cloudinary Backup Failed for {$key}: " . $ce->getMessage());
                             $updateData['value'] = $url; // Fallback to T3 URL if backup fails
                         }
 
@@ -118,13 +119,15 @@ class LandingController extends Controller
                         
                         // B. Backup to Cloudinary
                         try {
+                            Log::info("Attempting Cloudinary backup via URL for {$key}...");
                             $cloudinaryUpload = Cloudinary::upload($url, [ // Cloudinary can upload from a URL
                                 'folder' => $folder,
                                 'public_id' => $key . '_' . time()
                             ]);
                             $updateData['value'] = $cloudinaryUpload->getSecurePath(); // Backup URL
+                            Log::info("Cloudinary Backup Success: " . $updateData['value']);
                         } catch (\Exception $ce) {
-                            Log::warning("Cloudinary Backup Failed for URL {$key}: " . $ce->getMessage());
+                            Log::error("Cloudinary Backup Failed for URL {$key}: " . $ce->getMessage());
                             $updateData['value'] = $url;
                         }
 
