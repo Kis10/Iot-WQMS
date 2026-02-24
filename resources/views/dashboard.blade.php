@@ -1350,58 +1350,75 @@
 
                 document.getElementById('modal-title-text').textContent = title;
                 content.innerHTML = `
-                    <div class="p-4 bg-gray-50 rounded-xl space-y-3 border border-gray-100">
-                        <div class="flex justify-between items-center text-sm text-gray-500 font-bold uppercase tracking-wider mb-1">
-                            <span>FAO Standard</span>
-                            <span>${paramType === 'ph' ? '6.5 - 8.5 pH' : paramType === 'temp' ? '25 - 32 °C' : paramType === 'turbidity' ? '50 - 100%' : '300 - 500 ppm'}</span>
+                    <div class="p-5 bg-indigo-50/50 rounded-2xl border border-indigo-100 space-y-4">
+                        <div class="flex justify-between items-center text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
+                            <span>FAO Reference Standard</span>
+                            <span class="bg-white px-2 py-0.5 rounded-full border border-indigo-100">${paramType === 'ph' ? '6.5 - 8.5 pH' : paramType === 'temp' ? '25 - 32 °C' : paramType === 'turbidity' ? '50 - 100%' : '300 - 500 ppm'}</span>
                         </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600 font-medium">Real-time Reading</span>
-                            <span class="text-indigo-700 font-black text-2xl">${val}<span class="text-xs font-bold ml-1">${unit}</span></span>
+                        <div class="flex justify-between items-end">
+                            <span class="text-sm font-bold text-gray-600">Real-time Reading</span>
+                            <div class="text-right">
+                                <span class="text-3xl font-black text-indigo-600 tracking-tighter">${val}</span>
+                                <span class="text-xs font-bold text-indigo-400 ml-1 uppercase">${unit}</span>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-[2px]">WQI Mathematical Formula</label>
-                        <div class="p-3 bg-blue-50 text-blue-900 rounded-lg font-mono text-sm border border-blue-100 flex items-center gap-3">
-                             <div class="bg-blue-600 text-white px-2 py-0.5 rounded-md text-[10px] font-bold">FX</div>
-                             <span class="font-bold underline italic tracking-tight">${formulaText}</span>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-2">
+                             <div class="h-px flex-1 bg-gray-100"></div>
+                             <span class="text-[9px] font-black text-gray-400 uppercase tracking-[2px]">Mathematical Logic</span>
+                             <div class="h-px flex-1 bg-gray-100"></div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 font-mono text-xs flex items-center gap-4">
+                             <div class="flex-shrink-0 w-8 h-8 rounded-xl bg-white border border-gray-200 flex items-center justify-center text-indigo-600 shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                             </div>
+                             <div class="flex-1">
+                                <p class="text-[10px] text-gray-400 font-bold uppercase mb-1">Standard Formula</p>
+                                <span class="font-bold text-gray-700 italic tracking-tight">${formulaText}</span>
+                             </div>
                         </div>
                     </div>
 
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-[2px]">Solution</label>
-                        <div class="p-4 rounded-2xl border-2 border-dashed border-gray-100 bg-white space-y-4">
-                            <div class="flex gap-4">
-                                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">01</div>
-                                <div class="text-sm">
-                                    <p class="font-bold text-gray-900 mb-1">Calculate Quality Score</p>
-                                    <p class="font-mono text-xs bg-gray-50 p-2 rounded border border-gray-100 text-gray-700 leading-relaxed italic">${calcText}</p>
+                    <div class="space-y-4">
+                        <div class="relative pl-8 space-y-6 before:absolute before:left-[15px] before:top-2 before:bottom-2 before:w-0.5 before:bg-indigo-100">
+                            <!-- Step 1 -->
+                            <div class="relative">
+                                <div class="absolute -left-10 w-5 h-5 rounded-full bg-white border-4 border-indigo-500 z-10"></div>
+                                <div>
+                                    <p class="text-[10px] font-black text-indigo-500 uppercase tracking-wider mb-1">Step 01: Quality Score</p>
+                                    <div class="p-3 bg-white rounded-xl border border-gray-100 shadow-sm font-mono text-[11px] text-gray-600 italic">
+                                        ${calcText}
+                                    </div>
                                 </div>
                             </div>
-                            <div class="flex gap-4">
-                                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-600">02</div>
-                                <div class="text-sm">
-                                    <p class="font-bold text-gray-900 mb-1">Final Index Contribution</p>
-                                    <p class="text-gray-600">
-                                        <span class="font-mono text-xs bg-white text-gray-700">
-                                            Score (${score.toFixed(1)}) × Weight (${(weight * 100)}%) 
-                                        </span>
-                                        <br>
-                                        <span class="text-lg font-black text-indigo-600 mt-2 block tracking-tight">
-                                            Result = ${(score * weight).toFixed(1)}%
-                                        </span>
-                                    </p>
+                            <!-- Step 2 -->
+                            <div class="relative">
+                                <div class="absolute -left-10 w-5 h-5 rounded-full bg-white border-4 border-indigo-500 z-10"></div>
+                                <div>
+                                    <p class="text-[10px] font-black text-indigo-500 uppercase tracking-wider mb-1">Step 02: Final Contribution</p>
+                                    <div class="p-4 bg-white rounded-xl border border-gray-100 shadow-sm space-y-2">
+                                        <div class="flex justify-between text-xs text-gray-500">
+                                            <span>Score × Weight</span>
+                                            <span class="font-bold">${score.toFixed(1)} × ${(weight * 100)}%</span>
+                                        </div>
+                                        <div class="h-px bg-gray-50"></div>
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-xs font-bold text-gray-900">Result</span>
+                                            <span class="text-xl font-black text-indigo-600 tracking-tight">${(score * weight).toFixed(1)}%</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 flex gap-3">
-                        <div class="text-xl">ℹ️</div>
-                        <p class="text-[11px] text-indigo-900 leading-relaxed font-medium">
-                            <b>Did you know?</b> This parameter contributes <b>${(score * weight).toFixed(1)}%</b> toward the total 100% Water Quality Index. 
-                            ${score < 100 ? 'Points are deducted because the current reading deviates from the optimal FAO range for warm-water fish farming.' : 'Perfect contribution score as the current reading is within the ideal FAO range.'}
+                    <div class="p-4 bg-amber-50 rounded-2xl border border-amber-100 flex gap-3 shadow-sm">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-xl bg-white flex items-center justify-center text-sm shadow-sm">💡</div>
+                        <p class="text-[11px] text-amber-900 leading-relaxed font-medium">
+                            This parameter contributes <b>${(score * weight).toFixed(1)}%</b> toward the total 100% Water Quality Index. 
+                            ${score < 100 ? 'Points are deducted because the reading deviates from the optimal FAO range for fish.' : 'Perfect contribution score as the reading is within the ideal FAO range.'}
                         </p>
                     </div>
                 `;
@@ -1424,27 +1441,29 @@
     <!-- WQI Formula Modal -->
     <div id="formulaModal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity" aria-hidden="true" onclick="hideFormulaModal()"></div>
+            <div class="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity" aria-hidden="true" onclick="hideFormulaModal()"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div class="inline-block align-bottom bg-white rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-white/20">
-                <div class="bg-gradient-to-br from-indigo-600 via-indigo-700 to-blue-800 px-6 py-5">
-                    <h3 class="text-lg font-black text-white flex justify-between items-center tracking-tight" id="modal-title">
-                        <div class="flex flex-col">
-                            <span class="text-[10px] text-indigo-200 uppercase tracking-[3px] font-bold mb-0.5">WQI Solution</span>
-                            <span id="modal-title-text">Parameter Calculation</span>
+            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-gray-100">
+                <div class="px-6 py-4 bg-indigo-50 border-b border-indigo-100">
+                    <h3 class="text-sm font-bold text-indigo-900 flex items-center justify-between gap-2" id="modal-title">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="uppercase tracking-wider">WQI Solution: <span id="modal-title-text" class="normal-case">Parameter Calculation</span></span>
                         </div>
-                        <button onclick="hideFormulaModal()" class="text-white/60 hover:text-white transition-colors bg-white/10 p-2 rounded-xl">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" /></svg>
+                        <button onclick="hideFormulaModal()" class="text-indigo-400 hover:text-indigo-600 transition-colors p-1 rounded-lg">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                     </h3>
                 </div>
-                <div class="bg-white px-6 pt-6 pb-6 mt-[-10px] rounded-t-[20px] relative z-10">
+                <div class="bg-white p-6 relative">
                     <div id="modal-content" class="space-y-6">
                         <!-- Content will be injected here -->
                     </div>
                 </div>
-                <div class="bg-gray-50/50 px-6 py-4 flex flex-col gap-2">
-                    <button type="button" class="w-full inline-flex justify-center rounded-2xl border border-gray-200 shadow-sm px-4 py-3 bg-white text-sm font-bold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition-all focus:outline-none" onclick="hideFormulaModal()">Dismiss Solution</button>
+                <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+                    <button type="button" class="inline-flex justify-center rounded-xl border border-gray-200 shadow-sm px-4 py-2 bg-white text-xs font-bold text-gray-700 hover:bg-gray-50 hover:text-indigo-600 transition-all focus:outline-none" onclick="hideFormulaModal()">Close Details</button>
                 </div>
             </div>
         </div>
