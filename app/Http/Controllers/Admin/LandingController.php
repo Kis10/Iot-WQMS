@@ -62,67 +62,64 @@ class LandingController extends Controller
                 $folder = 'Landing/Main';
             }
 
-            // A. Handle File Upload
+            // A. Handle File Upload (Save to display folder as requested)
             if ($request->hasFile($fileInput)) {
-                Log::info("Processing file upload for key: " . $fileInput);
                 $file = $request->file($fileInput);
                 if ($file->isValid()) {
                     try {
-                        // Store Locally (Backup)
-                        $path = $file->store($folder, 'public');
-                        Log::info("Stored local backup at: " . $path);
+                        $ext = $file->getClientOriginalExtension() ?: 'png';
+                        $filename = $key . '_' . time() . '.' . $ext;
+
+                        // Target Display Folder for local files
+                        $targetDir = public_path('img/members/display');
+                        if (!file_exists($targetDir)) { mkdir($targetDir, 0755, true); }
+                        $file->move($targetDir, $filename);
+                        
+                        $localPath = 'img/members/display/' . $filename;
+                        Log::info("Stored photo in display folder: " . $localPath);
 
                         // Upload to Cloudinary (Primary)
-                        $result = $file->storeOnCloudinary($folder);
-                        $updateData['image'] = $result->getSecurePath();
-                        Log::info("Uploaded to Cloudinary: " . $updateData['image'] . " in folder: " . $folder);
-                    } catch (\Exception $e) {
-                        Log::error("Cloudinary Upload Error: " . $e->getMessage());
-                        // Fallback: use local path if Cloudinary fails
-                        if (isset($path)) {
-                            $updateData['image'] = asset('storage/' . $path);
-                            Log::info("Fallback to local: " . $updateData['image']);
-                        }
-                    }
-                } else {
-                    Log::error("File is not valid for key: " . $fileInput);
-                }
-            } 
-            // B. Handle URL String — also upload to Cloudinary for permanent backup
-            elseif ($request->filled($urlInput)) {
-                $url = $request->input($urlInput);
-                
-                try {
-                    // Download the URL image to a temp file, then upload to Cloudinary
-                    $tempFile = tempnam(sys_get_temp_dir(), 'landing_');
-                    $imageContents = file_get_contents($url);
-                    
-                    if ($imageContents !== false) {
-                        file_put_contents($tempFile, $imageContents);
-                        
-                        // Upload to Cloudinary
-                        $result = cloudinary()->upload($tempFile, [
+                        $result = cloudinary()->upload($targetDir . '/' . $filename, [
                             'folder' => $folder,
                         ]);
                         $updateData['image'] = $result->getSecurePath();
-                        Log::info("URL image uploaded to Cloudinary: " . $updateData['image'] . " (from: {$url})");
-                        
-                        // Also save locally
+                    } catch (\Exception $e) {
+                        Log::error("File Processing Error: " . $e->getMessage());
+                        if (isset($localPath)) {
+                            $updateData['image'] = asset($localPath);
+                        }
+                    }
+                }
+            } 
+            // B. Handle URL String (Save to hover folder as requested)
+            elseif ($request->filled($urlInput)) {
+                $url = $request->input($urlInput);
+                try {
+                    $imageContents = @file_get_contents($url);
+                    if ($imageContents !== false) {
                         $ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpg';
-                        $localName = $folder . '/' . $key . '_' . time() . '.' . $ext;
-                        Storage::disk('public')->put($localName, $imageContents);
-                        Log::info("URL image saved locally at: " . $localName);
+                        $filename = $key . '_' . time() . '.' . $ext;
+
+                        // Target Hover Folder for URL-based photos
+                        $targetDir = public_path('img/members/hover');
+                        if (!file_exists($targetDir)) { mkdir($targetDir, 0755, true); }
+                        $localFullPath = $targetDir . '/' . $filename;
+                        file_put_contents($localFullPath, $imageContents);
                         
-                        @unlink($tempFile);
+                        $localPath = 'img/members/hover/' . $filename;
+                        Log::info("Stored URL photo in hover folder: " . $localPath);
+
+                        // Upload to Cloudinary
+                        $result = cloudinary()->upload($localFullPath, [
+                            'folder' => $folder,
+                        ]);
+                        $updateData['image'] = $result->getSecurePath();
                     } else {
-                        // If download fails, just store the URL directly
                         $updateData['image'] = $url;
-                        Log::warning("Could not download URL, storing raw URL: " . $url);
                     }
                 } catch (\Exception $e) {
-                    // Fallback: store the URL directly if Cloudinary upload fails
                     $updateData['image'] = $url;
-                    Log::error("URL-to-Cloudinary failed: " . $e->getMessage() . " — storing raw URL");
+                    Log::error("URL Processing Error: " . $e->getMessage());
                 }
             }
 
