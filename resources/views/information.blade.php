@@ -28,23 +28,23 @@
                                 <!-- Temperature Standard -->
                                 <div class="p-4 rounded-xl bg-orange-50 border border-orange-100">
                                     <h3 class="text-base font-bold text-orange-900 tracking-tight mb-2 flex justify-between">
-                                        Temperature <span>26°C - 30°C</span>
+                                        Temperature <span>25°C - 32°C</span>
                                     </h3>
-                                    <p class="text-sm text-orange-800 leading-relaxed italic font-medium">"Controls the metabolic rate of fish. Tilapia productivity peaks in this range. Above 32°C, oxygen solubility drops."</p>
+                                    <p class="text-sm text-orange-800 leading-relaxed italic font-medium">"FAO African Regional Aquaculture Centre standard for warm-water fish like Tilapia. Productivity peaks in this range, controlling all biological processes."</p>
                                 </div>
                                 <!-- TDS Standard -->
                                 <div class="p-4 rounded-xl bg-purple-50 border border-purple-100">
                                     <h3 class="text-base font-bold text-purple-900 tracking-tight mb-2 flex justify-between">
-                                        TDS <span>100 - 500 ppm</span>
+                                        TDS <span>300 - 500 ppm</span>
                                     </h3>
-                                    <p class="text-sm text-purple-800 leading-relaxed italic font-medium">"Measures inorganic salts and organic matter. High TDS (>1000) stresses the osmoregulation of freshwater fish."</p>
+                                    <p class="text-sm text-purple-800 leading-relaxed italic font-medium">"FAO AGIRS research indicates 300-440 mg/L mineralization is suitable for freshwater ponds. High TDS (>2000) is the upper limit for irrigation use."</p>
                                 </div>
                                 <!-- Turbidity Standard -->
                                 <div class="p-4 rounded-xl bg-blue-50 border border-blue-100">
                                     <h3 class="text-base font-bold text-blue-900 tracking-tight mb-2 flex justify-between">
-                                        Turbidity <span>50 - 100%</span>
+                                        Turbidity <span>15 - 40 cm</span>
                                     </h3>
-                                    <p class="text-sm text-blue-800 leading-relaxed italic font-medium">"Clarity is vital for light penetration and gill health. Muddy water (below 20%) stunts growth and clogs gills."</p>
+                                    <p class="text-sm text-blue-800 leading-relaxed italic font-medium">"Optimal Secchi disk visibility. Plankton turbidity in this range is ideal for fish growth as it provides natural food, while inorganic muddiness should be avoided."</p>
                                 </div>
                             </div>
                         </div>

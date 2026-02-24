@@ -140,7 +140,7 @@
                     <div class="flex flex-col items-center mt-2">
                         <p class="text-gray-400 text-[11px] sm:text-xs font-medium">%</p>
                         <span id="status-turbidity" class="mt-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
-                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">Ideal: 50-100%</p>
+                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">FAO Ideal: 15-40cm depth</p>
                     </div>
                 </div>
 
@@ -164,7 +164,7 @@
                     <div class="flex flex-col items-center mt-2">
                         <p class="text-gray-400 text-[11px] sm:text-xs font-medium">mg/L</p>
                         <span id="status-tds" class="mt-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
-                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">Ideal: 100-500</p>
+                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">FAO Ideal: 300-500</p>
                     </div>
                 </div>
 
@@ -188,7 +188,7 @@
                     <div class="flex flex-col items-center mt-2">
                         <p class="text-gray-400 text-[11px] sm:text-xs font-medium">pH</p>
                         <span id="status-ph" class="mt-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
-                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">Ideal: 6.5-8.5</p>
+                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">FAO Ideal: 6.5-8.5</p>
                     </div>
                 </div>
 
@@ -212,7 +212,7 @@
                     <div class="flex flex-col items-center mt-2">
                         <p class="text-gray-400 text-[11px] sm:text-xs font-medium">°C</p>
                         <span id="status-temp" class="mt-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
-                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">Ideal: 24-30°C</p>
+                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">FAO Ideal: 25-32°C</p>
                     </div>
                 </div>
             </div>
@@ -588,12 +588,13 @@
                     if (r.ph < 6.5) scores.ph = Math.max(0, 100 - (6.5 - r.ph) * 50);
                     else if (r.ph > 8.5) scores.ph = Math.max(0, 100 - (r.ph - 8.5) * 50);
 
-                    if (r.temperature < 24) scores.temp = Math.max(0, 100 - (24 - r.temperature) * 10);
-                    else if (r.temperature > 30) scores.temp = Math.max(0, 100 - (r.temperature - 30) * 15);
+                    if (r.temperature < 25) scores.temp = Math.max(0, 100 - (25 - r.temperature) * 10);
+                    else if (r.temperature > 32) scores.temp = Math.max(0, 100 - (r.temperature - 32) * 15);
 
                     if (r.turbidity < 50) scores.turbidity = Math.max(0, (r.turbidity / 50) * 100);
                     
-                    if (r.tds > 500) scores.tds = Math.max(0, 100 - (r.tds - 500) * 0.1);
+                    if (r.tds < 300) scores.tds = Math.max(0, (r.tds / 300) * 100);
+                    else if (r.tds > 500) scores.tds = Math.max(0, 100 - (r.tds - 500) * 0.1);
 
                     const wqi = (scores.ph * weights.ph) + (scores.temp * weights.temp) + (scores.turbidity * weights.turbidity) + (scores.tds * weights.tds);
                     
@@ -656,7 +657,7 @@
                             else color = '#4f46e5'; // Indigo (Normal 50-100)
                         } else if (param === 'temp') {
                             if (val < 15 || val > 35) color = '#ef4444';
-                            else if (val < 20 || val > 30) color = '#f59e0b';
+                            else if (val < 25 || val > 32) color = '#f59e0b';
                             else color = '#f97316'; // Orange
                         }
                         circle.setAttribute('stroke', color);

@@ -105,7 +105,7 @@
                                     @endif
                                     
                                     <div class="flex items-center space-x-4 text-sm text-gray-500">
-                                        <span>Turbidity: {{ $analysis->waterReading->turbidity }} NTU</span>
+                                        <span>Turbidity: {{ $analysis->waterReading->turbidity }}%</span>
                                         <span>TDS: {{ $analysis->waterReading->tds }} mg/L</span>
                                         <span>pH: {{ $analysis->waterReading->ph }}</span>
                                         <span>Water Temp: {{ $analysis->waterReading->temperature }}°C</span>

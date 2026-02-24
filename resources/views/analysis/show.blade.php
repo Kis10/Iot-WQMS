@@ -95,7 +95,7 @@
                             </div>
                             <p class="text-sm font-medium text-gray-500">Turbidity</p>
                             <p class="text-xl font-semibold text-gray-900">{{ $analysis->waterReading->turbidity }}</p>
-                            <p class="text-xs text-gray-500">NTU</p>
+                            <p class="text-xs text-gray-500">% Clarity</p>
                         </div>
                         
                         <div class="text-center">

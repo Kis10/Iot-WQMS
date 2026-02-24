@@ -27,8 +27,9 @@
                                         if ($alert->turbidity < 20) $alertTypes[] = ['param' => 'Turbidity', 'value' => $alert->turbidity . '%', 'status' => 'Data Critical', 'effect' => 'Extremely Muddy - Fish death likely', 'severity' => 'critical'];
                                         else $alertTypes[] = ['param' => 'Turbidity', 'value' => $alert->turbidity . '%', 'status' => 'Poor Clarity', 'effect' => 'Slower growth, gill stress', 'severity' => 'warning'];
                                     }
-                                    if ($alert->tds > 500) {
-                                        if ($alert->tds > 1000) $alertTypes[] = ['param' => 'TDS', 'value' => $alert->tds . ' mg/L', 'status' => 'Dangerous', 'effect' => 'May cause mortality', 'severity' => 'critical'];
+                                    if ($alert->tds > 500 || $alert->tds < 300) {
+                                        if ($alert->tds > 1000) $alertTypes[] = ['param' => 'TDS', 'value' => $alert->tds . ' mg/L', 'status' => 'Dangerous', 'effect' => 'Extremely high mineralization', 'severity' => 'critical'];
+                                        elseif ($alert->tds < 300) $alertTypes[] = ['param' => 'TDS', 'value' => $alert->tds . ' mg/L', 'status' => 'Low', 'effect' => 'Below FAO ideal 300mg/L', 'severity' => 'warning'];
                                         else $alertTypes[] = ['param' => 'TDS', 'value' => $alert->tds . ' mg/L', 'status' => 'High', 'effect' => 'Reduce growth, chronic stress', 'severity' => 'warning'];
                                     }
                                     if ($alert->ph < 6.5 || $alert->ph > 8.5) {
@@ -36,9 +37,10 @@
                                         elseif ($alert->ph < 6.5) $alertTypes[] = ['param' => 'pH Level', 'value' => $alert->ph, 'status' => 'Acidic', 'effect' => 'Below optimal 6.5 - Growth may slow', 'severity' => 'warning'];
                                         else $alertTypes[] = ['param' => 'pH Level', 'value' => $alert->ph, 'status' => 'Alkaline', 'effect' => 'Above optimal 8.5 - Stress, ammonia toxicity risk', 'severity' => 'warning'];
                                     }
-                                    if ($alert->temperature < 15 || $alert->temperature > 32) {
-                                        if ($alert->temperature > 32) $alertTypes[] = ['param' => 'Water Temp', 'value' => $alert->temperature . '°C', 'status' => 'Dangerous', 'effect' => 'Can cause mortality quickly', 'severity' => 'critical'];
-                                        elseif ($alert->temperature < 15) $alertTypes[] = ['param' => 'Water Temp', 'value' => $alert->temperature . '°C', 'status' => 'Cold', 'effect' => 'Metabolism slows, feeding decreases', 'severity' => 'warning'];
+                                    if ($alert->temperature < 25 || $alert->temperature > 32) {
+                                        if ($alert->temperature > 35 || $alert->temperature < 20) $alertTypes[] = ['param' => 'Water Temp', 'value' => $alert->temperature . '°C', 'status' => 'Dangerous', 'effect' => 'Extreme FAO deviation - Stress/Mortality risk', 'severity' => 'critical'];
+                                        elseif ($alert->temperature > 32) $alertTypes[] = ['param' => 'Water Temp', 'value' => $alert->temperature . '°C', 'status' => 'Warm', 'effect' => 'Above optimal 32°C - Oxygen dropping', 'severity' => 'warning'];
+                                        else $alertTypes[] = ['param' => 'Water Temp', 'value' => $alert->temperature . '°C', 'status' => 'Cool', 'effect' => 'Below optimal 25°C - Metabolism slowing', 'severity' => 'warning'];
                                     }
                                 @endphp
                                 @foreach($alertTypes as $type)
@@ -81,9 +83,9 @@
                         @php
                             $alertTypes = [];
                             if ($alert->turbidity < 50) $alertTypes[] = ['param' => 'Turbidity', 'value' => $alert->turbidity . '%', 'status' => 'Critical', 'severity' => $alert->turbidity < 20 ? 'critical' : 'warning'];
-                            if ($alert->tds > 500) $alertTypes[] = ['param' => 'TDS', 'value' => $alert->tds . ' mg/L', 'status' => 'Dangerous', 'severity' => $alert->tds > 1000 ? 'critical' : 'warning'];
+                            if ($alert->tds > 500 || $alert->tds < 300) $alertTypes[] = ['param' => 'TDS', 'value' => $alert->tds . ' mg/L', 'status' => ($alert->tds > 1000) ? 'Dangerous' : 'Abnormal', 'severity' => $alert->tds > 1000 ? 'critical' : 'warning'];
                             if ($alert->ph < 6.5 || $alert->ph > 8.5) $alertTypes[] = ['param' => 'pH Level', 'value' => $alert->ph, 'status' => 'Abnormal', 'severity' => ($alert->ph < 6.0 || $alert->ph > 9.0) ? 'critical' : 'warning'];
-                            if ($alert->temperature < 15 || $alert->temperature > 32) $alertTypes[] = ['param' => 'Temp', 'value' => $alert->temperature . '°C', 'status' => 'Extreme', 'severity' => $alert->temperature > 32 ? 'critical' : 'warning'];
+                            if ($alert->temperature < 25 || $alert->temperature > 32) $alertTypes[] = ['param' => 'Temp', 'value' => $alert->temperature . '°C', 'status' => ($alert->temperature > 35 || $alert->temperature < 20) ? 'Critical' : 'Abnormal', 'severity' => ($alert->temperature > 35 || $alert->temperature < 20) ? 'critical' : 'warning'];
                         @endphp
                         @foreach($alertTypes as $type)
                             <div class="p-5 {{ $type['severity'] === 'critical' ? 'bg-red-50/30' : 'bg-amber-50/30' }}">
