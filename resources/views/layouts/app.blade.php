@@ -124,7 +124,9 @@
                 })();
             </script>
             @endif
-            <x-sound-controls />
+            @if(request()->routeIs('dashboard'))
+                <x-sound-controls />
+            @endif
         @endauth
 
         <audio id="globalAiSound" src="{{ asset('sounds/ai.mp3') }}" preload="auto"></audio>
