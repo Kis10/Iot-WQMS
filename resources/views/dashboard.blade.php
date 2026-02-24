@@ -100,6 +100,7 @@
                     <div class="flex flex-col items-center mt-2">
                         <p class="text-gray-400 text-[10px] sm:text-[11px] font-medium">%</p>
                         <span id="status-turbidity" class="mt-1 text-[9px] font-bold uppercase tracking-tighter px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
+                        <p class="mt-1.5 text-[8px] text-gray-400 font-bold uppercase tracking-widest italic">Ideal: 50-100%</p>
                     </div>
                 </div>
 
@@ -123,6 +124,7 @@
                     <div class="flex flex-col items-center mt-2">
                         <p class="text-gray-400 text-[10px] sm:text-[11px] font-medium">mg/L</p>
                         <span id="status-tds" class="mt-1 text-[9px] font-bold uppercase tracking-tighter px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
+                        <p class="mt-1.5 text-[8px] text-gray-400 font-bold uppercase tracking-widest italic">Ideal: 100-500</p>
                     </div>
                 </div>
 
@@ -146,6 +148,7 @@
                     <div class="flex flex-col items-center mt-2">
                         <p class="text-gray-400 text-[10px] sm:text-[11px] font-medium">pH</p>
                         <span id="status-ph" class="mt-1 text-[9px] font-bold uppercase tracking-tighter px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
+                        <p class="mt-1.5 text-[8px] text-gray-400 font-bold uppercase tracking-widest italic">Ideal: 6.5-8.5</p>
                     </div>
                 </div>
 
@@ -169,6 +172,7 @@
                     <div class="flex flex-col items-center mt-2">
                         <p class="text-gray-400 text-[10px] sm:text-[11px] font-medium">°C</p>
                         <span id="status-temp" class="mt-1 text-[9px] font-bold uppercase tracking-tighter px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
+                        <p class="mt-1.5 text-[8px] text-gray-400 font-bold uppercase tracking-widest italic">Ideal: 24-30°C</p>
                     </div>
                 </div>
             </div>
@@ -1103,10 +1107,10 @@
                 // Parameter Table
                 const tbody = document.getElementById('printTableBody');
                 const params = [
-                    { name: 'Turbidity', value: parseFloat(reading.turbidity).toFixed(2) + '%', critical: reading.turbidity < 50 },
-                    { name: 'TDS', value: parseFloat(reading.tds).toFixed(2) + ' ppm', critical: reading.tds > 500 },
-                    { name: 'pH Level', value: parseFloat(reading.ph).toFixed(2), critical: reading.ph < 6.0 || reading.ph > 8.0 },
-                    { name: 'Water Temp', value: parseFloat(reading.temperature).toFixed(2) + '°C', critical: reading.temperature < 15 || reading.temperature > 32 },
+                    { name: 'Turbidity', value: parseFloat(reading.turbidity).toFixed(2) + '%', standard: '50-100%', critical: reading.turbidity < 50 },
+                    { name: 'TDS', value: parseFloat(reading.tds).toFixed(2) + ' ppm', standard: '100-500', critical: reading.tds > 500 },
+                    { name: 'pH Level', value: parseFloat(reading.ph).toFixed(2), standard: '6.5-8.5', critical: reading.ph < 6.5 || reading.ph > 8.5 },
+                    { name: 'Water Temp', value: parseFloat(reading.temperature).toFixed(2) + '°C', standard: '24-30°C', critical: reading.temperature < 20 || reading.temperature > 32 },
                 ];
 
                 tbody.innerHTML = params.map(p => {
@@ -1114,7 +1118,7 @@
                     const statusText = p.critical ? 'Critical' : 'Normal';
                     return `<tr style="border-top:1px solid #e5e7eb;">
                         <td style="padding:12px 20px;font-size:13px;font-weight:500;color:#111827;">${p.name}</td>
-                        <td style="padding:12px 20px;font-size:13px;color:#111827;">${p.value}</td>
+                        <td style="padding:12px 20px;font-size:13px;color:#111827;">${p.value} <span style="font-size:10px;color:#9ca3af;font-style:italic;margin-left:4px;">(Standard: ${p.standard})</span></td>
                         <td style="padding:12px 20px;">
                             <span style="display:inline-block;padding:2px 10px;border-radius:9999px;font-size:11px;font-weight:600;${statusBg}">${statusText}</span>
                         </td>
