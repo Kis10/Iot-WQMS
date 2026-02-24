@@ -81,16 +81,22 @@ class LandingController extends Controller
                         
                         // B. Backup to Cloudinary
                         try {
-                            Log::info("Attempting Cloudinary backup for {$key}...");
-                            $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), [
-                                'folder' => $folder,
-                                'public_id' => $key . '_' . time()
-                            ]);
-                            $updateData['value'] = $cloudinaryUpload->getSecurePath(); // Backup URL
-                            Log::info("Cloudinary Backup Success: " . $updateData['value']);
+                            if (config('cloudinary.cloud_url') || env('CLOUDINARY_URL')) {
+                                Log::info("Attempting Cloudinary backup for {$key}...");
+                                $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), [
+                                    'folder' => $folder,
+                                    'public_id' => $key . '_' . time(),
+                                    'resource_type' => 'auto'
+                                ]);
+                                $updateData['value'] = $cloudinaryUpload->getSecurePath();
+                                Log::info("Cloudinary Backup Success: " . $updateData['value']);
+                            } else {
+                                Log::warning("Cloudinary ignored: Missing CLOUDINARY_URL in environment.");
+                                $updateData['value'] = $url;
+                            }
                         } catch (\Exception $ce) {
                             Log::error("Cloudinary Backup Failed for {$key}: " . $ce->getMessage());
-                            $updateData['value'] = $url; // Fallback to T3 URL if backup fails
+                            $updateData['value'] = $url;
                         }
 
                         Log::info("Saved Cloud URL: " . $url);
@@ -155,9 +161,12 @@ class LandingController extends Controller
         // 5. Skip syncSeeder on Railway to avoid ephemeral disk issues
         // $this->syncSeeder();
 
-        // Return Success
+        // Return Success with Status
         if ($request->wantsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
-            return response()->json(['status' => 'success']);
+            return response()->json([
+                'status' => 'success',
+                'cloudinary_active' => (bool)(config('cloudinary.cloud_url') || env('CLOUDINARY_URL'))
+            ]);
         }
 
         return redirect()->route('admin.landing.index')->with('status', 'Landing Page Updated Successfully!');
