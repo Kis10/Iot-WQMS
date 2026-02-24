@@ -140,7 +140,7 @@
                     <div class="flex flex-col items-center mt-2">
                         <p class="text-gray-400 text-[11px] sm:text-xs font-medium">%</p>
                         <span id="status-turbidity" class="mt-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
-                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">FAO Ideal: 15-40cm depth</p>
+                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">Ideal: 50-100%</p>
                     </div>
                 </div>
 
@@ -164,7 +164,7 @@
                     <div class="flex flex-col items-center mt-2">
                         <p class="text-gray-400 text-[11px] sm:text-xs font-medium">mg/L</p>
                         <span id="status-tds" class="mt-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
-                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">FAO Ideal: 300-500</p>
+                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">Ideal: 300-500</p>
                     </div>
                 </div>
 
@@ -188,7 +188,7 @@
                     <div class="flex flex-col items-center mt-2">
                         <p class="text-gray-400 text-[11px] sm:text-xs font-medium">pH</p>
                         <span id="status-ph" class="mt-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
-                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">FAO Ideal: 6.5-8.5</p>
+                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">Ideal: 6.5-8.5</p>
                     </div>
                 </div>
 
@@ -212,7 +212,7 @@
                     <div class="flex flex-col items-center mt-2">
                         <p class="text-gray-400 text-[11px] sm:text-xs font-medium">°C</p>
                         <span id="status-temp" class="mt-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
-                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">FAO Ideal: 25-32°C</p>
+                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">Ideal: 25-32°C</p>
                     </div>
                 </div>
             </div>

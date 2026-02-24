@@ -42,9 +42,9 @@
                                 <!-- Turbidity Standard -->
                                 <div class="p-4 rounded-xl bg-blue-50 border border-blue-100">
                                     <h3 class="text-base font-bold text-blue-900 tracking-tight mb-2 flex justify-between">
-                                        Turbidity <span>15 - 40 cm</span>
+                                        Turbidity <span>50 - 100%</span>
                                     </h3>
-                                    <p class="text-sm text-blue-800 leading-relaxed italic font-medium">"Optimal Secchi disk visibility. Plankton turbidity in this range is ideal for fish growth as it provides natural food, while inorganic muddiness should be avoided."</p>
+                                    <p class="text-sm text-blue-800 leading-relaxed italic font-medium">"Optimal clarity (correlating to 15-40cm Secchi visibility). Plankton turbidity in this range is ideal for fish growth as it provides natural food."</p>
                                 </div>
                             </div>
                         </div>

@@ -79,7 +79,7 @@
                             <tbody class="bg-white divide-y divide-gray-200">
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Turbidity</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->turbidity }}% <span class="text-gray-400 text-xs font-normal ml-1 italic">(FAO: 15-40cm Secchi)</span></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->turbidity }}% <span class="text-gray-400 text-xs font-normal ml-1 italic">(Standard: 50-100%)</span></td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @if($reading->turbidity < 20)
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Critical</span>
@@ -92,7 +92,7 @@
                                 </tr>
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TDS</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->tds }} ppm <span class="text-gray-400 text-xs font-normal ml-1 italic">(FAO: 300-500)</span></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->tds }} ppm <span class="text-gray-400 text-xs font-normal ml-1 italic">(Standard: 300-500)</span></td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @if($reading->tds > 1000)
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Critical</span>
@@ -116,7 +116,7 @@
                                 </tr>
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Water Temp</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->temperature }}°C <span class="text-gray-400 text-xs font-normal ml-1 italic">(FAO: 25-32°C)</span></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->temperature }}°C <span class="text-gray-400 text-xs font-normal ml-1 italic">(Standard: 25-32°C)</span></td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @if($reading->temperature < 20 || $reading->temperature > 35)
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Critical</span>
