@@ -98,14 +98,23 @@
                     </div>
                 </div>
 
-                <div class="flex flex-wrap justify-center md:justify-end gap-2 sm:gap-3">
-                    <span class="px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-xl text-[10px] font-bold uppercase tracking-wider border border-indigo-100 flex items-center gap-2">
-                        <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
-                        Real-Time
-                    </span>
-                    <span class="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl text-[10px] font-bold uppercase tracking-wider border border-emerald-100 italic">
-                        Accuracy: 99.4%
-                    </span>
+                <div class="flex flex-wrap justify-center md:justify-end gap-2 sm:gap-4">
+                    <div class="flex flex-col items-center">
+                        <span id="contrib-ph" class="text-[11px] font-bold text-gray-900">pH=30.0%</span>
+                        <span class="text-[8px] text-gray-400 uppercase font-black">pH</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span id="contrib-temp" class="text-[11px] font-bold text-gray-900">Temp=25.0%</span>
+                        <span class="text-[8px] text-gray-400 uppercase font-black">Temp</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span id="contrib-turbidity" class="text-[11px] font-bold text-gray-900">Turb=25.0%</span>
+                        <span class="text-[8px] text-gray-400 uppercase font-black">Turb</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <span id="contrib-tds" class="text-[11px] font-bold text-gray-900">TDS=20.0%</span>
+                        <span class="text-[8px] text-gray-400 uppercase font-black">TDS</span>
+                    </div>
                 </div>
             </div>
 
@@ -608,6 +617,16 @@
                         circle.setAttribute('stroke', color);
                         text.textContent = Math.round(wqi) + '%';
                         if (desc) desc.textContent = msg;
+
+                        // Update individual contributions in UI
+                        const updateContrib = (id, score, weight, prefix) => {
+                            const el = document.getElementById(id);
+                            if (el) el.textContent = `${prefix}=${(score * weight).toFixed(1)}%`;
+                        };
+                        updateContrib('contrib-ph', scores.ph, weights.ph, 'pH');
+                        updateContrib('contrib-temp', scores.temp, weights.temp, 'Temp');
+                        updateContrib('contrib-turbidity', scores.turbidity, weights.turbidity, 'Turb');
+                        updateContrib('contrib-tds', scores.tds, weights.tds, 'TDS');
                     }
                 };
 
