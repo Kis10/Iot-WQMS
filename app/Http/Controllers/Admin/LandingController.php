@@ -62,30 +62,27 @@ class LandingController extends Controller
                 $folder = 'Landing/Main';
             }
 
-            // A. Handle File Upload (Save to display folder as requested)
+            // A. Handle File Upload (Save to S3 Display Folder)
             if ($request->hasFile($fileInput)) {
                 $file = $request->file($fileInput);
                 if ($file->isValid()) {
                     try {
                         $ext = $file->getClientOriginalExtension() ?: 'png';
                         $filename = $key . '_' . time() . '.' . $ext;
+                        $bucketPath = 'members/display/' . $filename;
 
-                        // Target Display Folder for local files
-                        $targetDir = public_path('img/members/display');
-                        if (!file_exists($targetDir)) { mkdir($targetDir, 0755, true); }
-                        $file->move($targetDir, $filename);
+                        // Upload directly to S3 Bucket
+                        Storage::disk('s3')->put($bucketPath, file_get_contents($file), 'public');
                         
-                        $localPath = 'img/members/display/' . $filename;
-                        Log::info("Stored photo in display folder: " . $localPath);
-
-                        // Save Local Path to Database
-                        $updateData['image'] = asset($localPath);
+                        // Save S3 URL to Database
+                        $updateData['image'] = Storage::disk('s3')->url($bucketPath);
+                        Log::info("Uploaded photo to S3 display folder: " . $updateData['image']);
                     } catch (\Exception $e) {
-                        Log::error("File Processing Error: " . $e->getMessage());
+                        Log::error("S3 File Upload Error: " . $e->getMessage());
                     }
                 }
             } 
-            // B. Handle URL String (Save to hover folder as requested)
+            // B. Handle URL String (Save to S3 Hover Folder)
             elseif ($request->filled($urlInput)) {
                 $url = $request->input($urlInput);
                 try {
@@ -93,24 +90,20 @@ class LandingController extends Controller
                     if ($imageContents !== false) {
                         $ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpg';
                         $filename = $key . '_' . time() . '.' . $ext;
+                        $bucketPath = 'members/hover/' . $filename;
 
-                        // Target Hover Folder for URL-based photos
-                        $targetDir = public_path('img/members/hover');
-                        if (!file_exists($targetDir)) { mkdir($targetDir, 0755, true); }
-                        $localFullPath = $targetDir . '/' . $filename;
-                        file_put_contents($localFullPath, $imageContents);
+                        // Upload downloaded content to S3 Bucket
+                        Storage::disk('s3')->put($bucketPath, $imageContents, 'public');
                         
-                        $localPath = 'img/members/hover/' . $filename;
-                        Log::info("Stored URL photo in hover folder: " . $localPath);
-
-                        // Save Local Path to Database
-                        $updateData['image'] = asset($localPath);
+                        // Save S3 URL to Database
+                        $updateData['image'] = Storage::disk('s3')->url($bucketPath);
+                        Log::info("Uploaded URL photo to S3 hover folder: " . $updateData['image']);
                     } else {
                         $updateData['image'] = $url;
                     }
                 } catch (\Exception $e) {
                     $updateData['image'] = $url;
-                    Log::error("URL Processing Error: " . $e->getMessage());
+                    Log::error("S3 URL Processing Error: " . $e->getMessage());
                 }
             }
 
