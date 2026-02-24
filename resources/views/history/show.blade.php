@@ -79,10 +79,10 @@
                             <tbody class="bg-white divide-y divide-gray-200">
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Turbidity</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->turbidity }}% <span class="text-gray-400 text-xs font-normal ml-1 italic">(Standard: 50-100%)</span></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->turbidity }} NTU <span class="text-gray-400 text-xs font-normal ml-1 italic">(Standard: 0-5 NTU)</span></td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($reading->turbidity < 50)
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Critical</span>
+                                        @if($reading->turbidity > 5)
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ $reading->turbidity > 50 ? 'red' : 'yellow' }}-100 text-{{ $reading->turbidity > 50 ? 'red' : 'yellow' }}-800">{{ $reading->turbidity > 50 ? 'Critical' : 'Warning' }}</span>
                                         @else
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Normal</span>
                                         @endif

@@ -42,9 +42,9 @@
                                 <!-- Turbidity Standard -->
                                 <div class="p-4 rounded-xl bg-blue-50 border border-blue-100">
                                     <h3 class="text-base font-bold text-blue-900 tracking-tight mb-2 flex justify-between">
-                                        Turbidity <span>50 - 100%</span>
+                                        Turbidity <span>0 - 5.00 NTU</span>
                                     </h3>
-                                    <p class="text-sm text-blue-800 leading-relaxed italic font-medium">"Clarity is vital for light penetration and gill health. Muddy water (below 20%) stunts growth and clogs gills."</p>
+                                    <p class="text-sm text-blue-800 leading-relaxed italic font-medium">"WHO standard for clear water. Values below 5 NTU are ideal; above 50 NTU indicates severe muddiness or suspended solids affecting fish health."</p>
                                 </div>
                             </div>
                         </div>

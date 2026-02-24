@@ -23,9 +23,9 @@
                             @forelse($alerts as $alert)
                                 @php
                                     $alertTypes = [];
-                                    if ($alert->turbidity < 50) {
-                                        if ($alert->turbidity < 20) $alertTypes[] = ['param' => 'Turbidity', 'value' => $alert->turbidity . '%', 'status' => 'Data Critical', 'effect' => 'Extremely Muddy - Fish death likely', 'severity' => 'critical'];
-                                        else $alertTypes[] = ['param' => 'Turbidity', 'value' => $alert->turbidity . '%', 'status' => 'Poor Clarity', 'effect' => 'Slower growth, gill stress', 'severity' => 'warning'];
+                                    if ($alert->turbidity > 5) {
+                                        if ($alert->turbidity > 50) $alertTypes[] = ['param' => 'Turbidity', 'value' => $alert->turbidity . ' NTU', 'status' => 'Data Critical', 'effect' => 'Extremely Muddy - Fish stress/death likely', 'severity' => 'critical'];
+                                        else $alertTypes[] = ['param' => 'Turbidity', 'value' => $alert->turbidity . ' NTU', 'status' => 'High Turbidity', 'effect' => 'Reduced clarity, potential gill stress', 'severity' => 'warning'];
                                     }
                                     if ($alert->tds > 500) {
                                         if ($alert->tds > 1000) $alertTypes[] = ['param' => 'TDS', 'value' => $alert->tds . ' mg/L', 'status' => 'Dangerous', 'effect' => 'May cause mortality', 'severity' => 'critical'];
@@ -80,7 +80,7 @@
                     @forelse($alerts as $alert)
                         @php
                             $alertTypes = [];
-                            if ($alert->turbidity < 50) $alertTypes[] = ['param' => 'Turbidity', 'value' => $alert->turbidity . '%', 'status' => 'Critical', 'severity' => $alert->turbidity < 20 ? 'critical' : 'warning'];
+                            if ($alert->turbidity > 5) $alertTypes[] = ['param' => 'Turbidity', 'value' => $alert->turbidity . ' NTU', 'status' => 'Critical', 'severity' => $alert->turbidity > 50 ? 'critical' : 'warning'];
                             if ($alert->tds > 500) $alertTypes[] = ['param' => 'TDS', 'value' => $alert->tds . ' mg/L', 'status' => 'Dangerous', 'severity' => $alert->tds > 1000 ? 'critical' : 'warning'];
                             if ($alert->ph < 6.5 || $alert->ph > 8.5) $alertTypes[] = ['param' => 'pH Level', 'value' => $alert->ph, 'status' => 'Abnormal', 'severity' => ($alert->ph < 6.0 || $alert->ph > 9.0) ? 'critical' : 'warning'];
                             if ($alert->temperature < 15 || $alert->temperature > 32) $alertTypes[] = ['param' => 'Temp', 'value' => $alert->temperature . '°C', 'status' => 'Extreme', 'severity' => $alert->temperature > 32 ? 'critical' : 'warning'];
