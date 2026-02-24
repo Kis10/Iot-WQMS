@@ -138,9 +138,9 @@
                         </svg>
                     </div>
                     <div class="flex flex-col items-center mt-2">
-                        <p class="text-gray-400 text-[11px] sm:text-xs font-medium">NTU</p>
+                        <p class="text-gray-400 text-[11px] sm:text-xs font-medium">%</p>
                         <span id="status-turbidity" class="mt-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
-                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">Ideal: 0-5 NTU</p>
+                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">Ideal: 50-100%</p>
                     </div>
                 </div>
 
@@ -289,14 +289,6 @@
                                 @endif
                             </div>
                         </div>
-                        <!-- Turbidity Standard -->
-                        <div class="p-4 rounded-xl bg-blue-50 border border-blue-100">
-                            <h3 class="text-base font-bold text-blue-900 tracking-tight mb-2 flex justify-between">
-                                Turbidity <span>0 - 5.00 NTU</span>
-                            </h3>
-                            <p class="text-sm text-blue-800 leading-relaxed italic font-medium">"WHO standard for clear water. Values below 5 NTU are ideal; above 50 NTU indicates severe muddiness or suspended solids affecting fish health."</p>
-                        </div>
-
                         <div class="mt-3 pt-3 border-t border-gray-200">
                             <div class="flex items-center justify-between text-[11px] text-gray-600 font-bold">
                                 <span id="aiPopupAnalyzedAt">
@@ -403,7 +395,7 @@
                     labels: initialLabels,
                     datasets: [
                         {
-                            label: 'Turbidity (NTU)',
+                            label: 'Turbidity (%)',
                             data: initialData.turbidity,
                             borderColor: '#3b82f6',
                             backgroundColor: 'rgba(59, 130, 246, 0.05)',
@@ -599,7 +591,7 @@
                     if (r.temperature < 24) scores.temp = Math.max(0, 100 - (24 - r.temperature) * 10);
                     else if (r.temperature > 30) scores.temp = Math.max(0, 100 - (r.temperature - 30) * 15);
 
-                    if (r.turbidity > 5) scores.turbidity = Math.max(0, 100 - (r.turbidity - 5) * 2);
+                    if (r.turbidity < 50) scores.turbidity = Math.max(0, (r.turbidity / 50) * 100);
                     
                     if (r.tds > 500) scores.tds = Math.max(0, 100 - (r.tds - 500) * 0.1);
 
@@ -659,9 +651,9 @@
                             else if (val > 500) color = '#f59e0b';
                             else color = '#8b5cf6'; // Violet
                         } else if (param === 'turbidity') {
-                            if (val > 50) color = '#ef4444'; // Red (Critical > 50 NTU)
-                            else if (val > 5) color = '#f59e0b'; // Amber (Warning 5-50 NTU)
-                            else color = '#4f46e5'; // Indigo (Normal 0-5 NTU)
+                            if (val < 20) color = '#ef4444'; // Red (Critical)
+                            else if (val < 50) color = '#f59e0b'; // Amber (Suboptimal)
+                            else color = '#4f46e5'; // Indigo (Normal 50-100)
                         } else if (param === 'temp') {
                             if (val < 15 || val > 35) color = '#ef4444';
                             else if (val < 20 || val > 30) color = '#f59e0b';
@@ -1214,7 +1206,7 @@
                 // Parameter Table
                 const tbody = document.getElementById('printTableBody');
                 const params = [
-                    { name: 'Turbidity', value: parseFloat(reading.turbidity).toFixed(2) + ' NTU', standard: '0-5 NTU', critical: reading.turbidity > 50 },
+                    { name: 'Turbidity', value: parseFloat(reading.turbidity).toFixed(2) + '%', standard: '50-100%', critical: reading.turbidity < 50 },
                     { name: 'TDS', value: parseFloat(reading.tds).toFixed(2) + ' ppm', standard: '100-500', critical: reading.tds > 500 },
                     { name: 'pH Level', value: parseFloat(reading.ph).toFixed(2), standard: '6.5-8.5', critical: reading.ph < 6.5 || reading.ph > 8.5 },
                     { name: 'Water Temp', value: parseFloat(reading.temperature).toFixed(2) + '°C', standard: '24-30°C', critical: reading.temperature < 20 || reading.temperature > 32 },
