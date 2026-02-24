@@ -79,7 +79,7 @@
     <div class="py-12">
         <div id="dashboardContainer" class="max-w-none mx-auto px-4 sm:px-6 lg:px-8 relative">
             <!-- Overall Water Quality Status -->
-            <div class="mb-8 p-6 bg-white/60 backdrop-blur-md rounded-2xl border border-white shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+            <div class="mb-8 p-6 bg-white/60 backdrop-blur-md rounded-2xl border border-white shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
                 <!-- Background Decoration -->
                 <div class="absolute top-0 right-0 -mt-8 -mr-8 w-48 h-48 bg-indigo-500/5 rounded-full blur-3xl"></div>
                 
