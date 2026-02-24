@@ -130,7 +130,7 @@
                         <div class="mb-8 p-6 bg-blue-50 rounded-xl border border-blue-100">
                             <h4 class="text-sm font-bold text-blue-900 uppercase tracking-wider mb-2 flex items-center gap-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                                Analyzed by AI
+                                Analyzed by AquaSense
                             </h4>
                             <p class="text-gray-700 leading-relaxed font-medium">
                                 {{ $reading->waterAnalyses->first()->ai_insight }}

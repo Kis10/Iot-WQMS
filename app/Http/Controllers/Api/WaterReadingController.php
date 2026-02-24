@@ -116,9 +116,7 @@ class WaterReadingController extends Controller
 
     private function performAnalysis(WaterReading $reading)
     {
-        // NO MORE TIMEOUT: Analyze every saved reading as requested.
-
-        // --- PERFORM ANALYSIS (FISH GROWTH FOCUS) ---
+        // --- PERFORM ANALYSIS (AQUACULTURE FOCUS) ---
         $risk = 'safe';
         $insight = '';
         $recommendations = [];
@@ -127,68 +125,94 @@ class WaterReadingController extends Controller
 
         $turbidity = $reading->turbidity; // Clarity % (High is Good)
         $tds = $reading->tds;
-        $ph = $reading->ph; // Safe: 5.0 - 9.0
+        $ph = $reading->ph;
         $temp = $reading->temperature;
 
         // 1. Analyze Turbidity (Clarity)
-        // High % is Clear (Good), Low % is Muddy (Bad)
-        if ($turbidity < 50) { 
-            $riskScore += 40; 
-            $details[] = "Water is too muddy (" . $turbidity . "%)";
-            $recommendations[] = "Perform a partial water change based on Clarity."; 
-        } elseif ($turbidity < 75) { 
-            $riskScore += 20; 
-            $details[] = "Water is a bit cloudy (" . $turbidity . "%)";
-            $recommendations[] = "Check filtration system.";
+        if ($turbidity < 50) {
+            $riskScore += 40;
+            $details[] = "water clarity is critically low at {$turbidity}%";
+            $recommendations[] = "Replace 25-30% of pond water with fresh, dechlorinated water to reduce suspended solids.";
+            $recommendations[] = "Inspect and clean mechanical filters, settling tanks, or biofilters.";
+            $recommendations[] = "Reduce feeding rate temporarily — uneaten feed contributes to turbidity buildup.";
+        } elseif ($turbidity < 75) {
+            $riskScore += 20;
+            $details[] = "water clarity is slightly reduced at {$turbidity}%";
+            $recommendations[] = "Perform a 10-15% water exchange to improve clarity.";
+            $recommendations[] = "Monitor algae bloom indicators and consider adding pond aeration.";
         }
 
-        // 2. Analyze pH (Safe Range: 5.0 - 9.0)
+        // 2. Analyze pH
         if ($ph < 5.0 || $ph > 9.0) {
             $riskScore += 40;
-            $details[] = "pH is dangerous ({$ph})";
-            $recommendations[] = "Adjust pH level immediately.";
+            $details[] = "pH level is at a dangerous range ({$ph})";
+            if ($ph < 5.0) {
+                $recommendations[] = "Apply agricultural lime (CaCO3) at 50-100 kg/ha to raise pH gradually.";
+                $recommendations[] = "Check for acid runoff or decaying organic matter as possible acidification sources.";
+            } else {
+                $recommendations[] = "Increase freshwater inflow to dilute alkalinity and bring pH down.";
+                $recommendations[] = "Add organic acids or reduce exposure to photosynthetic algae blooms.";
+            }
         } elseif ($ph < 5.5 || $ph > 8.5) {
             $riskScore += 10;
+            $details[] = "pH is approaching borderline levels ({$ph})";
+            if ($ph < 5.5) {
+                $recommendations[] = "Consider light liming to buffer pH and prevent further decline.";
+            } else {
+                $recommendations[] = "Increase water exchange rate to stabilize pH within optimal range.";
+            }
         }
 
         // 3. Analyze TDS
         if ($tds > 1000) {
             $riskScore += 30;
-            $details[] = "TDS is too high";
-            $recommendations[] = "Reduce dissolved solids by changing water.";
+            $details[] = "total dissolved solids (TDS) is elevated at {$tds} ppm";
+            $recommendations[] = "Perform a 20-30% water change with low-TDS source water.";
+            $recommendations[] = "Inspect for mineral or salt intrusion from soil runoff.";
+            $recommendations[] = "Reduce supplemental feed inputs which raise dissolved organic matter.";
+        } elseif ($tds > 500) {
+            $riskScore += 10;
+            $details[] = "TDS is moderately high at {$tds} ppm";
+            $recommendations[] = "Schedule routine water exchange to prevent further TDS accumulation.";
         }
 
-        // 4. Analyze Temperature (If available)
+        // 4. Analyze Temperature
         if ($temp && ($temp < 20 || $temp > 34)) {
             $riskScore += 20;
-            $details[] = "Temperature is extreme";
-            $recommendations[] = "Check water depth or shading.";
+            if ($temp < 20) {
+                $details[] = "water temperature is below optimal range ({$temp}°C)";
+                $recommendations[] = "Increase pond water depth to retain thermal mass during cold periods.";
+                $recommendations[] = "Reduce feeding frequency — fish metabolism slows significantly below 20°C.";
+            } else {
+                $details[] = "water temperature exceeds safe threshold ({$temp}°C)";
+                $recommendations[] = "Increase aeration to compensate for reduced dissolved oxygen at high temperatures.";
+                $recommendations[] = "Provide shade cover or increase water flow to lower pond temperature.";
+            }
+        } elseif ($temp && ($temp < 24 || $temp > 32)) {
+            $riskScore += 5;
+            $details[] = "water temperature is outside the ideal range ({$temp}°C)";
+            $recommendations[] = "Monitor temperature trends — sustained readings outside 24-32°C may affect growth rate.";
         }
 
-        // --- Determine Status & Insight ---
+        // --- Determine Risk Level & Insight ---
         if ($riskScore >= 40) {
             $risk = 'critical';
-            $insight = "🚨 Poor Conditions for Growth! ";
-            $insight .= "Your fish are stressed because " . implode(' and ', $details) . ". ";
-            $insight .= "Growth will stop or fish may die if not fixed.";
+            $insight = "Critical water quality conditions detected: " . implode('; ', $details) . ". ";
+            $insight .= "Immediate corrective action is required to prevent fish mortality and significant growth loss.";
         } elseif ($riskScore >= 20) {
             $risk = 'high';
-            $insight = "⚠️ Slower Growth Detected. ";
-            if (count($details) > 0) {
-                $insight .= "The water is " . implode(', ', $details) . ". ";
-            }
-            $insight .= "Fish are surviving but not growing fast. Improve conditions for better harvest.";
+            $insight = "Suboptimal water conditions identified: " . implode('; ', $details) . ". ";
+            $insight .= "Fish growth rate may be reduced. Corrective measures are recommended to restore optimal conditions.";
         } else {
             $risk = 'safe';
-            // Random Positive Insights
-            $positiveMsg = [
-                "Conditions are perfect for maximum fish growth! 🐟📈",
-                "Water quality is excellent. Your fish are happy and growing fast!",
-                "Great job! The environment is ideal for your aquaculture.",
-            ];
-            $insight = $positiveMsg[array_rand($positiveMsg)];
-            $recommendations[] = "Keep up the good work!";
-            $recommendations[] = "Maintain current feeding schedule.";
+            $insight = "All water quality parameters are within the optimal range for aquaculture. ";
+            $insight .= "Turbidity at {$turbidity}%, TDS at {$tds} ppm, pH at {$ph}, and water temperature at {$temp}°C — ";
+            $insight .= "conditions are favorable for healthy fish growth and development.";
+
+            // Real-world safe-condition recommendations
+            $recommendations[] = "Continue regular water quality monitoring at consistent intervals.";
+            $recommendations[] = "Maintain current feeding schedule based on fish biomass and growth stage.";
+            $recommendations[] = "Inspect pond infrastructure (dikes, inlet/outlet, screens) during routine rounds.";
         }
 
         // Create Analysis Record

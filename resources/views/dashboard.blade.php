@@ -185,7 +185,7 @@
                         @else from-gray-50 to-gray-100 border-l-4 border-gray-300
                         @endif">
                         <div class="flex items-center justify-between gap-3">
-                            <h4 class="text-sm font-semibold text-gray-800">AI Water Quality Analysis</h4>
+                            <h4 class="text-sm font-semibold text-gray-800">AquaSense Water Quality Analysis</h4>
                             <div class="flex items-center gap-2">
                                 <span id="aiPopupRiskBadge" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold
                                 @if($latestAnalysis?->risk_level == 'critical') bg-red-100 text-red-800
@@ -1074,7 +1074,7 @@
                 const aiSection = document.getElementById('printAiSection');
                 let aiHtml = `<h4 style="font-size:12px;font-weight:700;color:#1e3a5f;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;gap:8px;">
                     <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                    Analyzed by AI
+                    Analyzed by AquaSense
                 </h4>`;
                 aiHtml += `<p style="color:#374151;line-height:1.6;font-weight:500;">${analysis.ai_insight || 'No analysis insight available.'}</p>`;
 
