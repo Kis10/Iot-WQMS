@@ -47,7 +47,7 @@ return [
             'report' => false,
         ],
 
-        's3' => [
+        't3_storage' => [
             'driver' => 's3',
             'key' => env('T3_ACCESS_KEY_ID'),
             'secret' => env('T3_SECRET_ACCESS_KEY'),

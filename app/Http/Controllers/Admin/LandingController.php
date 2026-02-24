@@ -72,12 +72,12 @@ class LandingController extends Controller
                         $bucketPath = 'members/display/' . $filename;
 
                         // Upload directly to S3 Bucket with correct visibility syntax
-                        Storage::disk('s3')->put($bucketPath, file_get_contents($file->getPathname()), [
+                        Storage::disk('t3_storage')->put($bucketPath, file_get_contents($file->getPathname()), [
                             'visibility' => 'public'
                         ]);
                         
                         // Save S3 URL to Database
-                        $updateData['image'] = Storage::disk('s3')->url($bucketPath);
+                        $updateData['image'] = Storage::disk('t3_storage')->url($bucketPath);
                         Log::info("Uploaded photo to S3: " . $updateData['image']);
                     } catch (\Exception $e) {
                         Log::error("S3 File Upload Error for {$key}: " . $e->getMessage());
@@ -96,12 +96,12 @@ class LandingController extends Controller
                         $bucketPath = 'members/hover/' . $filename;
 
                         // Upload downloaded content to S3 Bucket
-                        Storage::disk('s3')->put($bucketPath, $imageContents, [
+                        Storage::disk('t3_storage')->put($bucketPath, $imageContents, [
                             'visibility' => 'public'
                         ]);
                         
                         // Save S3 URL to Database
-                        $updateData['image'] = Storage::disk('s3')->url($bucketPath);
+                        $updateData['image'] = Storage::disk('t3_storage')->url($bucketPath);
                     } else {
                         $updateData['image'] = $url;
                     }
