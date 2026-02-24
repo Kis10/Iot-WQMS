@@ -71,14 +71,15 @@ class LandingController extends Controller
                         $filename = $key . '_' . time() . '.' . $ext;
                         $bucketPath = 'members/display/' . $filename;
 
-                        // Upload directly to S3 Bucket with correct visibility syntax
+                        // Upload directly to S3 Bucket
                         Storage::disk('t3_storage')->put($bucketPath, file_get_contents($file->getPathname()), [
                             'visibility' => 'public'
                         ]);
                         
-                        // Save S3 URL to Database
-                        $updateData['image'] = Storage::disk('t3_storage')->url($bucketPath);
-                        Log::info("Uploaded photo to S3: " . $updateData['image']);
+                        // Generate a clean, full URL
+                        $url = env('T_URL') . '/' . $bucketPath;
+                        $updateData['image'] = $url;
+                        Log::info("Stored full S3 URL: " . $url);
                     } catch (\Exception $e) {
                         Log::error("S3 File Upload Error for {$key}: " . $e->getMessage());
                         return response()->json(['status' => 'error', 'message' => 'S3 Upload Failed: ' . $e->getMessage()], 500);
@@ -100,8 +101,10 @@ class LandingController extends Controller
                             'visibility' => 'public'
                         ]);
                         
-                        // Save S3 URL to Database
-                        $updateData['image'] = Storage::disk('t3_storage')->url($bucketPath);
+                        // Generate a clean, full URL
+                        $url = env('T_URL') . '/' . $bucketPath;
+                        $updateData['image'] = $url;
+                        Log::info("Stored full URL from link: " . $url);
                     } else {
                         $updateData['image'] = $url;
                     }
