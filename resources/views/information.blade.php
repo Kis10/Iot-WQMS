@@ -62,12 +62,12 @@
                         </div>
                         <div class="p-6 space-y-6">
                             <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 transition">
-                                <div class="w-12 h-12 rounded-lg bg-indigo-100 flex items-center justify-center shrink-0">
-                                    <span class="font-bold text-indigo-600">pH</span>
+                                <div class="w-12 h-12 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
+                                    <span class="font-bold text-emerald-600">pH</span>
                                 </div>
                                 <div>
-                                    <h4 class="text-sm font-bold text-gray-900 underline decoration-indigo-200">pH Composite Electrode</h4>
-                                    <p class="text-xs text-gray-600 mt-1 font-medium italic">Measures the hydrogen-ion activity in water. Its duty is to detect chemical shifts caused by waste accumulation or rainwater. Data is sampled 10 times per second and averaged for 99.9% accuracy.</p>
+                                    <h4 class="text-sm font-bold text-gray-900 underline decoration-emerald-200">pH Composite Electrode</h4>
+                                    <p class="text-sm text-gray-700 mt-1 font-medium italic">Measures the hydrogen-ion activity in water. Its duty is to detect chemical shifts caused by waste accumulation or rainwater. Data is sampled 10 times per second and averaged for 99.9% accuracy.</p>
                                 </div>
                             </div>
                             <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 transition">
@@ -86,6 +86,15 @@
                                 <div>
                                     <h4 class="text-sm font-bold text-gray-900 underline decoration-orange-200">DS18B20 Waterproof Probe</h4>
                                     <p class="text-sm text-gray-700 mt-1 font-medium italic">Uses a 1-Wire digital bus for high-precision thermal tracking. Its duty is to regulate the feeding schedule, as fish appetite is directly proportional to water temperature.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 transition">
+                                <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                                    <span class="font-bold text-blue-600">TUR</span>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-gray-900 underline decoration-blue-200">Turbidity Sensor (TSW-200B)</h4>
+                                    <p class="text-sm text-gray-700 mt-1 font-medium italic">Measures water clarity using light scattering principle. Its duty is to detect suspended particles and silt. Essential for monitoring respiratory health and visibility for fish feeding.</p>
                                 </div>
                             </div>
                         </div>
