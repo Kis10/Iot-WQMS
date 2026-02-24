@@ -6,7 +6,7 @@
                 <img src="{{ asset('img/logo/logo-wq.png') }}" alt="AquaSense Logo" class="w-full h-full object-contain">
             </div>
             <div class="leading-tight">
-                <h1 class="text-xl font-bold text-gray-900 tracking-tight break-words">{{ config('app.name', 'AquaSense') }}</h1>
+                <h1 class="text-2xl font-black text-gray-900 tracking-tighter break-words">{{ config('app.name', 'AquaSense') }}</h1>
             </div>
         </div>
     </div>

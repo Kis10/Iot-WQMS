@@ -89,7 +89,7 @@
                             <circle cx="50" cy="50" r="45" fill="none" stroke="#f3f4f6" stroke-width="8"/>
                             <circle id="overall-health-circle" cx="50" cy="50" r="45" fill="none" stroke="#10b981" stroke-width="8" 
                                 stroke-dasharray="282.7" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 50 50)"/>
-                            <text id="overall-health-text" x="50" y="55" text-anchor="middle" font-size="16" font-weight="bold" fill="#111827" style="font-family: var(--font-coco);">100%</text>
+                            <text id="overall-health-text" x="50" y="55" text-anchor="middle" font-size="20" font-weight="black" fill="#111827" style="font-family: var(--font-coco);">100%</text>
                          </svg>
                     </div>
                     <div>
@@ -98,22 +98,22 @@
                     </div>
                 </div>
 
-                <div class="flex flex-wrap justify-center md:justify-end gap-2 sm:gap-4">
+                <div class="flex flex-wrap justify-center md:justify-end gap-3 sm:gap-6">
                     <div class="flex flex-col items-center">
-                        <span id="contrib-ph" class="text-[11px] font-bold text-gray-900">pH=30.0%</span>
-                        <span class="text-[8px] text-gray-400 uppercase font-black">pH</span>
+                        <span id="contrib-ph" class="text-xs sm:text-base font-black text-gray-900">pH=30.0%</span>
+                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-black tracking-widest">pH Level</span>
                     </div>
                     <div class="flex flex-col items-center">
-                        <span id="contrib-temp" class="text-[11px] font-bold text-gray-900">Temp=25.0%</span>
-                        <span class="text-[8px] text-gray-400 uppercase font-black">Temp</span>
+                        <span id="contrib-temp" class="text-xs sm:text-base font-black text-gray-900">Temp=25.0%</span>
+                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-black tracking-widest">Temperature</span>
                     </div>
                     <div class="flex flex-col items-center">
-                        <span id="contrib-turbidity" class="text-[11px] font-bold text-gray-900">Turb=25.0%</span>
-                        <span class="text-[8px] text-gray-400 uppercase font-black">Turb</span>
+                        <span id="contrib-turbidity" class="text-xs sm:text-base font-black text-gray-900">Turb=25.0%</span>
+                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-black tracking-widest">Turbidity</span>
                     </div>
                     <div class="flex flex-col items-center">
-                        <span id="contrib-tds" class="text-[11px] font-bold text-gray-900">TDS=20.0%</span>
-                        <span class="text-[8px] text-gray-400 uppercase font-black">TDS</span>
+                        <span id="contrib-tds" class="text-xs sm:text-base font-black text-gray-900">TDS=20.0%</span>
+                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-black tracking-widest">TDS</span>
                     </div>
                 </div>
             </div>
@@ -122,7 +122,7 @@
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <!-- Turbidity Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
-                    <h3 class="text-gray-500 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-3">Turbidity</h3>
+                    <h3 class="text-gray-500 text-xs sm:text-sm font-black uppercase tracking-wider mb-3">Turbidity</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
@@ -132,21 +132,21 @@
                                 stroke-dasharray="{{ ($latest?->turbidity ?? 0) / 100 * 314.1 }}, 314.1" stroke-dashoffset="0" stroke-linecap="round"
                                 transform="rotate(-90 60 60)"/>
                             <!-- Center Value -->
-                            <text id="gauge-turbidity-text" x="60" y="65" text-anchor="middle" font-size="16" font-weight="bold" fill="#111827">
+                            <text id="gauge-turbidity-text" x="60" y="65" text-anchor="middle" font-size="20" font-weight="black" fill="#111827">
                                 {{ round($latest?->turbidity ?? 0, 2) }}
                             </text>
                         </svg>
                     </div>
                     <div class="flex flex-col items-center mt-2">
-                        <p class="text-gray-400 text-[10px] sm:text-[11px] font-medium">%</p>
-                        <span id="status-turbidity" class="mt-1 text-[9px] font-bold uppercase tracking-tighter px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
-                        <p class="mt-1.5 text-[8px] text-gray-400 font-bold uppercase tracking-widest italic">Ideal: 50-100%</p>
+                        <p class="text-gray-400 text-[11px] sm:text-xs font-medium">%</p>
+                        <span id="status-turbidity" class="mt-1 text-[10px] font-black uppercase tracking-tighter px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
+                        <p class="mt-1.5 text-[9px] text-gray-400 font-black uppercase tracking-widest italic">Ideal: 50-100%</p>
                     </div>
                 </div>
 
                 <!-- TDS Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
-                    <h3 class="text-gray-500 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-3">TDS</h3>
+                    <h3 class="text-gray-500 text-xs sm:text-sm font-black uppercase tracking-wider mb-3">TDS</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
@@ -156,21 +156,21 @@
                                 stroke-dasharray="{{ ($latest?->tds ?? 0) / 1000 * 314.1 }}, 314.1" stroke-dashoffset="0" stroke-linecap="round"
                                 transform="rotate(-90 60 60)"/>
                             <!-- Center Value -->
-                            <text id="gauge-tds-text" x="60" y="65" text-anchor="middle" font-size="16" font-weight="bold" fill="#111827">
+                            <text id="gauge-tds-text" x="60" y="65" text-anchor="middle" font-size="20" font-weight="black" fill="#111827">
                                 {{ round($latest?->tds ?? 0, 2) }}
                             </text>
                         </svg>
                     </div>
                     <div class="flex flex-col items-center mt-2">
-                        <p class="text-gray-400 text-[10px] sm:text-[11px] font-medium">mg/L</p>
-                        <span id="status-tds" class="mt-1 text-[9px] font-bold uppercase tracking-tighter px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
-                        <p class="mt-1.5 text-[8px] text-gray-400 font-bold uppercase tracking-widest italic">Ideal: 100-500</p>
+                        <p class="text-gray-400 text-[11px] sm:text-xs font-medium">mg/L</p>
+                        <span id="status-tds" class="mt-1 text-[10px] font-black uppercase tracking-tighter px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
+                        <p class="mt-1.5 text-[9px] text-gray-400 font-black uppercase tracking-widest italic">Ideal: 100-500</p>
                     </div>
                 </div>
 
                 <!-- pH Level Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
-                    <h3 class="text-gray-500 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-3">pH Level</h3>
+                    <h3 class="text-gray-500 text-xs sm:text-sm font-black uppercase tracking-wider mb-3">pH Level</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
@@ -180,21 +180,21 @@
                                 stroke-dasharray="{{ (($latest?->ph ?? 0) / 14) * 314.1 }}, 314.1" stroke-dashoffset="0" stroke-linecap="round"
                                 transform="rotate(-90 60 60)"/>
                             <!-- Center Value -->
-                            <text id="gauge-ph-text" x="60" y="65" text-anchor="middle" font-size="16" font-weight="bold" fill="#111827">
+                            <text id="gauge-ph-text" x="60" y="65" text-anchor="middle" font-size="20" font-weight="black" fill="#111827">
                                 {{ round($latest?->ph ?? 0, 2) }}
                             </text>
                         </svg>
                     </div>
                     <div class="flex flex-col items-center mt-2">
-                        <p class="text-gray-400 text-[10px] sm:text-[11px] font-medium">pH</p>
-                        <span id="status-ph" class="mt-1 text-[9px] font-bold uppercase tracking-tighter px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
-                        <p class="mt-1.5 text-[8px] text-gray-400 font-bold uppercase tracking-widest italic">Ideal: 6.5-8.5</p>
+                        <p class="text-gray-400 text-[11px] sm:text-xs font-medium">pH</p>
+                        <span id="status-ph" class="mt-1 text-[10px] font-black uppercase tracking-tighter px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
+                        <p class="mt-1.5 text-[9px] text-gray-400 font-black uppercase tracking-widest italic">Ideal: 6.5-8.5</p>
                     </div>
                 </div>
 
                 <!-- Temperature Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
-                    <h3 class="text-gray-500 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-3">Water Temp</h3>
+                    <h3 class="text-gray-500 text-xs sm:text-sm font-black uppercase tracking-wider mb-3">Water Temp</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
@@ -204,15 +204,15 @@
                                 stroke-dasharray="{{ (($latest?->temperature ?? 0) / 50) * 314.1 }}, 314.1" stroke-dashoffset="0" stroke-linecap="round"
                                 transform="rotate(-90 60 60)"/>
                             <!-- Center Value -->
-                            <text id="gauge-temp-text" x="60" y="65" text-anchor="middle" font-size="16" font-weight="bold" fill="#111827">
+                            <text id="gauge-temp-text" x="60" y="65" text-anchor="middle" font-size="20" font-weight="black" fill="#111827">
                                 {{ round($latest?->temperature ?? 0, 2) }}
                             </text>
                         </svg>
                     </div>
                     <div class="flex flex-col items-center mt-2">
-                        <p class="text-gray-400 text-[10px] sm:text-[11px] font-medium">°C</p>
-                        <span id="status-temp" class="mt-1 text-[9px] font-bold uppercase tracking-tighter px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
-                        <p class="mt-1.5 text-[8px] text-gray-400 font-bold uppercase tracking-widest italic">Ideal: 24-30°C</p>
+                        <p class="text-gray-400 text-[11px] sm:text-xs font-medium">°C</p>
+                        <span id="status-temp" class="mt-1 text-[10px] font-black uppercase tracking-tighter px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
+                        <p class="mt-1.5 text-[9px] text-gray-400 font-black uppercase tracking-widest italic">Ideal: 24-30°C</p>
                     </div>
                 </div>
             </div>
@@ -241,9 +241,9 @@
                         @else from-gray-50 to-gray-100 border-l-4 border-gray-300
                         @endif">
                         <div class="flex items-center justify-between gap-3">
-                            <h4 class="text-sm font-semibold text-gray-800">AquaSense Water Quality Analysis</h4>
+                            <h4 class="text-base font-black text-gray-900">AquaSense Water Quality Analysis</h4>
                             <div class="flex items-center gap-2">
-                                <span id="aiPopupRiskBadge" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold
+                                <span id="aiPopupRiskBadge" class="inline-flex items-center px-3 py-1.5 rounded-full text-[13px] font-black
                                 @if($latestAnalysis?->risk_level == 'critical') bg-red-100 text-red-800
                                 @elseif($latestAnalysis?->risk_level == 'high') bg-orange-100 text-orange-800
                                 @elseif($latestAnalysis?->risk_level == 'medium') bg-yellow-100 text-yellow-800
@@ -256,7 +256,7 @@
                                     No Data
                                 @endif
                                 </span>
-                                <span id="aiPopupGrowthBadge" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold
+                                <span id="aiPopupGrowthBadge" class="inline-flex items-center px-3 py-1.5 rounded-full text-[13px] font-black
                                     @if($latestAnalysis?->risk_level == 'safe') bg-emerald-100 text-emerald-800
                                     @elseif($latestAnalysis) bg-rose-100 text-rose-800
                                     @else bg-gray-100 text-gray-700
@@ -271,11 +271,11 @@
                         </div>
                     </div>
                     <div class="p-4">
-                        <p id="aiPopupInsight" class="text-sm text-gray-700 leading-relaxed">
+                        <p id="aiPopupInsight" class="text-[15px] text-gray-900 leading-relaxed font-medium">
                             {{ $latestAnalysis?->ai_insight ?? 'No analysis yet. Waiting for new readings...' }}
                         </p>
                         <div id="aiPopupRecommendations" class="mt-3 pt-3 border-t border-gray-200 @if(!$latestAnalysis?->recommendations) hidden @endif">
-                            <p class="text-xs font-medium text-gray-600 mb-2">Key Recommendations:</p>
+                            <p class="text-[13px] font-black text-gray-700 mb-2">Key Recommendations:</p>
                             <div id="aiPopupRecommendationsList" class="space-y-1">
                                 @if($latestAnalysis?->recommendations)
                                     @foreach($latestAnalysis->recommendations as $recommendation)
@@ -283,14 +283,14 @@
                                             <svg class="w-4 h-4 text-blue-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                                             </svg>
-                                            <span class="text-sm text-gray-600">{{ $recommendation }}</span>
+                                            <span class="text-sm text-gray-800 font-medium">{{ $recommendation }}</span>
                                         </div>
                                     @endforeach
                                 @endif
                             </div>
                         </div>
                         <div class="mt-3 pt-3 border-t border-gray-200">
-                            <div class="flex items-center justify-between text-xs text-gray-500">
+                            <div class="flex items-center justify-between text-[11px] text-gray-600 font-bold">
                                 <span id="aiPopupAnalyzedAt">
                                     @if($latestAnalysis)
                                         Analyzed {{ $latestAnalysis->analyzed_at->setTimezone('Asia/Manila')->format('M j, Y g:i A') }}
