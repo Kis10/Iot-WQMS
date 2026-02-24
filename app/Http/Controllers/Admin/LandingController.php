@@ -322,8 +322,18 @@ class LandingController extends Controller
         $failed = collect($results)->where('status', 'failed')->count();
         $skipped = collect($results)->where('status', 'skipped')->count();
 
-        return redirect()->route('admin.landing.index')->with('status', 
-            "Photo Backup Complete! ✅ {$uploaded} uploaded, {$already} already backed up, {$skipped} skipped, {$failed} failed."
-        );
+        $message = "Photo Backup Complete! ✅ {$uploaded} uploaded, {$already} already backed up, {$skipped} skipped, {$failed} failed.";
+        
+        // Show failure details
+        $failedItems = collect($results)->where('status', 'failed');
+        if ($failedItems->count() > 0) {
+            $message .= " | Failed: ";
+            foreach ($failedItems as $item) {
+                $message .= $item['key'] . " (" . mb_substr($item['reason'], 0, 80) . "), ";
+            }
+            $message = rtrim($message, ', ');
+        }
+
+        return redirect()->route('admin.landing.index')->with('status', $message);
     }
 }
