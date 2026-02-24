@@ -104,7 +104,12 @@
                             </h2>
                         </div>
                         <div class="p-6 space-y-6 text-gray-300">
-                            <p class="text-sm leading-relaxed">To ensure scientific validity, our system uses the <strong>Weighted Water Quality Index (WQI)</strong> formula:</p>
+                            <div class="space-y-2">
+                                <h3 class="text-sm font-bold text-white uppercase tracking-wider">Overall Water Quality Score</h3>
+                                <p class="text-xs leading-relaxed text-gray-400">The dashboard features a premium, glassmorphic status bar at the very top that provides a real-time health score of your pond.</p>
+                            </div>
+
+                            <p class="text-sm leading-relaxed">This <strong>100% Contribution Score</strong> is calculated using the <strong>Weighted Water Quality Index (WQI)</strong> model:</p>
                             
                             <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 font-mono text-center">
                                 <p class="text-indigo-400 text-lg">WQI = Σ (q<sub>i</sub> × w<sub>i</sub>)</p>
@@ -112,12 +117,24 @@
 
                             <div class="space-y-4">
                                 <div>
-                                    <h4 class="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-2">1. Parameter Weighting (w<sub>i</sub>)</h4>
-                                    <div class="grid grid-cols-2 gap-2 text-[11px]">
-                                        <div class="p-2 bg-gray-800 rounded">pH: 30%</div>
-                                        <div class="p-2 bg-gray-800 rounded">Temp: 25%</div>
-                                        <div class="p-2 bg-gray-800 rounded">Clarity: 25%</div>
-                                        <div class="p-2 bg-gray-800 rounded">TDS: 20%</div>
+                                    <h4 class="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-2">Parameter Weighting (w<sub>i</sub>)</h4>
+                                    <div class="space-y-2 text-[11px]">
+                                        <div class="flex justify-between p-2 bg-gray-800 rounded">
+                                            <span>pH Level (30%)</span>
+                                            <span class="text-gray-500 italic">Critical for survival</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-gray-800 rounded">
+                                            <span>Water Temperature (25%)</span>
+                                            <span class="text-gray-500 italic">Metabolic controller</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-gray-800 rounded">
+                                            <span>Turbidity/Clarity (25%)</span>
+                                            <span class="text-gray-500 italic">Oxygen & Gill health</span>
+                                        </div>
+                                        <div class="flex justify-between p-2 bg-gray-800 rounded">
+                                            <span>TDS (20%)</span>
+                                            <span class="text-gray-500 italic">Mineral balance</span>
+                                        </div>
                                     </div>
                                 </div>
 
