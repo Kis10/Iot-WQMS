@@ -71,7 +71,6 @@ class AnalyzeWaterQuality implements ShouldQueue
                 'sample_count' => $windowReadings->count()
             ];
 
-            // Simulate AI analysis (replace with actual AI API call)
             $trendData = $this->calculateTrends($windowReadings);
             $speciesConfig = $this->getSpeciesConfig($latestReading);
             $analysis = $this->performAIAnalysis($summaryReading, $trendData, $speciesConfig);
@@ -91,18 +90,15 @@ class AnalyzeWaterQuality implements ShouldQueue
 
         } catch (\Exception $e) {
             Log::error('Failed to analyze water quality: ' . $e->getMessage());
-            throw $e; // This will trigger retry mechanism
+            throw $e;
         }
     }
 
     /**
-     * Perform AI analysis on water quality data
+     * Perform analysis on water quality data
      */
     private function performAIAnalysis(object $reading, array $trendData, array $speciesConfig): array
     {
-        // For now, implement rule-based analysis
-        // In production, you would integrate with OpenAI, Claude, or other AI services
-
         $riskFactors = [];
         $recommendations = [];
         $riskScore = 0;
@@ -111,21 +107,24 @@ class AnalyzeWaterQuality implements ShouldQueue
         [$speciesKey, $species] = $speciesConfig;
         $speciesLabel = $species['label'] ?? ucfirst($speciesKey);
 
-        // Analyze turbidity
         // Analyze turbidity as Clarity % (100 = Clear, 0 = Dirty)
         $clarity = $reading->turbidity;
-        
+
         if ($clarity >= 85) {
-            $positiveNotes[] = "Water is Crystal Clear (Like tap water) 💎 ({$clarity}%)";
+            $positiveNotes[] = "Water clarity is excellent at {$clarity}%";
         } elseif ($clarity >= 50) {
-             $positiveNotes[] = "Water is Good / Clear Enough (Typical pond water) 🧼 ({$clarity}%)";
+            $positiveNotes[] = "Water clarity is acceptable at {$clarity}%";
         } elseif ($clarity >= 25) {
-            $riskFactors[] = "Water is Cloudy / Murky (Hard to see the bottom) ☁️ ({$clarity}%)";
-            $recommendations[] = "Clean the filter or stop feeding for a few hours.";
+            $riskFactors[] = "Water clarity is reduced to {$clarity}%";
+            $recommendations[] = "Perform a 10-15% water exchange to improve clarity.";
+            $recommendations[] = "Inspect and clean mechanical filters or biofilters.";
+            $recommendations[] = "Reduce feeding rate temporarily — uneaten feed contributes to turbidity buildup.";
             $riskScore += 20;
         } else {
-            $riskFactors[] = "Water is Muddy / Dirty (Like chocolate milk) 🍫 ({$clarity}%)";
-            $recommendations[] = "This is too dirty! Please change the water immediately.";
+            $riskFactors[] = "Water clarity is critically low at {$clarity}%";
+            $recommendations[] = "Replace 25-30% of pond water with fresh, dechlorinated water immediately.";
+            $recommendations[] = "Inspect filtration system and settling tanks for blockages.";
+            $recommendations[] = "Suspend feeding until water clarity improves above 25%.";
             $riskScore += 40;
         }
 
@@ -133,45 +132,63 @@ class AnalyzeWaterQuality implements ShouldQueue
         [$tdsOptimalMin, $tdsOptimalMax] = $species['tds']['optimal'];
         [$tdsSafeMin, $tdsSafeMax] = $species['tds']['safe'];
         if ($reading->tds < $tdsSafeMin || $reading->tds > $tdsSafeMax) {
-            $riskFactors[] = "Too much stuff dissolved in water! ({$reading->tds})";
-            $recommendations[] = "Change some of the water (about 20%) with fresh water.";
+            $riskFactors[] = "TDS is outside safe range at {$reading->tds} ppm";
+            $recommendations[] = "Perform a 20-30% water change with low-TDS source water.";
+            $recommendations[] = "Inspect for mineral or salt intrusion from soil runoff.";
             $riskScore += 25;
         } elseif ($reading->tds < $tdsOptimalMin || $reading->tds > $tdsOptimalMax) {
-            $riskFactors[] = "Water has a bit too much minerals ({$reading->tds})";
-            $recommendations[] = "Just add a little fresh water slowly.";
+            $riskFactors[] = "TDS is slightly outside optimal range at {$reading->tds} ppm";
+            $recommendations[] = "Schedule routine water exchange to prevent further TDS accumulation.";
             $riskScore += 10;
         } else {
-            $positiveNotes[] = "Water purity is perfect! 💧";
+            $positiveNotes[] = "TDS is within optimal range at {$reading->tds} ppm";
         }
 
         // Analyze pH
         [$phOptimalMin, $phOptimalMax] = $species['ph']['optimal'];
         [$phSafeMin, $phSafeMax] = $species['ph']['safe'];
         if ($reading->ph < $phSafeMin || $reading->ph > $phSafeMax) {
-            $riskFactors[] = "pH is dangerous! ({$reading->ph})";
-            $recommendations[] = "The water is too acidic or basic! Ask an adult to help adjust it.";
+            $riskFactors[] = "pH is at a dangerous level ({$reading->ph})";
+            if ($reading->ph < $phSafeMin) {
+                $recommendations[] = "Apply agricultural lime (CaCO3) at 50-100 kg/ha to raise pH gradually.";
+                $recommendations[] = "Check for acid runoff or decaying organic matter as possible acidification sources.";
+            } else {
+                $recommendations[] = "Increase freshwater inflow to dilute alkalinity and bring pH down.";
+                $recommendations[] = "Reduce exposure to photosynthetic algae blooms that elevate pH.";
+            }
             $riskScore += 35;
         } elseif ($reading->ph < $phOptimalMin || $reading->ph > $phOptimalMax) {
-            $riskFactors[] = "pH is slightly off ({$reading->ph})";
-            $recommendations[] = "Keep an eye on the pH level today.";
+            $riskFactors[] = "pH is approaching borderline levels ({$reading->ph})";
+            if ($reading->ph < $phOptimalMin) {
+                $recommendations[] = "Consider light liming to buffer pH and prevent further decline.";
+            } else {
+                $recommendations[] = "Increase water exchange rate to stabilize pH within optimal range.";
+            }
             $riskScore += 15;
         } else {
-            $positiveNotes[] = "pH level is just right! 👍";
+            $positiveNotes[] = "pH level is within optimal range at {$reading->ph}";
         }
 
         // Analyze temperature
         [$tempOptimalMin, $tempOptimalMax] = $species['temperature']['optimal'];
         [$tempSafeMin, $tempSafeMax] = $species['temperature']['safe'];
         if ($reading->temperature < $tempSafeMin || $reading->temperature > $tempSafeMax) {
-            $riskFactors[] = "Water is too hot or cold! ({$reading->temperature} C)";
-            $recommendations[] = "Check the heater or add some shade/ice to help the fish.";
+            if ($reading->temperature < $tempSafeMin) {
+                $riskFactors[] = "Water temperature is critically low at {$reading->temperature}°C";
+                $recommendations[] = "Increase pond water depth to retain thermal mass during cold periods.";
+                $recommendations[] = "Reduce feeding frequency — fish metabolism slows significantly at low temperatures.";
+            } else {
+                $riskFactors[] = "Water temperature exceeds safe threshold at {$reading->temperature}°C";
+                $recommendations[] = "Increase aeration to compensate for reduced dissolved oxygen at high temperatures.";
+                $recommendations[] = "Provide shade cover or increase water flow to lower pond temperature.";
+            }
             $riskScore += 20;
         } elseif ($reading->temperature < $tempOptimalMin || $reading->temperature > $tempOptimalMax) {
-            $riskFactors[] = "Temp is not quite right ({$reading->temperature} C)";
-            $recommendations[] = "Make sure the water stays steady, fish hate sudden changes!";
+            $riskFactors[] = "Water temperature is outside the ideal range at {$reading->temperature}°C";
+            $recommendations[] = "Monitor temperature trends — sustained readings outside the optimal range may affect growth rate.";
             $riskScore += 10;
         } else {
-            $positiveNotes[] = "Temperature is comfy! 🌡️";
+            $positiveNotes[] = "Water temperature is optimal at {$reading->temperature}°C";
         }
 
         $this->applyTrendSignals($trendData, $riskFactors, $recommendations, $positiveNotes, $riskScore);
@@ -186,13 +203,13 @@ class AnalyzeWaterQuality implements ShouldQueue
             $riskLevel = 'medium';
         }
 
-        // Generate AI insight
+        // Generate insight
         $insight = $this->generateInsight($reading, $riskFactors, $positiveNotes, $riskLevel, $speciesLabel);
 
         if ($riskLevel === 'safe') {
-            $recommendations[] = "Maintain regular aeration and water circulation to support growth";
-            $recommendations[] = "Keep feeding consistent and avoid overfeeding to prevent waste buildup";
-            $recommendations[] = "Continue routine filter cleaning and sensor checks to keep conditions stable";
+            $recommendations[] = "Continue regular water quality monitoring at consistent intervals.";
+            $recommendations[] = "Maintain current feeding schedule based on fish biomass and growth stage.";
+            $recommendations[] = "Inspect pond infrastructure (dikes, inlet/outlet, screens) during routine rounds.";
         }
 
         $recommendations = array_values(array_unique($recommendations));
@@ -208,39 +225,34 @@ class AnalyzeWaterQuality implements ShouldQueue
             'insight' => $insight,
             'risk_level' => $riskLevel,
             'recommendations' => $recommendations,
-            'confidence_score' => max(60, $baseConfidence), // Higher confidence for lower risk
+            'confidence_score' => max(60, $baseConfidence),
         ];
     }
 
     /**
-     * Generate AI insight based on analysis
+     * Generate insight based on analysis
      */
     private function generateInsight(object $reading, array $riskFactors, array $positiveNotes, string $riskLevel, string $speciesLabel): string
     {
-        $sampleCount = $reading->sample_count ?? 1;
-        
-        // Friendly Start
         $insight = "";
-        
+
         if ($riskLevel === 'safe') {
-            $insight = "Everything looks great! The water is perfect for your {$speciesLabel}. ";
-            $insight .= "Your fish are happy and healthy! 🐟✨";
+            $insight = "All water quality parameters are within the optimal range for {$speciesLabel} aquaculture. ";
+            $insight .= "Conditions are favorable for healthy fish growth and development.";
         } elseif ($riskLevel === 'medium') {
-            $insight = "Heads up! The water is okay, but could be better. ";
-            $insight .= "Your {$speciesLabel} might be a little uncomfy. Let's fix a few things.";
+            $insight = "Suboptimal water conditions identified for {$speciesLabel}. ";
+            $insight .= "Fish growth rate may be reduced. Corrective measures are recommended to restore optimal conditions.";
         } else {
-            $insight = "Oh no! The water needs help right now! 🚨 ";
-            $insight .= "Your {$speciesLabel} are in danger. Please check the pond immediately.";
+            $insight = "Critical water quality conditions detected for {$speciesLabel}. ";
+            $insight .= "Immediate corrective action is required to prevent fish mortality and significant growth loss.";
         }
 
-        // Add details simply
         if (!empty($riskFactors)) {
-            $insight .= " Problem: " . implode(', ', $riskFactors) . ".";
+            $insight .= " Issues detected: " . implode('; ', $riskFactors) . ".";
         }
 
-        // Add positive notes if any
         if (!empty($positiveNotes) && $riskLevel !== 'critical') {
-            $insight .= " On the bright side: " . implode(', ', $positiveNotes) . ".";
+            $insight .= " Positive indicators: " . implode('; ', $positiveNotes) . ".";
         }
 
         return $insight;
@@ -293,7 +305,7 @@ class AnalyzeWaterQuality implements ShouldQueue
         if (isset($thresholds['turbidity']) && abs($turbidityDelta) >= $thresholds['turbidity']) {
             if ($turbidityDelta > 0) {
                 $riskFactors[] = "Turbidity rising (+{$turbidityDelta} NTU in {$minutes} min)";
-                $recommendations[] = "Check solids removal and avoid overfeeding to prevent oxygen drops";
+                $recommendations[] = "Check solids removal and reduce feeding to prevent dissolved oxygen depletion.";
                 $riskScore += 10;
             } else {
                 $positiveNotes[] = "Turbidity trend is improving";
@@ -304,7 +316,7 @@ class AnalyzeWaterQuality implements ShouldQueue
         if (isset($thresholds['tds']) && abs($tdsDelta) >= $thresholds['tds']) {
             if ($tdsDelta > 0) {
                 $riskFactors[] = "TDS climbing (+{$tdsDelta} mg/L in {$minutes} min)";
-                $recommendations[] = "Monitor source water and consider dilution to limit chronic stress";
+                $recommendations[] = "Monitor source water quality and consider dilution to limit chronic stress.";
                 $riskScore += 8;
             } else {
                 $positiveNotes[] = "TDS trend is improving";
@@ -313,15 +325,15 @@ class AnalyzeWaterQuality implements ShouldQueue
 
         $phDelta = $trendData['deltas']['ph'] ?? 0;
         if (isset($thresholds['ph']) && abs($phDelta) >= $thresholds['ph']) {
-            $riskFactors[] = "pH shifting quickly ({$phDelta} in {$minutes} min)";
-            $recommendations[] = "Stabilize pH gradually to avoid sudden stress";
+            $riskFactors[] = "pH shifting rapidly ({$phDelta} in {$minutes} min)";
+            $recommendations[] = "Stabilize pH gradually — avoid rapid chemical corrections that may stress fish.";
             $riskScore += 10;
         }
 
         $tempDelta = $trendData['deltas']['temperature'] ?? 0;
         if (isset($thresholds['temperature']) && abs($tempDelta) >= $thresholds['temperature']) {
-            $riskFactors[] = "Temperature drifting ({$tempDelta} C in {$minutes} min)";
-            $recommendations[] = "Reduce temperature swings for steady growth and appetite";
+            $riskFactors[] = "Temperature fluctuating ({$tempDelta}°C in {$minutes} min)";
+            $recommendations[] = "Minimize temperature swings to maintain steady growth and appetite.";
             $riskScore += 8;
         }
     }

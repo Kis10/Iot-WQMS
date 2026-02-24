@@ -2,7 +2,7 @@
     <div class="py-12">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-8">
-                <h1 class="text-3xl font-bold text-gray-900">AI Water Quality Analysis</h1>
+                <h1 class="text-3xl font-bold text-gray-900">AquaSense Water Quality Analysis</h1>
                 <p class="mt-2 text-gray-600">Automated analysis and insights for water quality monitoring</p>
             </div>
 
