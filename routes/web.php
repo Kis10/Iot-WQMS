@@ -65,6 +65,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/analysis/latest', [AnalysisController::class, 'latest'])->name('analysis.latest');
     Route::get('/analysis/generate', [AnalysisController::class, 'generate'])->name('analysis.generate');
     Route::get('/analysis/{analysis}', [AnalysisController::class, 'show'])->name('analysis.show');
+    Route::get('/information', function () {
+        return view('information');
+    })->name('information');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
