@@ -1118,7 +1118,7 @@
                     .then(async res => {
                         if (res.ok) {
                             this.showSuccess = true;
-                            setTimeout(() => window.location.reload(), 1000);
+                            setTimeout(() => { this.showSuccess = false; }, 3000);
                         } else {
                             const error = await res.json().catch(() => ({ message: 'Unknown Server Error' }));
                             alert('Failed to save changes: ' + (error.message || 'Check Server Logs'));
