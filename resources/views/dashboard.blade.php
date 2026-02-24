@@ -101,19 +101,19 @@
                 <div class="flex flex-wrap justify-center md:justify-end gap-3 sm:gap-6">
                     <div class="flex flex-col items-center">
                         <span id="contrib-ph" class="text-xs sm:text-base font-bold text-gray-900">pH=30.0%</span>
-                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">pH Level</span>
+                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">pH Level (30%)</span>
                     </div>
                     <div class="flex flex-col items-center">
                         <span id="contrib-temp" class="text-xs sm:text-base font-bold text-gray-900">Temp=25.0%</span>
-                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">Temperature</span>
+                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">Temperature (25%)</span>
                     </div>
                     <div class="flex flex-col items-center">
                         <span id="contrib-turbidity" class="text-xs sm:text-base font-bold text-gray-900">Turb=25.0%</span>
-                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">Turbidity</span>
+                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">Turbidity (25%)</span>
                     </div>
                     <div class="flex flex-col items-center">
                         <span id="contrib-tds" class="text-xs sm:text-base font-bold text-gray-900">TDS=20.0%</span>
-                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">TDS</span>
+                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">TDS (20%)</span>
                     </div>
                 </div>
             </div>
