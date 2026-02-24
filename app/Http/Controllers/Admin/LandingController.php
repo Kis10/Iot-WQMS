@@ -222,4 +222,108 @@ class LandingController extends Controller
             Log::error("Failed to sync seeder: " . $e->getMessage());
         }
     }
+
+    /**
+     * Backup all existing photos to Cloudinary (accessible via web route).
+     * Use this when you don't have SSH/shell access to run artisan commands.
+     */
+    public function backupPhotos()
+    {
+        $imageKeys = [
+            'hero_bg',
+            'team1_img', 'team1_img_hover',
+            'team2_img', 'team2_img_hover',
+            'team3_img', 'team3_img_hover',
+            'team4_img', 'team4_img_hover',
+        ];
+
+        $results = [];
+
+        foreach ($imageKeys as $key) {
+            $content = LandingContent::where('key', $key)->first();
+
+            if (!$content || !$content->image) {
+                $results[] = ['key' => $key, 'status' => 'skipped', 'reason' => 'No image found'];
+                continue;
+            }
+
+            $imageUrl = $content->image;
+
+            // Already on Cloudinary? Skip.
+            if (str_contains($imageUrl, 'cloudinary.com') || str_contains($imageUrl, 'res.cloudinary')) {
+                $results[] = ['key' => $key, 'status' => 'already_backed_up', 'url' => $imageUrl];
+                continue;
+            }
+
+            // Determine folder
+            $folder = 'Landing';
+            if ($key === 'hero_bg') {
+                $folder = 'Landing/Hero';
+            } elseif (str_contains($key, 'hover')) {
+                $folder = 'Landing/Hover';
+            } elseif (str_contains($key, 'img')) {
+                $folder = 'Landing/Main';
+            }
+
+            try {
+                // Try downloading the image
+                $imageContents = @file_get_contents($imageUrl);
+
+                if ($imageContents === false) {
+                    // Try as local/relative path
+                    $localPath = public_path($imageUrl);
+                    if (file_exists($localPath)) {
+                        $imageContents = file_get_contents($localPath);
+                    } else {
+                        $storagePath = str_replace(asset('storage/'), '', $imageUrl);
+                        if (Storage::disk('public')->exists($storagePath)) {
+                            $imageContents = Storage::disk('public')->get($storagePath);
+                        }
+                    }
+                }
+
+                if ($imageContents === false || empty($imageContents)) {
+                    $results[] = ['key' => $key, 'status' => 'failed', 'reason' => 'Could not download: ' . $imageUrl];
+                    continue;
+                }
+
+                // Save to temp file and upload to Cloudinary
+                $tempFile = tempnam(sys_get_temp_dir(), 'landing_backup_');
+                file_put_contents($tempFile, $imageContents);
+
+                $result = cloudinary()->upload($tempFile, [
+                    'folder' => $folder,
+                    'public_id' => $key . '_' . time(),
+                ]);
+
+                $cloudinaryUrl = $result->getSecurePath();
+                $content->update(['image' => $cloudinaryUrl]);
+
+                // Save local backup
+                $localName = $folder . '/' . $key . '_backup.jpg';
+                Storage::disk('public')->put($localName, $imageContents);
+
+                @unlink($tempFile);
+
+                $results[] = ['key' => $key, 'status' => 'uploaded', 'url' => $cloudinaryUrl];
+                Log::info("Photo backed up to Cloudinary: {$key} → {$cloudinaryUrl}");
+
+            } catch (\Exception $e) {
+                $results[] = ['key' => $key, 'status' => 'failed', 'reason' => $e->getMessage()];
+                Log::error("Photo backup failed for {$key}: " . $e->getMessage());
+            }
+        }
+
+        // Sync seeder after backup
+        $this->syncSeeder();
+
+        $uploaded = collect($results)->where('status', 'uploaded')->count();
+        $already = collect($results)->where('status', 'already_backed_up')->count();
+        $failed = collect($results)->where('status', 'failed')->count();
+        $skipped = collect($results)->where('status', 'skipped')->count();
+
+        return redirect()->route('admin.landing.index')->with('status', 
+            "Photo Backup Complete! ✅ {$uploaded} uploaded, {$already} already backed up, {$skipped} skipped, {$failed} failed."
+        );
+    }
 }
