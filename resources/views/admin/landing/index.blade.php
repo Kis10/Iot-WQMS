@@ -469,16 +469,16 @@
                         </div>
                     </button>
 
-                    <!-- Hover Effect Upload (Only show if primary photo exists) -->
-                    <button x-show="currentUploadKey && currentUploadKey.indexOf('team') !== -1 && currentUploadKey.indexOf('_hover') === -1 && (previews[currentUploadKey] || (data[currentUploadKey] && (data[currentUploadKey].image || data[currentUploadKey].value)))"
+                    <!-- Hover Effect Upload (3rd Option: Only shows if a primary photo exists) -->
+                    <button x-show="currentUploadKey && currentUploadKey.includes('team') && !currentUploadKey.endsWith('_hover') && (previews[currentUploadKey] || (data[currentUploadKey] && (data[currentUploadKey].image || data[currentUploadKey].value)))"
                             @click="currentUploadKey = currentUploadKey.replace('_img', '') + '_img_hover'; $refs.bgFileInput.click(); showBgModal = false;" 
-                            class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition text-left">
-                        <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center text-pink-600 shrink-0">
+                            class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition text-left group">
+                        <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center text-pink-600 shrink-0 group-hover:bg-pink-200 transition-colors">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                         </div>
                         <div>
-                            <div class="font-semibold text-gray-900 text-sm">Upload Hover Effect</div>
-                            <div class="text-gray-400 text-xs">Image changes when cursor passes</div>
+                            <div class="font-semibold text-gray-900 text-sm">Upload Hover Photo</div>
+                            <div class="text-gray-400 text-xs">Shown when someone hovers over the photo</div>
                         </div>
                     </button>
                 </div>
@@ -1116,7 +1116,8 @@
                     .then(res => {
                         if (res.ok) {
                             this.showSuccess = true;
-                            setTimeout(() => this.showSuccess = false, 2000);
+                            // Reload after 1 second to fetch fixed values from DB
+                            setTimeout(() => window.location.reload(), 1000);
                         } else { alert('Failed to save changes.'); }
                     })
                     .catch(err => { console.error(err); alert('Error saving changes.'); })
