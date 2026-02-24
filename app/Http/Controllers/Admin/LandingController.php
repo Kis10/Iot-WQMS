@@ -119,6 +119,7 @@ class LandingController extends Controller
 
             // Only perform DB update if we have new image data
             if (!empty($updateData)) {
+                $updateData['type'] = 'image'; // Ensure type is set
                 LandingContent::updateOrCreate(
                     ['key' => $key],
                     $updateData
@@ -126,8 +127,8 @@ class LandingController extends Controller
             }
         }
 
-        // 5. Auto-update the Seeder file so photos survive database resets
-        $this->syncSeeder();
+        // 5. Skip syncSeeder on Railway to avoid ephemeral disk issues
+        // $this->syncSeeder();
 
         // Return Success
         if ($request->wantsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
