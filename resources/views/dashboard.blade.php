@@ -548,6 +548,7 @@
             }
 
             let lastReadingState = @json($latest);
+            let lastAnalysisState = @json($latestAnalysis);
             try {
                 const saved = localStorage.getItem(STORAGE_KEY_LATEST);
                 if (saved) {
@@ -574,6 +575,8 @@
                      if (!reading.created_at) reading.created_at = new Date().toISOString();
                      localStorage.setItem(STORAGE_KEY_LATEST, JSON.stringify(reading));
                      lastReadingState = reading;
+                     // Keep print report in sync
+                     populatePrintReport();
                 }
 
                 const updateOverallHealth = (r) => {
@@ -934,6 +937,7 @@
             }
 
             function updatePopupContent(analysis) {
+                lastAnalysisState = analysis;
                 if (!analysis) {
                     popupHandle.className = `${headerBaseClasses} ${riskStyles.default.header}`;
                     riskBadge.className = `${badgeBaseClasses} ${riskStyles.default.badge}`;
@@ -1105,6 +1109,7 @@
             window.addEventListener('new-analysis', function(event) {
                 const analysis = event.detail;
                 if (analysis) {
+                    lastAnalysisState = analysis;
                     showPopup(analysis);
                     saveState(popupLastShownKey, analysis.id);
 
@@ -1181,7 +1186,7 @@
             // ============================
             // Auto-Print Report Builder
             // ============================
-            function populatePrintReport(analysis) {
+            function populatePrintReport(analysis = lastAnalysisState) {
                 const reading = lastReadingState;
                 if (!reading) return;
 
@@ -1221,6 +1226,10 @@
 
                 // AI Analysis Section
                 const aiSection = document.getElementById('printAiSection');
+                if (!analysis || !analysis.ai_insight) {
+                    aiSection.innerHTML = '<p style="color:#6b7280;font-style:italic;">Awaiting AI analysis for these readings...</p>';
+                    return;
+                }
                 let aiHtml = `<h4 style="font-size:12px;font-weight:700;color:#1e3a5f;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;gap:8px;">
                     <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                     Analyzed by AquaSense
@@ -1238,6 +1247,11 @@
                 }
                 aiSection.innerHTML = aiHtml;
             }
+
+            window.triggerDashboardPrint = function() {
+                populatePrintReport(lastAnalysisState || {});
+                window.print();
+            };
 
             initPopupPosition();
             restorePopupIfActive();
