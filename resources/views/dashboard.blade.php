@@ -122,7 +122,7 @@
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <!-- Turbidity Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
-                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase mb-3">Turbidity</h3>
+                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">Turbidity</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
@@ -146,7 +146,7 @@
 
                 <!-- TDS Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
-                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase mb-3">TDS</h3>
+                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">TDS</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
@@ -170,7 +170,7 @@
 
                 <!-- pH Level Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
-                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase mb-3">pH Level</h3>
+                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">pH Level</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
@@ -194,7 +194,7 @@
 
                 <!-- Temperature Card -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
-                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase mb-3">Water Temp</h3>
+                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">Water Temp</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->

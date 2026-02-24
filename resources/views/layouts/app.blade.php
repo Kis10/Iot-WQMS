@@ -11,18 +11,10 @@
         <link rel="icon" type="image/png" href="{{ asset('img/logo/logo-wq.png') }}">
         <link rel="shortcut icon" type="image/png" href="{{ asset('img/logo/logo-wq.png') }}">
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Coco+Gothic&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
         <style>
-            :root {
-                --font-coco: 'Coco Gothic', sans-serif;
-            }
-            body {
-                font-family: 'Coco Gothic', sans-serif;
-            }
-            h1, h2, h3, h4, h5, h6 {
-                font-family: 'Coco Gothic', sans-serif;
-            }
+            body { font-family: 'Figtree', sans-serif; }
+            h1, h2, h3, h4, h5, h6 { font-family: 'Figtree', sans-serif; }
         </style>
 
         <!-- Scripts -->

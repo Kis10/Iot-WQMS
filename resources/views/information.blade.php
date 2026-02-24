@@ -8,7 +8,7 @@
                     <!-- Global Standards Card -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                         <div class="p-6 border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-white">
-                            <h2 class="text-xl font-bold text-gray-900 flex items-center gap-3">
+                            <h2 class="text-xl font-bold text-gray-900 tracking-tight flex items-center gap-3">
                                 <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                 </svg>
@@ -20,28 +20,28 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- pH Standard -->
                                 <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-100">
-                                    <h3 class="text-base font-bold text-emerald-900 mb-2 flex justify-between">
+                                    <h3 class="text-base font-bold text-emerald-900 tracking-tight mb-2 flex justify-between">
                                         pH Level <span>6.5 - 8.5</span>
                                     </h3>
                                     <p class="text-xs text-emerald-800 leading-relaxed italic font-medium">"Optimal for nutrient availability and fish metabolism. Below 6.0 causes slow growth; above 9.0 increases ammonia toxicity."</p>
                                 </div>
                                 <!-- Temperature Standard -->
                                 <div class="p-4 rounded-xl bg-orange-50 border border-orange-100">
-                                    <h3 class="text-base font-bold text-orange-900 mb-2 flex justify-between">
+                                    <h3 class="text-base font-bold text-orange-900 tracking-tight mb-2 flex justify-between">
                                         Temperature <span>26°C - 30°C</span>
                                     </h3>
                                     <p class="text-sm text-orange-800 leading-relaxed italic font-medium">"Controls the metabolic rate of fish. Tilapia productivity peaks in this range. Above 32°C, oxygen solubility drops."</p>
                                 </div>
                                 <!-- TDS Standard -->
                                 <div class="p-4 rounded-xl bg-purple-50 border border-purple-100">
-                                    <h3 class="text-base font-bold text-purple-900 mb-2 flex justify-between">
+                                    <h3 class="text-base font-bold text-purple-900 tracking-tight mb-2 flex justify-between">
                                         TDS <span>100 - 500 ppm</span>
                                     </h3>
                                     <p class="text-sm text-purple-800 leading-relaxed italic font-medium">"Measures inorganic salts and organic matter. High TDS (>1000) stresses the osmoregulation of freshwater fish."</p>
                                 </div>
                                 <!-- Turbidity Standard -->
                                 <div class="p-4 rounded-xl bg-blue-50 border border-blue-100">
-                                    <h3 class="text-base font-bold text-blue-900 mb-2 flex justify-between">
+                                    <h3 class="text-base font-bold text-blue-900 tracking-tight mb-2 flex justify-between">
                                         Turbidity <span>50 - 100%</span>
                                     </h3>
                                     <p class="text-sm text-blue-800 leading-relaxed italic font-medium">"Clarity is vital for light penetration and gill health. Muddy water (below 20%) stunts growth and clogs gills."</p>
@@ -53,7 +53,7 @@
                     <!-- Sensor Duty Card -->
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                         <div class="p-6 border-b border-gray-100">
-                            <h2 class="text-xl font-bold text-gray-900 flex items-center gap-3">
+                            <h2 class="text-xl font-bold text-gray-900 tracking-tight flex items-center gap-3">
                                 <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
                                 </svg>
