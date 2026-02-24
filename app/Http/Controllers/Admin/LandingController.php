@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\LandingContent;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class LandingController extends Controller
 {
@@ -74,10 +75,23 @@ class LandingController extends Controller
                         // Upload directly to S3 Bucket
                         Storage::disk('t3_storage')->put($bucketPath, file_get_contents($file->getPathname()));
                         
-                        // Generate full, absolute URL
+                        // Generate full, absolute URL (Primary)
                         $url = config('filesystems.disks.t3_storage.url') . '/' . $bucketPath;
                         $updateData['image'] = $url;
-                        $updateData['value'] = $url;
+                        
+                        // B. Backup to Cloudinary
+                        try {
+                            $cloudinaryUpload = Cloudinary::upload($file->getRealPath(), [
+                                'folder' => $folder,
+                                'public_id' => $key . '_' . time()
+                            ]);
+                            $updateData['value'] = $cloudinaryUpload->getSecurePath(); // Backup URL
+                            Log::info("Backup Cloudinary URL: " . $updateData['value']);
+                        } catch (\Exception $ce) {
+                            Log::warning("Cloudinary Backup Failed for {$key}: " . $ce->getMessage());
+                            $updateData['value'] = $url; // Fallback to T3 URL if backup fails
+                        }
+
                         Log::info("Saved Cloud URL: " . $url);
                     } catch (\Exception $e) {
                         Log::error("S3 File Upload Error for {$key}: " . $e->getMessage());
@@ -98,10 +112,22 @@ class LandingController extends Controller
                         // Upload to Cloud
                         Storage::disk('t3_storage')->put($bucketPath, $imageContents);
                         
-                        // Generate full, absolute URL
+                        // Generate full, absolute URL (Primary)
                         $url = config('filesystems.disks.t3_storage.url') . '/' . $bucketPath;
                         $updateData['image'] = $url;
-                        $updateData['value'] = $url;
+                        
+                        // B. Backup to Cloudinary
+                        try {
+                            $cloudinaryUpload = Cloudinary::upload($url, [ // Cloudinary can upload from a URL
+                                'folder' => $folder,
+                                'public_id' => $key . '_' . time()
+                            ]);
+                            $updateData['value'] = $cloudinaryUpload->getSecurePath(); // Backup URL
+                        } catch (\Exception $ce) {
+                            Log::warning("Cloudinary Backup Failed for URL {$key}: " . $ce->getMessage());
+                            $updateData['value'] = $url;
+                        }
+
                         Log::info("Saved Cloud URL from link: " . $url);
                     } else {
                         $updateData['image'] = $url;
