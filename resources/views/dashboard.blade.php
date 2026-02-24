@@ -550,9 +550,9 @@
                             else if (val > 500) color = '#f59e0b';
                             else color = '#8b5cf6'; // Violet
                         } else if (param === 'turbidity') {
-                            if (val > 50) color = '#ef4444';
-                            else if (val > 25) color = '#f59e0b';
-                            else color = '#4f46e5'; // Indigo
+                            if (val < 20) color = '#ef4444'; // Red (Critical)
+                            else if (val < 50) color = '#f59e0b'; // Amber (Suboptimal)
+                            else color = '#4f46e5'; // Indigo (Normal 50-100)
                         } else if (param === 'temp') {
                             if (val < 15 || val > 35) color = '#ef4444';
                             else if (val < 20 || val > 30) color = '#f59e0b';
