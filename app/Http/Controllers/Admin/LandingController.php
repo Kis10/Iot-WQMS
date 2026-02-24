@@ -76,8 +76,9 @@ class LandingController extends Controller
                             'visibility' => 'public'
                         ]);
                         
-                        // Generate a clean, full URL
-                        $url = env('T_URL') . '/' . $bucketPath;
+                        // Generate a clean, full URL from config
+                        $baseUrl = config('filesystems.disks.t3_storage.url');
+                        $url = rtrim($baseUrl, '/') . '/' . $bucketPath;
                         $updateData['image'] = $url;
                         Log::info("Stored full S3 URL: " . $url);
                     } catch (\Exception $e) {
@@ -101,8 +102,9 @@ class LandingController extends Controller
                             'visibility' => 'public'
                         ]);
                         
-                        // Generate a clean, full URL
-                        $url = env('T_URL') . '/' . $bucketPath;
+                        // Generate a clean, full URL from config
+                        $baseUrl = config('filesystems.disks.t3_storage.url');
+                        $url = rtrim($baseUrl, '/') . '/' . $bucketPath;
                         $updateData['image'] = $url;
                         Log::info("Stored full URL from link: " . $url);
                     } else {
