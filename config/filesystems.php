@@ -56,6 +56,7 @@ return [
             'url' => env('T_URL'),
             'endpoint' => env('T_END'),
             'use_path_style_endpoint' => env('T_USE_PATH', true),
+            'visibility' => 'public',
             'throw' => false,
             'report' => false,
         ],

@@ -72,15 +72,13 @@ class LandingController extends Controller
                         $bucketPath = 'members/display/' . $filename;
 
                         // Upload directly to S3 Bucket
-                        Storage::disk('t3_storage')->put($bucketPath, file_get_contents($file->getPathname()), [
-                            'visibility' => 'public'
-                        ]);
+                        Storage::disk('t3_storage')->put($bucketPath, file_get_contents($file->getPathname()));
                         
-                        // Generate a clean, full URL from config
-                        $baseUrl = config('filesystems.disks.t3_storage.url');
-                        $url = rtrim($baseUrl, '/') . '/' . $bucketPath;
+                        // Generate full, absolute URL
+                        $url = config('filesystems.disks.t3_storage.url') . '/' . $bucketPath;
                         $updateData['image'] = $url;
-                        Log::info("Stored full S3 URL: " . $url);
+                        $updateData['value'] = $url;
+                        Log::info("Saved Cloud URL: " . $url);
                     } catch (\Exception $e) {
                         Log::error("S3 File Upload Error for {$key}: " . $e->getMessage());
                         return response()->json(['status' => 'error', 'message' => 'S3 Upload Failed: ' . $e->getMessage()], 500);
@@ -97,16 +95,14 @@ class LandingController extends Controller
                         $filename = $key . '_' . time() . '.' . $ext;
                         $bucketPath = 'members/hover/' . $filename;
 
-                        // Upload downloaded content to S3 Bucket
-                        Storage::disk('t3_storage')->put($bucketPath, $imageContents, [
-                            'visibility' => 'public'
-                        ]);
+                        // Upload to Cloud
+                        Storage::disk('t3_storage')->put($bucketPath, $imageContents);
                         
-                        // Generate a clean, full URL from config
-                        $baseUrl = config('filesystems.disks.t3_storage.url');
-                        $url = rtrim($baseUrl, '/') . '/' . $bucketPath;
+                        // Generate full, absolute URL
+                        $url = config('filesystems.disks.t3_storage.url') . '/' . $bucketPath;
                         $updateData['image'] = $url;
-                        Log::info("Stored full URL from link: " . $url);
+                        $updateData['value'] = $url;
+                        Log::info("Saved Cloud URL from link: " . $url);
                     } else {
                         $updateData['image'] = $url;
                     }
