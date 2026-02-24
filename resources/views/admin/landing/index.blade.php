@@ -30,6 +30,21 @@
     <div class="py-6" x-data="landingEditor(@js($contents))">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
+        <!-- Flash Message Banner -->
+        @if(session('status'))
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 8000)" x-transition
+                 class="fixed top-4 left-1/2 -translate-x-1/2 z-[200] max-w-xl w-full">
+                <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3">
+                    <svg class="w-6 h-6 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="font-semibold text-sm">{{ session('status') }}</span>
+                    <button @click="show = false" class="ml-auto text-emerald-400 hover:text-emerald-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </div>
+        @endif
         <!-- Floating Save Button -->
         <div class="fixed top-20 right-8 z-50 flex items-center gap-3">
             <div x-show="showSuccess" x-transition x-cloak class="flex items-center gap-2 text-green-600 font-bold text-sm bg-green-50 px-3 py-1.5 rounded-full border border-green-100 shadow-lg">
