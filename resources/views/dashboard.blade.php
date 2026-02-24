@@ -99,19 +99,19 @@
                 </div>
 
                 <div class="flex flex-wrap justify-center md:justify-end gap-3 sm:gap-6">
-                    <div class="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform" onclick="showFormulaModal('ph')">
+                    <div class="flex flex-col items-center cursor-pointer hover:scale-110 transition-transform" onclick="showFormulaModal('ph')">
                         <span id="contrib-ph" class="text-xs sm:text-base font-bold text-gray-900">pH=30.0%</span>
                         <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">pH Level (30%)</span>
                     </div>
-                    <div class="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform" onclick="showFormulaModal('temp')">
+                    <div class="flex flex-col items-center cursor-pointer hover:scale-110 transition-transform" onclick="showFormulaModal('temp')">
                         <span id="contrib-temp" class="text-xs sm:text-base font-bold text-gray-900">Temp=25.0%</span>
                         <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">Temperature (25%)</span>
                     </div>
-                    <div class="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform" onclick="showFormulaModal('turbidity')">
+                    <div class="flex flex-col items-center cursor-pointer hover:scale-110 transition-transform" onclick="showFormulaModal('turbidity')">
                         <span id="contrib-turbidity" class="text-xs sm:text-base font-bold text-gray-900">Turb=25.0%</span>
                         <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">Turbidity (25%)</span>
                     </div>
-                    <div class="flex flex-col items-center cursor-pointer hover:scale-105 transition-transform" onclick="showFormulaModal('tds')">
+                    <div class="flex flex-col items-center cursor-pointer hover:scale-110 transition-transform" onclick="showFormulaModal('tds')">
                         <span id="contrib-tds" class="text-xs sm:text-base font-bold text-gray-900">TDS=20.0%</span>
                         <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">TDS (20%)</span>
                     </div>
@@ -121,7 +121,7 @@
             <!-- Measurement Cards Grid -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <!-- Turbidity Card -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md hover:border-indigo-200 transition-all duration-200 cursor-pointer" onclick="showFormulaModal('turbidity')">
                     <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">Turbidity (25%)</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
@@ -145,7 +145,7 @@
                 </div>
 
                 <!-- TDS Card -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md hover:border-indigo-200 transition-all duration-200 cursor-pointer" onclick="showFormulaModal('tds')">
                     <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">TDS (20%)</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
@@ -169,7 +169,7 @@
                 </div>
 
                 <!-- pH Level Card -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md hover:border-indigo-200 transition-all duration-200 cursor-pointer" onclick="showFormulaModal('ph')">
                     <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">pH Level (30%)</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
@@ -193,7 +193,7 @@
                 </div>
 
                 <!-- Temperature Card -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition duration-200">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md hover:border-indigo-200 transition-all duration-200 cursor-pointer" onclick="showFormulaModal('temp')">
                     <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">Water Temp (25%)</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
@@ -579,44 +579,6 @@
                      populatePrintReport();
                 }
 
-                window.getWQIInfo = (r) => {
-                    if (!r) return null;
-                    const weights = { ph: 0.30, temp: 0.25, turbidity: 0.25, tds: 0.20 };
-                    let scores = { ph: 100, temp: 100, turbidity: 100, tds: 100 };
-
-                    if (r.ph < 6.5) scores.ph = Math.max(0, 100 - (6.5 - r.ph) * 50);
-                    else if (r.ph > 8.5) scores.ph = Math.max(0, 100 - (r.ph - 8.5) * 50);
-
-                    if (r.temperature < 25) scores.temp = Math.max(0, 100 - (25 - r.temperature) * 10);
-                    else if (r.temperature > 32) scores.temp = Math.max(0, 100 - (r.temperature - 32) * 15);
-
-                    if (r.turbidity < 50) scores.turbidity = Math.max(0, (r.turbidity / 50) * 100);
-                    
-                    if (r.tds < 300) scores.tds = Math.max(0, (r.tds / 300) * 100);
-                    else if (r.tds > 500) scores.tds = Math.max(0, 100 - (r.tds - 500) * 0.1);
-
-                    const wqi = (scores.ph * weights.ph) + (scores.temp * weights.temp) + (scores.turbidity * weights.turbidity) + (scores.tds * weights.tds);
-                    
-                    let color = '#10b981';
-                    let status = 'Excellent';
-                    let msg = 'Excellent water quality. Ideal for fish growth.';
-                    let rec = 'Maintain current management practices and continue regular monitoring.';
-                    
-                    if (wqi < 60) {
-                        color = '#ef4444';
-                        status = 'Critical';
-                        msg = 'CRITICAL: Water conditions may lead to high stress or fish mortality.';
-                        rec = 'Immediate emergency action required: flush system with fresh water and increase aeration.';
-                    } else if (wqi < 85) {
-                        color = '#f59e0b';
-                        status = 'Warning';
-                        msg = 'Warning: Suboptimal conditions detected. Check sensors and water balance.';
-                        rec = 'Perform a minor water exchange and verify all sensor readings.';
-                    }
-
-                    return { wqi, color, msg, rec, status, scores, weights };
-                };
-
                 const updateOverallHealth = (r) => {
                     const info = window.getWQIInfo(r);
                     if (!info) return;
@@ -645,6 +607,7 @@
                         updateContrib('contrib-tds', info.scores.tds, info.weights.tds, 'TDS');
                     }
                 };
+
                 const updateCircle = (id, val, max, param) => {
                     const circle = document.getElementById(id);
                     if (circle) {
@@ -692,10 +655,12 @@
                         }
                     }
                 };
+
                 const updateText = (id, val) => {
                     const text = document.getElementById(id);
                     if (text) text.textContent = Number(val).toFixed(2);
                 };
+
                 // Only update if value is present to prevent flickering to 0
                 if (reading.turbidity !== undefined) {
                     updateCircle('gauge-turbidity-circle', reading.turbidity, 100, 'turbidity');
@@ -1434,6 +1399,7 @@
 
             initPopupPosition();
             restorePopupIfActive();
+            updateGauges(lastReadingState, false);
             fetchLatestAnalysis(true);
             setInterval(() => fetchLatestAnalysis(true), analysisPollIntervalMs);
         });
