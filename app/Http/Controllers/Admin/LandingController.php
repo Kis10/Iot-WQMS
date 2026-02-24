@@ -61,13 +61,13 @@ class LandingController extends Controller
                 if ($file->isValid()) {
                     try {
                         // 1. Determine Folder
-                        $folder = 'landing';
+                        $folder = 'Landing';
                         if ($key === 'hero_bg') {
-                            $folder = 'landing/hero';
+                            $folder = 'Landing/Hero';
                         } elseif (str_contains($key, 'hover')) {
-                            $folder = 'landing/hover';
+                            $folder = 'Landing/Hover';
                         } elseif (str_contains($key, 'img')) {
-                            $folder = 'landing/main';
+                            $folder = 'Landing/Main';
                         }
 
                         // 2. Store Locally (Backup)
