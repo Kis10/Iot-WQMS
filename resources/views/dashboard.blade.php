@@ -1,4 +1,81 @@
 <x-app-layout>
+    <!-- Print Styles: Hide dashboard, show only the report -->
+    <style>
+        #printableReport { display: none; }
+        @media print {
+            body * { visibility: hidden; }
+            #printableReport, #printableReport * { visibility: visible; }
+            #printableReport {
+                display: block !important;
+                position: absolute;
+                left: 0; top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 40px;
+                box-shadow: none !important;
+                border: none !important;
+            }
+            nav, aside, footer, header, .py-12 { display: none !important; }
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+
+    <!-- Hidden Printable Report (populated dynamically by JS) -->
+    <div id="printableReport">
+        <div style="max-width: 700px; margin: 0 auto; font-family: 'Figtree', sans-serif;">
+            <!-- Report Header -->
+            <div style="position: relative; text-align: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 24px; margin-bottom: 24px; padding-top: 16px;">
+                <div style="position: absolute; top: 0; left: 0; display: flex; align-items: center; gap: 10px;">
+                    <img src="{{ asset('img/logo/logo-wq.png') }}" alt="AquaSense Logo" style="width: 36px; height: 36px; object-fit: contain;">
+                    <span style="font-size: 18px; font-weight: 700; color: #374151; letter-spacing: 2px;">AQUASENSE</span>
+                </div>
+                <div style="margin-top: 48px;">
+                    <h3 style="font-size: 14px; font-weight: 700; color: #111827; letter-spacing: 0.5px;">
+                        IoT-based Water Quality Monitoring System for <br>
+                        <span style="display: block; margin-top: 4px;">Aquaculture</span>
+                    </h3>
+                </div>
+            </div>
+
+            <!-- Info: Device & Date -->
+            <div style="margin-bottom: 24px; padding-left: 8px;">
+                <p id="printDevice" style="font-size: 13px; color: #4b5563; margin-bottom: 4px;"></p>
+                <p id="printDate" style="font-size: 13px; color: #4b5563; margin-bottom: 4px;"></p>
+                <p id="printLocation" style="font-size: 13px; color: #4b5563;"></p>
+            </div>
+
+            <!-- Data Table -->
+            <div style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background-color: #f9fafb;">
+                            <th style="padding: 12px 20px; text-align: left; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Parameter</th>
+                            <th style="padding: 12px 20px; text-align: left; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Value</th>
+                            <th style="padding: 12px 20px; text-align: left; font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="printTableBody"></tbody>
+                </table>
+            </div>
+
+            <!-- AI Analysis -->
+            <div id="printAiSection" style="margin-bottom: 24px; padding: 20px; background-color: #eff6ff; border-radius: 12px; border: 1px solid #dbeafe;"></div>
+
+            <!-- Footer -->
+            <div style="text-align: center; border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: auto;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px;">
+                    <img src="{{ asset('img/logo/logo-wq.png') }}" alt="Logo" style="width: 20px; height: 20px; object-fit: contain; opacity: 0.7;">
+                    <span style="font-size: 16px; font-weight: 700; color: #374151; letter-spacing: 1px;">AquaSense</span>
+                </div>
+                <p style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">&copy; 2026 AquaSense. All rights reserved.</p>
+                <p style="font-size: 12px; color: #6b7280; font-weight: 500;">Developed by: Kirstine A. Sanchez, Dannica J. Besinio and Joy Mae A. Samra</p>
+            </div>
+        </div>
+    </div>
+
     <div class="py-12">
         <div id="dashboardContainer" class="max-w-none mx-auto px-4 sm:px-6 lg:px-8 relative">
             <!-- Measurement Cards Grid -->
@@ -879,17 +956,12 @@
                     showPopup(analysis);
                     saveState(popupLastShownKey, analysis.id);
 
-                    // Auto-Print: 5-second delay after AI analysis arrives
+                    // Auto-Print: 5-second delay, in-page print overlay
                     const readingId = analysis.water_reading_id;
                     if (readingId) {
                         setTimeout(() => {
-                            const printUrl = `/history/${readingId}`;
-                            const printWindow = window.open(printUrl, '_blank');
-                            if (printWindow) {
-                                printWindow.addEventListener('load', function() {
-                                    setTimeout(() => printWindow.print(), 500);
-                                });
-                            }
+                            populatePrintReport(analysis);
+                            window.print();
                         }, 5000);
                     }
                 }
@@ -955,6 +1027,67 @@
                         persistAnalysisId(analysis);
                     })
                     .catch(err => console.error('AI Poll Error:', err));
+            }
+
+            // ============================
+            // Auto-Print Report Builder
+            // ============================
+            function populatePrintReport(analysis) {
+                const reading = lastReadingState;
+                if (!reading) return;
+
+                // Device & Date
+                const deviceEl = document.getElementById('printDevice');
+                const dateEl = document.getElementById('printDate');
+                const locationEl = document.getElementById('printLocation');
+
+                deviceEl.innerHTML = '<span style="font-weight:600;color:#1f2937;display:inline-block;width:70px;">Device:</span> ' + (reading.device_id || 'ESP32-WQ-01');
+                
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Manila' }) 
+                    + ' ' + now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Manila' });
+                dateEl.innerHTML = '<span style="font-weight:600;color:#1f2937;display:inline-block;width:70px;">Date:</span> ' + dateStr;
+                locationEl.innerHTML = '<span style="font-weight:600;color:#1f2937;display:inline-block;width:70px;">Location:</span> Po-Ok, Hinoba-an, Negros Occidental';
+
+                // Parameter Table
+                const tbody = document.getElementById('printTableBody');
+                const params = [
+                    { name: 'Turbidity', value: parseFloat(reading.turbidity).toFixed(2) + '%', critical: reading.turbidity < 50 },
+                    { name: 'TDS', value: parseFloat(reading.tds).toFixed(2) + ' ppm', critical: reading.tds > 500 },
+                    { name: 'pH Level', value: parseFloat(reading.ph).toFixed(2), critical: reading.ph < 6.0 || reading.ph > 8.0 },
+                    { name: 'Water Temp', value: parseFloat(reading.temperature).toFixed(2) + '°C', critical: reading.temperature < 15 || reading.temperature > 32 },
+                ];
+
+                tbody.innerHTML = params.map(p => {
+                    const statusBg = p.critical ? 'background-color:#fef2f2;color:#991b1b;' : 'background-color:#f0fdf4;color:#166534;';
+                    const statusText = p.critical ? 'Critical' : 'Normal';
+                    return `<tr style="border-top:1px solid #e5e7eb;">
+                        <td style="padding:12px 20px;font-size:13px;font-weight:500;color:#111827;">${p.name}</td>
+                        <td style="padding:12px 20px;font-size:13px;color:#111827;">${p.value}</td>
+                        <td style="padding:12px 20px;">
+                            <span style="display:inline-block;padding:2px 10px;border-radius:9999px;font-size:11px;font-weight:600;${statusBg}">${statusText}</span>
+                        </td>
+                    </tr>`;
+                }).join('');
+
+                // AI Analysis Section
+                const aiSection = document.getElementById('printAiSection');
+                let aiHtml = `<h4 style="font-size:12px;font-weight:700;color:#1e3a5f;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;gap:8px;">
+                    <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    Analyzed by AI
+                </h4>`;
+                aiHtml += `<p style="color:#374151;line-height:1.6;font-weight:500;">${analysis.ai_insight || 'No analysis insight available.'}</p>`;
+
+                if (analysis.recommendations && analysis.recommendations.length > 0) {
+                    aiHtml += `<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(219,234,254,0.5);">
+                        <h5 style="font-size:11px;font-weight:700;color:#1e40af;text-transform:uppercase;margin-bottom:8px;">Recommendations:</h5>
+                        <ul style="list-style:disc;padding-left:20px;margin:0;">`;
+                    analysis.recommendations.forEach(rec => {
+                        aiHtml += `<li style="font-size:13px;color:rgba(30,58,95,0.8);margin-bottom:4px;">${rec}</li>`;
+                    });
+                    aiHtml += `</ul></div>`;
+                }
+                aiSection.innerHTML = aiHtml;
             }
 
             initPopupPosition();
