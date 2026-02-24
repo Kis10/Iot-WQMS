@@ -56,10 +56,33 @@ class LandingController extends Controller
 
             // A. Handle File Upload
             if ($request->hasFile($fileInput)) {
+                \Log::info("Processing file upload for key: " . $fileInput);
                 $file = $request->file($fileInput);
                 if ($file->isValid()) {
-                    $path = $file->store('landing', 'public');
-                    $updateData['image'] = 'storage/' . $path;
+                    try {
+                        // 1. Determine Folder
+                        $folder = 'landing';
+                        if ($key === 'hero_bg') {
+                            $folder = 'landing/hero';
+                        } elseif (str_contains($key, 'hover')) {
+                            $folder = 'landing/hover';
+                        } elseif (str_contains($key, 'img')) {
+                            $folder = 'landing/main';
+                        }
+
+                        // 2. Store Locally (Backup)
+                        $path = $file->store($folder, 'public');
+                        \Log::info("Stored local backup at: " . $path);
+
+                        // 3. Upload to Cloudinary (Primary for production)
+                        $result = $file->storeOnCloudinary($folder);
+                        $updateData['image'] = $result->getSecurePath();
+                        \Log::info("Uploaded to Cloudinary: " . $updateData['image'] . " in folder: " . $folder);
+                    } catch (\Exception $e) {
+                        \Log::error("Cloudinary Upload Error: " . $e->getMessage());
+                    }
+                } else {
+                    \Log::error("File is not valid for key: " . $fileInput);
                 }
             } 
             // B. Handle URL String (only if no file uploaded)

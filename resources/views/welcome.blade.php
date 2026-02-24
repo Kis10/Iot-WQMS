@@ -113,7 +113,7 @@
             <!-- Dynamic Background Image -->
             @if(isset($contents['hero_bg']) && $contents['hero_bg']->image)
                  <div class="absolute inset-0 z-0">
-                    <img src="{{ asset($contents['hero_bg']->image) }}" class="w-full h-full object-cover opacity-40">
+                    <img src="{{ str_starts_with($contents['hero_bg']->image, 'http') ? $contents['hero_bg']->image : asset($contents['hero_bg']->image) }}" class="w-full h-full object-cover opacity-40">
                  </div>
             @endif
             <div class="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-slate-900/40 to-slate-950/40 z-0"></div>
@@ -259,7 +259,7 @@
                     <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
                         <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative border-4 bg-white" style="border-color: #0D1A63;">
                             @if(isset($contents['team1_img']) && $contents['team1_img']->image)
-                                <img src="{{ asset($contents['team1_img']->image) }}" class="w-full h-full object-cover">
+                                <img src="{{ str_starts_with($contents['team1_img']->image, 'http') ? $contents['team1_img']->image : asset($contents['team1_img']->image) }}" class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
                                     <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
@@ -267,7 +267,7 @@
                             @endif
 
                             @if(isset($contents['team1_img_hover']) && $contents['team1_img_hover']->image)
-                                <img src="{{ asset($contents['team1_img_hover']->image) }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white">
+                                <img src="{{ str_starts_with($contents['team1_img_hover']->image, 'http') ? $contents['team1_img_hover']->image : asset($contents['team1_img_hover']->image) }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white">
                             @endif
                         </div>
                         <h3 class="text-lg font-bold mb-1" style="color: #0D1A63;">{{ $contents['team1_name']->value ?? 'Kirstine A. Sanchez' }}</h3>
@@ -279,7 +279,7 @@
                     <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
                          <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative border-4 bg-white" style="border-color: #0D1A63;">
                             @if(isset($contents['team2_img']) && $contents['team2_img']->image)
-                                <img src="{{ asset($contents['team2_img']->image) }}" class="w-full h-full object-cover">
+                                <img src="{{ str_starts_with($contents['team2_img']->image, 'http') ? $contents['team2_img']->image : asset($contents['team2_img']->image) }}" class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
                                     <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
@@ -287,7 +287,7 @@
                             @endif
 
                             @if(isset($contents['team2_img_hover']) && $contents['team2_img_hover']->image)
-                                <img src="{{ asset($contents['team2_img_hover']->image) }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white">
+                                <img src="{{ str_starts_with($contents['team2_img_hover']->image, 'http') ? $contents['team2_img_hover']->image : asset($contents['team2_img_hover']->image) }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white">
                             @endif
                         </div>
                         <h3 class="text-lg font-bold mb-1" style="color: #0D1A63;">{{ $contents['team2_name']->value ?? 'Dannica J. Besinio' }}</h3>
@@ -299,7 +299,7 @@
                     <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
                          <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative border-4 bg-white" style="border-color: #0D1A63;">
                             @if(isset($contents['team3_img']) && $contents['team3_img']->image)
-                                <img src="{{ asset($contents['team3_img']->image) }}" class="w-full h-full object-cover">
+                                <img src="{{ str_starts_with($contents['team3_img']->image, 'http') ? $contents['team3_img']->image : asset($contents['team3_img']->image) }}" class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
                                     <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
@@ -307,7 +307,7 @@
                             @endif
 
                             @if(isset($contents['team3_img_hover']) && $contents['team3_img_hover']->image)
-                                <img src="{{ asset($contents['team3_img_hover']->image) }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white">
+                                <img src="{{ str_starts_with($contents['team3_img_hover']->image, 'http') ? $contents['team3_img_hover']->image : asset($contents['team3_img_hover']->image) }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white">
                             @endif
                         </div>
                         <h3 class="text-lg font-bold mb-1" style="color: #0D1A63;">{{ $contents['team3_name']->value ?? 'Joy Mae A. Samra' }}</h3>
@@ -319,7 +319,7 @@
                     <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
                          <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative border-4 bg-white" style="border-color: #0D1A63;">
                             @if(isset($contents['team4_img']) && $contents['team4_img']->image)
-                                <img src="{{ asset($contents['team4_img']->image) }}" class="w-full h-full object-cover">
+                                <img src="{{ str_starts_with($contents['team4_img']->image, 'http') ? $contents['team4_img']->image : asset($contents['team4_img']->image) }}" class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
                                     <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
@@ -327,7 +327,7 @@
                             @endif
 
                             @if(isset($contents['team4_img_hover']) && $contents['team4_img_hover']->image)
-                                <img src="{{ asset($contents['team4_img_hover']->image) }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white">
+                                <img src="{{ str_starts_with($contents['team4_img_hover']->image, 'http') ? $contents['team4_img_hover']->image : asset($contents['team4_img_hover']->image) }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white">
                             @endif
                         </div>
                         <h3 class="text-lg font-bold mb-1" style="color: #0D1A63;">{{ $contents['team4_name']->value ?? 'Jonas D. Parraño' }}</h3>
