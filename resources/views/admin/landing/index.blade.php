@@ -1115,14 +1115,19 @@
                         },
                         body: formData
                     })
-                    .then(res => {
+                    .then(async res => {
                         if (res.ok) {
                             this.showSuccess = true;
-                            // Reload after 1 second to fetch fixed values from DB
                             setTimeout(() => window.location.reload(), 1000);
-                        } else { alert('Failed to save changes.'); }
+                        } else {
+                            const error = await res.json().catch(() => ({ message: 'Unknown Server Error' }));
+                            alert('Failed to save changes: ' + (error.message || 'Check Server Logs'));
+                        }
                     })
-                    .catch(err => { console.error(err); alert('Error saving changes.'); })
+                    .catch(err => { 
+                        console.error(err); 
+                        alert('Network Error: Could not connect to server.'); 
+                    })
                     .finally(() => { this.saving = false; });
                 }
             }

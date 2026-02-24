@@ -71,14 +71,17 @@ class LandingController extends Controller
                         $filename = $key . '_' . time() . '.' . $ext;
                         $bucketPath = 'members/display/' . $filename;
 
-                        // Upload directly to S3 Bucket
-                        Storage::disk('s3')->put($bucketPath, file_get_contents($file), 'public');
+                        // Upload directly to S3 Bucket with correct visibility syntax
+                        Storage::disk('s3')->put($bucketPath, file_get_contents($file->getPathname()), [
+                            'visibility' => 'public'
+                        ]);
                         
                         // Save S3 URL to Database
                         $updateData['image'] = Storage::disk('s3')->url($bucketPath);
-                        Log::info("Uploaded photo to S3 display folder: " . $updateData['image']);
+                        Log::info("Uploaded photo to S3: " . $updateData['image']);
                     } catch (\Exception $e) {
-                        Log::error("S3 File Upload Error: " . $e->getMessage());
+                        Log::error("S3 File Upload Error for {$key}: " . $e->getMessage());
+                        return response()->json(['status' => 'error', 'message' => 'S3 Upload Failed: ' . $e->getMessage()], 500);
                     }
                 }
             } 
@@ -93,17 +96,19 @@ class LandingController extends Controller
                         $bucketPath = 'members/hover/' . $filename;
 
                         // Upload downloaded content to S3 Bucket
-                        Storage::disk('s3')->put($bucketPath, $imageContents, 'public');
+                        Storage::disk('s3')->put($bucketPath, $imageContents, [
+                            'visibility' => 'public'
+                        ]);
                         
                         // Save S3 URL to Database
                         $updateData['image'] = Storage::disk('s3')->url($bucketPath);
-                        Log::info("Uploaded URL photo to S3 hover folder: " . $updateData['image']);
                     } else {
                         $updateData['image'] = $url;
                     }
                 } catch (\Exception $e) {
+                    Log::error("S3 URL Processing Error for {$key}: " . $e->getMessage());
+                    // Don't fail the whole request for a URL error, just fallback
                     $updateData['image'] = $url;
-                    Log::error("S3 URL Processing Error: " . $e->getMessage());
                 }
             }
 
