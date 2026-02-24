@@ -93,11 +93,14 @@
                                 transform="rotate(-90 60 60)"/>
                             <!-- Center Value -->
                             <text id="gauge-turbidity-text" x="60" y="65" text-anchor="middle" font-size="16" font-weight="bold" fill="#111827">
-                                {{ round($latest?->turbidity ?? 0, 1) }}
+                                {{ round($latest?->turbidity ?? 0, 2) }}
                             </text>
                         </svg>
                     </div>
-                    <p class="text-center text-gray-400 text-[10px] sm:text-[11px] mt-2 font-medium">%</p>
+                    <div class="flex flex-col items-center mt-2">
+                        <p class="text-gray-400 text-[10px] sm:text-[11px] font-medium">%</p>
+                        <span id="status-turbidity" class="mt-1 text-[9px] font-bold uppercase tracking-tighter px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
+                    </div>
                 </div>
 
                 <!-- TDS Card -->
@@ -113,11 +116,14 @@
                                 transform="rotate(-90 60 60)"/>
                             <!-- Center Value -->
                             <text id="gauge-tds-text" x="60" y="65" text-anchor="middle" font-size="16" font-weight="bold" fill="#111827">
-                                {{ round($latest?->tds ?? 0, 1) }}
+                                {{ round($latest?->tds ?? 0, 2) }}
                             </text>
                         </svg>
                     </div>
-                    <p class="text-center text-gray-400 text-[10px] sm:text-[11px] mt-2 font-medium">mg/L</p>
+                    <div class="flex flex-col items-center mt-2">
+                        <p class="text-gray-400 text-[10px] sm:text-[11px] font-medium">mg/L</p>
+                        <span id="status-tds" class="mt-1 text-[9px] font-bold uppercase tracking-tighter px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
+                    </div>
                 </div>
 
                 <!-- pH Level Card -->
@@ -133,11 +139,14 @@
                                 transform="rotate(-90 60 60)"/>
                             <!-- Center Value -->
                             <text id="gauge-ph-text" x="60" y="65" text-anchor="middle" font-size="16" font-weight="bold" fill="#111827">
-                                {{ round($latest?->ph ?? 0, 1) }}
+                                {{ round($latest?->ph ?? 0, 2) }}
                             </text>
                         </svg>
                     </div>
-                    <p class="text-center text-gray-400 text-[10px] sm:text-[11px] mt-2 font-medium">pH</p>
+                    <div class="flex flex-col items-center mt-2">
+                        <p class="text-gray-400 text-[10px] sm:text-[11px] font-medium">pH</p>
+                        <span id="status-ph" class="mt-1 text-[9px] font-bold uppercase tracking-tighter px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
+                    </div>
                 </div>
 
                 <!-- Temperature Card -->
@@ -153,11 +162,14 @@
                                 transform="rotate(-90 60 60)"/>
                             <!-- Center Value -->
                             <text id="gauge-temp-text" x="60" y="65" text-anchor="middle" font-size="16" font-weight="bold" fill="#111827">
-                                {{ round($latest?->temperature ?? 0, 1) }}
+                                {{ round($latest?->temperature ?? 0, 2) }}
                             </text>
                         </svg>
                     </div>
-                    <p class="text-center text-gray-400 text-[10px] sm:text-[11px] mt-2 font-medium">°C</p>
+                    <div class="flex flex-col items-center mt-2">
+                        <p class="text-gray-400 text-[10px] sm:text-[11px] font-medium">°C</p>
+                        <span id="status-temp" class="mt-1 text-[9px] font-bold uppercase tracking-tighter px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
+                    </div>
                 </div>
             </div>
 
@@ -496,9 +508,10 @@
                 const saved = localStorage.getItem(STORAGE_KEY_LATEST);
                 if (saved) {
                     const parsed = JSON.parse(saved);
-                    // Merge saved state with backend latest if saved is newer
+                    // Merge: Backend data (lastReadingState) should OVERWRITE saved state 
+                    // to ensure initial page load reflects the most recent database records
                     if (lastReadingState) {
-                        lastReadingState = { ...lastReadingState, ...parsed };
+                        lastReadingState = { ...parsed, ...lastReadingState };
                     } else {
                         lastReadingState = parsed;
                     }
@@ -519,34 +532,72 @@
                      lastReadingState = reading;
                 }
 
-                const updateCircle = (id, val, max) => {
+                const updateCircle = (id, val, max, param) => {
                     const circle = document.getElementById(id);
                     if (circle) {
                         const circumference = 314.1;
                         const percent = Math.min(Math.max(val / max, 0), 1);
                         circle.setAttribute('stroke-dasharray', `${percent * circumference}, ${circumference}`);
+                        
+                        // Dynamic Colors
+                        let color = '#4f46e5'; // Default Indigo
+                        if (param === 'ph') {
+                            if (val < 6.0 || val > 9.0) color = '#ef4444'; // Red (Critical)
+                            else if (val < 6.5 || val > 8.5) color = '#f59e0b'; // Amber (Suboptimal)
+                            else color = '#10b981'; // Green (Safe 6.5-8.5)
+                        } else if (param === 'tds') {
+                            if (val > 1000) color = '#ef4444';
+                            else if (val > 500) color = '#f59e0b';
+                            else color = '#8b5cf6'; // Violet
+                        } else if (param === 'turbidity') {
+                            if (val > 50) color = '#ef4444';
+                            else if (val > 25) color = '#f59e0b';
+                            else color = '#4f46e5'; // Indigo
+                        } else if (param === 'temp') {
+                            if (val < 15 || val > 35) color = '#ef4444';
+                            else if (val < 20 || val > 30) color = '#f59e0b';
+                            else color = '#f97316'; // Orange
+                        }
+                        circle.setAttribute('stroke', color);
+
+                        // Update Status Label
+                        const statusLabel = document.getElementById(`status-${param}`);
+                        if (statusLabel) {
+                            let statusText = 'Normal';
+                            let statusClass = 'bg-emerald-50 text-emerald-600';
+                            
+                            if (color === '#ef4444') {
+                                statusText = 'Critical';
+                                statusClass = 'bg-red-50 text-red-600';
+                            } else if (color === '#f59e0b') {
+                                statusText = 'Warning';
+                                statusClass = 'bg-amber-50 text-amber-600';
+                            }
+                            
+                            statusLabel.textContent = statusText;
+                            statusLabel.className = `mt-1 text-[9px] font-bold uppercase tracking-tighter px-2 py-0.5 rounded-full ${statusClass}`;
+                        }
                     }
                 };
                 const updateText = (id, val) => {
                     const text = document.getElementById(id);
-                    if (text) text.textContent = Number(val).toFixed(1);
+                    if (text) text.textContent = Number(val).toFixed(2);
                 };
-
                 // Only update if value is present to prevent flickering to 0
                 if (reading.turbidity !== undefined) {
-                    updateCircle('gauge-turbidity-circle', reading.turbidity, 100);
+                    updateCircle('gauge-turbidity-circle', reading.turbidity, 100, 'turbidity');
                     updateText('gauge-turbidity-text', reading.turbidity);
                 }
                 if (reading.tds !== undefined) {
-                    updateCircle('gauge-tds-circle', reading.tds, 1000);
+                    updateCircle('gauge-tds-circle', reading.tds, 1000, 'tds');
                     updateText('gauge-tds-text', reading.tds);
                 }
                 if (reading.ph !== undefined) {
-                    updateCircle('gauge-ph-circle', reading.ph, 14);
+                    updateCircle('gauge-ph-circle', reading.ph, 14, 'ph');
                     updateText('gauge-ph-text', reading.ph);
                 }
                 if (reading.temperature !== undefined) {
-                    updateCircle('gauge-temp-circle', reading.temperature, 50);
+                    updateCircle('gauge-temp-circle', reading.temperature, 50, 'temp');
                     updateText('gauge-temp-text', reading.temperature);
                 }
             }

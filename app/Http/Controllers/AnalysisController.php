@@ -44,9 +44,9 @@ class AnalysisController extends Controller
         ];
         
         if ($reading) {
-            if ($reading->turbidity > 50 || $reading->tds > 800 || $reading->ph < 5.5 || $reading->ph > 9) {
+            if ($reading->turbidity > 50 || $reading->tds > 1000 || $reading->ph < 6.0 || $reading->ph > 9.0) {
                 $risk = 'critical';
-                $insight = 'Critical water quality conditions detected. Immediate corrective action is required to prevent fish mortality and significant growth loss.';
+                $insight = 'Critical water quality conditions detected. pH levels outside 6.0-9.0 can cause immediate stress or mortality. Urgent intervention required.';
                 $recommendations = [
                     'Increase aeration to maintain dissolved oxygen levels.',
                     'Perform a 25-30% water change with fresh, dechlorinated source water.',
@@ -54,7 +54,7 @@ class AnalysisController extends Controller
                 ];
             } elseif ($reading->turbidity > 25 || $reading->tds > 500 || $reading->ph < 6.5 || $reading->ph > 8.5) {
                 $risk = 'high';
-                $insight = 'Suboptimal water conditions identified. Fish growth rate may be reduced. Corrective measures are recommended to restore optimal conditions.';
+                $insight = 'Suboptimal water conditions identified. The pH is outside the 6.5-8.5 range ideal for fish growth. Productivity may be reduced.';
                 $recommendations = [
                     'Inspect and clean mechanical filters or biofilters.',
                     'Reduce feeding rate temporarily to minimize organic waste.',
