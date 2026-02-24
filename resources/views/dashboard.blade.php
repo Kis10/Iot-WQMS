@@ -318,6 +318,111 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     {{-- Ably script removed, handled globally in app.blade.php --}}
     <script>
+        /**
+         * Water Quality Index (WQI) Calculator
+         * Based on FAO (Food and Agriculture Organization) water quality guidelines
+         * for freshwater aquaculture (tilapia, catfish, carp).
+         *
+         * Weighted Arithmetic WQI Method:
+         *   WQI = Σ (Wi × qi)
+         * where Wi = weight of parameter i, qi = sub-index score (0-100)
+         *
+         * FAO Reference Ranges (Aquaculture):
+         *   pH:          6.5 – 8.5
+         *   Temperature: 25  – 32 °C
+         *   Turbidity:   ≥ 50 % clarity (lower = worse)
+         *   TDS:         300 – 500 mg/L
+         *
+         * Weight allocation follows parameter impact on fish health:
+         *   pH         = 0.30 (30%) — most critical for fish survival
+         *   Temperature = 0.25 (25%) — affects metabolism & dissolved O₂
+         *   Turbidity   = 0.25 (25%) — affects light, feeding, gill health
+         *   TDS         = 0.20 (20%) — mineral load indicator
+         */
+        window.getWQIInfo = function(reading) {
+            if (!reading) return null;
+
+            const weights = { ph: 0.30, temp: 0.25, turbidity: 0.25, tds: 0.20 };
+
+            // --- Sub-index scoring functions (qi) ---
+            // Each returns 0-100 where 100 = ideal FAO range
+
+            // pH Sub-index: Optimal 6.5-8.5 (FAO)
+            // Penalty: 50 points per unit outside optimal range
+            function scorePH(val) {
+                if (val >= 6.5 && val <= 8.5) return 100;
+                if (val < 6.5) return Math.max(0, 100 - (6.5 - val) * 50);
+                return Math.max(0, 100 - (val - 8.5) * 50);
+            }
+
+            // Temperature Sub-index: Optimal 25-32°C (FAO)
+            // Below: -10 pts per °C; Above: -15 pts per °C (heat stress is more dangerous)
+            function scoreTemp(val) {
+                if (val >= 25 && val <= 32) return 100;
+                if (val < 25) return Math.max(0, 100 - (25 - val) * 10);
+                return Math.max(0, 100 - (val - 32) * 15);
+            }
+
+            // Turbidity Sub-index: Clarity % (higher = better)
+            // Optimal ≥ 50%; below 50% scales linearly
+            function scoreTurbidity(val) {
+                if (val >= 50) return 100;
+                return Math.max(0, (val / 50) * 100);
+            }
+
+            // TDS Sub-index: Optimal 300-500 mg/L (FAO)
+            // Below 300: linear scale; Above 500: -0.1 pts per mg/L excess
+            function scoreTDS(val) {
+                if (val >= 300 && val <= 500) return 100;
+                if (val < 300) return Math.max(0, (val / 300) * 100);
+                return Math.max(0, 100 - (val - 500) * 0.1);
+            }
+
+            const ph = parseFloat(reading.ph) || 0;
+            const temp = parseFloat(reading.temperature) || 0;
+            const turbidity = parseFloat(reading.turbidity) || 0;
+            const tds = parseFloat(reading.tds) || 0;
+
+            const scores = {
+                ph: scorePH(ph),
+                temp: scoreTemp(temp),
+                turbidity: scoreTurbidity(turbidity),
+                tds: scoreTDS(tds)
+            };
+
+            // WQI = Σ (Wi × qi)
+            const wqi = Math.min(100, Math.max(0,
+                scores.ph * weights.ph +
+                scores.temp * weights.temp +
+                scores.turbidity * weights.turbidity +
+                scores.tds * weights.tds
+            ));
+
+            // Classification & color based on WQI score
+            let color, msg;
+            if (wqi >= 90) {
+                color = '#10b981'; // Emerald
+                msg = 'Excellent water quality — all parameters within FAO optimal range for aquaculture.';
+            } else if (wqi >= 70) {
+                color = '#22c55e'; // Green
+                msg = 'Good water quality — minor deviations from FAO standards, suitable for fish growth.';
+            } else if (wqi >= 50) {
+                color = '#f59e0b'; // Amber
+                msg = 'Fair water quality — some parameters outside FAO range, corrective action recommended.';
+            } else if (wqi >= 25) {
+                color = '#f97316'; // Orange
+                msg = 'Poor water quality — multiple parameters outside safe FAO limits, immediate action needed.';
+            } else {
+                color = '#ef4444'; // Red
+                msg = 'Critical water quality — dangerous conditions for aquaculture, urgent intervention required.';
+            }
+
+            return { wqi, color, msg, scores, weights };
+        };
+
+        // Alias for use inside DOMContentLoaded scope
+        const getWQIInfo = window.getWQIInfo;
+
         document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('waterQualityChart').getContext('2d');
             
@@ -1314,7 +1419,48 @@
                 }
 
                 document.getElementById('modal-title-text').textContent = title;
+                // Build the WQI breakdown bar showing all 4 contributions
+                const contribPH = (info.scores.ph * info.weights.ph).toFixed(1);
+                const contribTemp = (info.scores.temp * info.weights.temp).toFixed(1);
+                const contribTurb = (info.scores.turbidity * info.weights.turbidity).toFixed(1);
+                const contribTDS = (info.scores.tds * info.weights.tds).toFixed(1);
+                const currentParam = paramType;
+
+                const paramColors = { ph: '#10b981', temp: '#f59e0b', turbidity: '#4f46e5', tds: '#8b5cf6' };
+                const paramLabels = { ph: 'pH', temp: 'Temp', turbidity: 'Turb', tds: 'TDS' };
+                const contribs = { ph: contribPH, temp: contribTemp, turbidity: contribTurb, tds: contribTDS };
+
+                let wqiBarHtml = '';
+                for (const [key, label] of Object.entries(paramLabels)) {
+                    const isActive = key === currentParam;
+                    const opacity = isActive ? '1' : '0.35';
+                    const ring = isActive ? 'ring-2 ring-offset-1 ring-indigo-400' : '';
+                    wqiBarHtml += `<div class="flex flex-col items-center ${ring} rounded-lg px-1.5 py-1" style="opacity:${opacity}">
+                        <div class="w-3 h-3 rounded-full mb-1" style="background:${paramColors[key]}"></div>
+                        <span class="text-[10px] font-black text-gray-700">${contribs[key]}%</span>
+                        <span class="text-[8px] font-bold text-gray-400 uppercase">${label}</span>
+                    </div>`;
+                }
+
                 content.innerHTML = `
+                    <!-- WQI Overview -->
+                    <div class="p-4 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-2xl border border-indigo-100 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-[9px] font-black text-indigo-400 uppercase tracking-[2px] mb-1">FAO Weighted Arithmetic WQI</p>
+                                <p class="text-[11px] text-gray-500 font-medium italic">WQI = Σ (W<sub>i</sub> × q<sub>i</sub>)</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-2xl font-black tracking-tight" style="color:${info.color}">${Math.round(info.wqi)}%</span>
+                                <p class="text-[9px] font-bold text-gray-400 uppercase">Overall</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-around pt-2 border-t border-indigo-100/50">
+                            ${wqiBarHtml}
+                        </div>
+                    </div>
+
+                    <!-- Parameter Reading -->
                     <div class="p-5 bg-indigo-50/50 rounded-2xl border border-indigo-100 space-y-4">
                         <div class="flex justify-between items-center text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
                             <span>FAO Reference Standard</span>
@@ -1332,7 +1478,7 @@
                     <div class="space-y-3">
                         <div class="flex items-center gap-2">
                              <div class="h-px flex-1 bg-gray-100"></div>
-                             <span class="text-[9px] font-black text-gray-400 uppercase tracking-[2px]">Mathematical Logic</span>
+                             <span class="text-[9px] font-black text-gray-400 uppercase tracking-[2px]">Sub-index Calculation (q<sub>i</sub>)</span>
                              <div class="h-px flex-1 bg-gray-100"></div>
                         </div>
                         <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 font-mono text-xs flex items-center gap-4">
@@ -1352,7 +1498,7 @@
                             <div class="relative">
                                 <div class="absolute -left-10 w-5 h-5 rounded-full bg-white border-4 border-indigo-500 z-10"></div>
                                 <div>
-                                    <p class="text-[10px] font-black text-indigo-500 uppercase tracking-wider mb-1">Step 01: Quality Score</p>
+                                    <p class="text-[10px] font-black text-indigo-500 uppercase tracking-wider mb-1">Step 01: Sub-index Score (q<sub>i</sub>)</p>
                                     <div class="p-3 bg-white rounded-xl border border-gray-100 shadow-sm font-mono text-[11px] text-gray-600 italic">
                                         ${calcText}
                                     </div>
@@ -1362,15 +1508,15 @@
                             <div class="relative">
                                 <div class="absolute -left-10 w-5 h-5 rounded-full bg-white border-4 border-indigo-500 z-10"></div>
                                 <div>
-                                    <p class="text-[10px] font-black text-indigo-500 uppercase tracking-wider mb-1">Step 02: Final Contribution</p>
+                                    <p class="text-[10px] font-black text-indigo-500 uppercase tracking-wider mb-1">Step 02: Weighted Contribution (W<sub>i</sub> × q<sub>i</sub>)</p>
                                     <div class="p-4 bg-white rounded-xl border border-gray-100 shadow-sm space-y-2">
                                         <div class="flex justify-between text-xs text-gray-500">
-                                            <span>Score × Weight</span>
+                                            <span>q<sub>i</sub> × W<sub>i</sub></span>
                                             <span class="font-bold">${score.toFixed(1)} × ${(weight * 100)}%</span>
                                         </div>
                                         <div class="h-px bg-gray-50"></div>
                                         <div class="flex justify-between items-center">
-                                            <span class="text-xs font-bold text-gray-900">Result</span>
+                                            <span class="text-xs font-bold text-gray-900">Contribution to WQI</span>
                                             <span class="text-xl font-black text-indigo-600 tracking-tight">${(score * weight).toFixed(1)}%</span>
                                         </div>
                                     </div>
@@ -1380,10 +1526,16 @@
                     </div>
 
                     <div class="p-4 bg-amber-50 rounded-2xl border border-amber-100 flex gap-3 shadow-sm">
-                        <div class="flex-shrink-0 w-8 h-8 rounded-xl bg-white flex items-center justify-center text-sm shadow-sm">💡</div>
+                        <div class="flex-shrink-0 w-8 h-8 rounded-xl bg-white flex items-center justify-center text-sm shadow-sm">📐</div>
                         <p class="text-[11px] text-amber-900 leading-relaxed font-medium">
-                            This parameter contributes <b>${(score * weight).toFixed(1)}%</b> toward the total 100% Water Quality Index. 
-                            ${score < 100 ? 'Points are deducted because the reading deviates from the optimal FAO range for fish.' : 'Perfect contribution score as the reading is within the ideal FAO range.'}
+                            This parameter contributes <b>${(score * weight).toFixed(1)}%</b> out of its maximum <b>${(weight * 100)}%</b> toward the overall WQI of <b>${Math.round(info.wqi)}%</b>.
+                            ${score < 100 ? 'Points are deducted because the reading deviates from the FAO optimal range for freshwater aquaculture.' : 'Full contribution — the reading is within the ideal FAO range for fish health.'}
+                        </p>
+                    </div>
+
+                    <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <p class="text-[9px] text-gray-400 font-medium text-center italic">
+                            Reference: FAO (Food and Agriculture Organization of the United Nations) — Water Quality for Aquaculture Guidelines
                         </p>
                     </div>
                 `;
