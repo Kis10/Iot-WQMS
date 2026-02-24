@@ -579,9 +579,8 @@
                      populatePrintReport();
                 }
 
-                const updateOverallHealth = (r) => {
-                    if (!r) return;
-                    // Weights: pH (30%), Temp (25%), Clarity (25%), TDS (20%)
+                const getWQIInfo = (r) => {
+                    if (!r) return null;
                     const weights = { ph: 0.30, temp: 0.25, turbidity: 0.25, tds: 0.20 };
                     let scores = { ph: 100, temp: 100, turbidity: 100, tds: 100 };
 
@@ -598,42 +597,55 @@
 
                     const wqi = (scores.ph * weights.ph) + (scores.temp * weights.temp) + (scores.turbidity * weights.turbidity) + (scores.tds * weights.tds);
                     
+                    let color = '#10b981';
+                    let status = 'Excellent';
+                    let msg = 'Excellent water quality. Ideal for fish growth.';
+                    let rec = 'Maintain current management practices and continue regular monitoring.';
+                    
+                    if (wqi < 60) {
+                        color = '#ef4444';
+                        status = 'Critical';
+                        msg = 'CRITICAL: Water conditions may lead to high stress or fish mortality.';
+                        rec = 'Immediate emergency action required: flush system with fresh water and increase aeration.';
+                    } else if (wqi < 85) {
+                        color = '#f59e0b';
+                        status = 'Warning';
+                        msg = 'Warning: Suboptimal conditions detected. Check sensors and water balance.';
+                        rec = 'Perform a minor water exchange and verify all sensor readings.';
+                    }
+
+                    return { wqi, color, msg, rec, status, scores, weights };
+                };
+
+                const updateOverallHealth = (r) => {
+                    const info = getWQIInfo(r);
+                    if (!info) return;
+                    
                     const circle = document.getElementById('overall-health-circle');
                     const text = document.getElementById('overall-health-text');
                     const desc = document.getElementById('overall-health-desc');
 
                     if (circle && text) {
                         const circumference = 282.7;
-                        const offset = circumference - (wqi / 100) * circumference;
+                        const offset = circumference - (info.wqi / 100) * circumference;
                         circle.style.transition = 'stroke-dashoffset 1s ease-in-out, stroke 1s';
                         circle.setAttribute('stroke-dashoffset', offset);
-                        
-                        let color = '#10b981';
-                        let msg = 'Excellent water quality. Ideal for fish growth.';
-                        
-                        if (wqi < 60) {
-                            color = '#ef4444';
-                            msg = 'CRITICAL: Water conditions may lead to high stress/mortality.';
-                        } else if (wqi < 85) {
-                            color = '#f59e0b';
-                            msg = 'Warning: Suboptimal conditions detected. Check sensors.';
-                        }
-                        circle.setAttribute('stroke', color);
-                        text.textContent = Math.round(wqi) + '%';
-                        if (desc) desc.textContent = msg;
+                        circle.setAttribute('stroke', info.color);
+                        text.textContent = Math.round(info.wqi) + '%';
+                        if (desc) desc.textContent = info.msg;
 
                         // Update individual contributions in UI
                         const updateContrib = (id, score, weight, prefix) => {
                             const el = document.getElementById(id);
                             if (el) el.textContent = `${prefix}=${(score * weight).toFixed(1)}%`;
                         };
-                        updateContrib('contrib-ph', scores.ph, weights.ph, 'pH');
-                        updateContrib('contrib-temp', scores.temp, weights.temp, 'Temp');
-                        updateContrib('contrib-turbidity', scores.turbidity, weights.turbidity, 'Turb');
-                        updateContrib('contrib-tds', scores.tds, weights.tds, 'TDS');
+                        updateContrib('contrib-ph', info.scores.ph, info.weights.ph, 'pH');
+                        updateContrib('contrib-temp', info.scores.temp, info.weights.temp, 'Temp');
+                        updateContrib('contrib-turbidity', info.scores.turbidity, info.weights.turbidity, 'Turb');
+                        updateContrib('contrib-tds', info.scores.tds, info.weights.tds, 'TDS');
                     }
                 };
-
+internal_link:c:\xampp\htdocs\water-quality-system\resources\views\dashboard.blade.php:582-634
                 const updateCircle = (id, val, max, param) => {
                     const circle = document.getElementById(id);
                     if (circle) {
@@ -1225,27 +1237,28 @@
                     </tr>`;
                 }).join('');
 
-                // AI Analysis Section
+                // AI Analysis Section - Strategic Alignment with Overall Health
                 const aiSection = document.getElementById('printAiSection');
-                if (!analysis || !analysis.ai_insight) {
-                    aiSection.innerHTML = '<p style="color:#6b7280;font-style:italic;">Awaiting AI analysis for these readings...</p>';
-                    return;
-                }
+                const wqiInfo = getWQIInfo(reading);
+                
                 let aiHtml = `<h4 style="font-size:12px;font-weight:700;color:#1e3a5f;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;gap:8px;">
                     <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                     Analyzed by AquaSense
                 </h4>`;
-                aiHtml += `<p style="color:#374151;line-height:1.6;font-weight:500;">${analysis.ai_insight || 'No analysis insight available.'}</p>`;
+                
+                // Primary Analysis: Alignment with WQI Message
+                const healthMsg = wqiInfo ? wqiInfo.msg : 'Analyzing water quality...';
+                aiHtml += `<p style="color:#374151;line-height:1.6;font-weight:500;">${healthMsg}</p>`;
 
-                if (analysis.recommendations && analysis.recommendations.length > 0) {
-                    aiHtml += `<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(219,234,254,0.5);">
-                        <h5 style="font-size:11px;font-weight:700;color:#1e40af;text-transform:uppercase;margin-bottom:8px;">Recommendations:</h5>
-                        <ul style="list-style:disc;padding-left:20px;margin:0;">`;
-                    analysis.recommendations.forEach(rec => {
-                        aiHtml += `<li style="font-size:13px;color:rgba(30,58,95,0.8);margin-bottom:4px;">${rec}</li>`;
-                    });
-                    aiHtml += `</ul></div>`;
-                }
+                // Strategic Recommendation: Single Action Point
+                const recommendation = wqiInfo ? wqiInfo.rec : 'Continue standard monitoring protocol.';
+                aiHtml += `<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(219,234,254,0.5);">
+                    <h5 style="font-size:11px;font-weight:700;color:#1e40af;text-transform:uppercase;margin-bottom:8px;">Recommendation:</h5>
+                    <ul style="list-style:disc;padding-left:20px;margin:0;">
+                        <li style="font-size:13px;color:rgba(30,58,95,0.8);margin-bottom:4px;">${recommendation}</li>
+                    </ul>
+                </div>`;
+                
                 aiSection.innerHTML = aiHtml;
             }
 
