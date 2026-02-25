@@ -80,10 +80,10 @@
         <div id="dashboardContainer" class="max-w-none mx-auto px-4 sm:px-6 lg:px-8 relative">
             <!-- Overall Water Quality Status -->
             <div class="mb-8 p-6 bg-white/60 backdrop-blur-md rounded-2xl border border-white shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-                <!-- Background Decoration -->
-                <div class="absolute top-0 right-0 -mt-8 -mr-8 w-48 h-48 bg-indigo-500/5 rounded-full blur-3xl"></div>
+                <!-- Background Decoration (pointer-events-none to prevent blocking clicks) -->
+                <div class="absolute top-0 right-0 -mt-8 -mr-8 w-48 h-48 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
                 
-                <div class="flex items-center gap-6">
+                <div class="flex items-center gap-6 relative z-10">
                     <div class="relative w-20 h-20 sm:w-24 sm:h-24">
                          <svg class="w-full h-full" viewBox="0 0 100 100">
                             <circle cx="50" cy="50" r="45" fill="none" stroke="#f3f4f6" stroke-width="8"/>
@@ -145,7 +145,7 @@
                 </div>
 
                 <!-- TDS Card -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md hover:border-indigo-200 transition-all duration-200 cursor-pointer" onclick="showFormulaModal('tds')">
+                <div class="relative z-10 bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md hover:border-indigo-200 transition-all duration-200 cursor-pointer" onclick="showFormulaModal('tds')">
                     <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">TDS (20%)</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
@@ -1404,7 +1404,7 @@
                         val = parseFloat(reading.tds).toFixed(2);
                         weight = info.weights.tds;
                         score = info.scores.tds;
-                        unit = 'ppm';
+                        unit = 'mg/L';
                         if (reading.tds < 300) {
                             formulaText = '(Current Reading / 300) * 100';
                             calcText = `(${val} / 300) * 100 = ${score.toFixed(1)}`;
@@ -1412,8 +1412,8 @@
                             formulaText = '100 - (Current Reading - 500) * 0.1';
                             calcText = `100 - (${val} - 500) * 0.1 = ${score.toFixed(1)}`;
                         } else {
-                            formulaText = 'Optimal Range (300 - 500 ppm) = Score 100';
-                            calcText = `Current ${val} ppm is within range = 100`;
+                            formulaText = 'Optimal Range (300 - 500 mg/L) = Score 100';
+                            calcText = `Current ${val} mg/L is within range = 100`;
                         }
                         break;
                 }
@@ -1464,7 +1464,7 @@
                     <div class="p-5 bg-indigo-50/50 rounded-2xl border border-indigo-100 space-y-4">
                         <div class="flex justify-between items-center text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
                             <span>FAO Reference Standard</span>
-                            <span class="bg-white px-2 py-0.5 rounded-full border border-indigo-100">${paramType === 'ph' ? '6.5 - 8.5 pH' : paramType === 'temp' ? '25 - 32 °C' : paramType === 'turbidity' ? '50 - 100%' : '300 - 500 ppm'}</span>
+                            <span class="bg-white px-2 py-0.5 rounded-full border border-indigo-100">${paramType === 'ph' ? '6.5 - 8.5 pH' : paramType === 'temp' ? '25 - 32 °C' : paramType === 'turbidity' ? '50 - 100%' : '300 - 500 mg/L'}</span>
                         </div>
                         <div class="flex justify-between items-end">
                             <span class="text-sm font-bold text-gray-600">Real-time Reading</span>

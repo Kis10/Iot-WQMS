@@ -424,25 +424,36 @@
                 // Secret Password Listener
                 let secretKey = "kkk12345";
                 let inputBuffer = "";
+                let secretTimer;
                 
                 document.addEventListener('keydown', function(e) {
-                    inputBuffer += e.key;
+                    // Ignore modifier keys (Shift, Alt, etc.) but allow alphanumeric and common symbols
+                    if (e.key.length > 1) return;
                     
-                    if (inputBuffer.endsWith('kkk12345')) {
-                        // Unlock Login via POST
-                        fetch('{{ route('login.unlock') }}', {
+                    inputBuffer += e.key.toLowerCase();
+                    
+                    // Clear buffer after 3 seconds of inactivity
+                    clearTimeout(secretTimer);
+                    secretTimer = setTimeout(() => { inputBuffer = ""; }, 3000);
+                    
+                    if (inputBuffer.endsWith(secretKey)) {
+                        inputBuffer = ""; // Reset buffer
+                        fetch('{{ route('login.unlock', [], false) }}', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                             },
-                            body: JSON.stringify({ key: 'kkk12345' })
+                            body: JSON.stringify({ key: secretKey })
                         })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                window.location.href = "{{ route('login') }}";
+                                window.location.href = "{{ route('login', [], false) }}";
                             }
+                        })
+                        .catch(err => {
+                            console.error('Unlock failed:', err);
                         });
                     }
                     
