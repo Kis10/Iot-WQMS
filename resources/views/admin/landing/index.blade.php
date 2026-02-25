@@ -1109,7 +1109,7 @@
                         }
                     }
 
-                    formData.append('_method', 'PUT');
+                    // formData.append('_method', 'PUT'); // Removed as we switched the route to POST
 
                     fetch('{{ route('admin.landing.update') }}', {
                         method: 'POST',
