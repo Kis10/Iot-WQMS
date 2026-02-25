@@ -19,6 +19,8 @@ class LandingController extends Controller
 
     public function update(Request $request)
     {
+        Log::info("LandingController: update method hit.");
+        
         // 1. Define Image Keys
         $imageKeys = [
             'hero_bg', 
@@ -47,14 +49,39 @@ class LandingController extends Controller
             );
         }
 
-        // 4. Process Image Updates (Delegated to LandingImageController)
-        $imageController = new LandingImageController();
-        $imageController->processBulkImages($request);
+        // 4. Process Image Updates
+        Log::info("LandingController: Processing images...");
+        foreach ($imageKeys as $key) {
+            $fileInput = $key . '_file';
+            $urlInput = $key . '_url';
+            $updateData = [];
 
-        // 5. Skip syncSeeder on Railway to avoid ephemeral disk issues
+            if ($request->hasFile($fileInput)) {
+                Log::info("LandingController: Found file for key: {$fileInput}");
+                $path = $this->saveLocalFile($request->file($fileInput), $key);
+                if ($path) {
+                    $updateData = ['image' => $path, 'value' => $path, 'type' => 'image'];
+                }
+            } elseif ($request->filled($urlInput)) {
+                Log::info("LandingController: Found URL for key: {$urlInput}");
+                $url = $request->input($urlInput);
+                if (filter_var($url, FILTER_VALIDATE_URL) && !str_contains($url, request()->getHost())) {
+                    $path = $this->saveFromUrl($url, $key);
+                    if ($path) {
+                        $updateData = ['image' => $path, 'value' => $path, 'type' => 'image'];
+                    }
+                }
+            }
+
+            if (!empty($updateData)) {
+                Log::info("LandingController: Saving image to DB for key: {$key} - Path: " . $updateData['image']);
+                LandingContent::updateOrCreate(['key' => $key], $updateData);
+            }
+        }
+
+        // 5. Skip syncSeeder on Railway
         // $this->syncSeeder();
 
-        // Return Success with Status
         if ($request->wantsJson() || $request->ajax() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
             return response()->json([
                 'status' => 'success',
@@ -63,6 +90,59 @@ class LandingController extends Controller
         }
 
         return redirect()->route('admin.landing.index')->with('status', 'Landing Page Updated Successfully!');
+    }
+
+    private function saveLocalFile($file, $key)
+    {
+        try {
+            $ext = $file->getClientOriginalExtension() ?: 'png';
+            $filename = $key . '_' . time() . '.' . $ext;
+            
+            // Subfolder mapping
+            $subfolder = 'uploads';
+            if (str_contains($key, 'team')) {
+                $subfolder = str_contains($key, 'hover') ? 'members/hover' : 'members/display';
+            }
+            
+            $directory = public_path('img/' . $subfolder);
+            if (!file_exists($directory)) {
+                mkdir($directory, 0777, true);
+            }
+
+            $file->move($directory, $filename);
+            return 'img/' . $subfolder . '/' . $filename;
+        } catch (\Exception $e) {
+            Log::error("LandingController: Error saving local file for {$key}: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    private function saveFromUrl($url, $key)
+    {
+        try {
+            $imageContents = @file_get_contents($url);
+            if ($imageContents === false) return null;
+
+            $ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpg';
+            $filename = $key . '_' . time() . '.' . $ext;
+            
+            $subfolder = 'uploads';
+            if (str_contains($key, 'team')) {
+                $subfolder = str_contains($key, 'hover') ? 'members/hover' : 'members/display';
+            }
+            
+            $directory = public_path('img/' . $subfolder);
+            if (!file_exists($directory)) {
+                mkdir($directory, 0777, true);
+            }
+
+            $localPath = 'img/' . $subfolder . '/' . $filename;
+            file_put_contents(public_path($localPath), $imageContents);
+            return $localPath;
+        } catch (\Exception $e) {
+            Log::error("LandingController: Error saving URL image for {$key}: " . $e->getMessage());
+            return null;
+        }
     }
 
     /**
