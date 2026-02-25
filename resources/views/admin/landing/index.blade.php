@@ -142,11 +142,7 @@
                     <img :src="heroBgPreview" class="w-full h-full object-cover opacity-40">
                 </template>
                 <template x-if="!heroBgPreview && data.hero_bg && (data.hero_bg.image || data.hero_bg.value)">
-                    <img :src="(data.hero_bg.image || data.hero_bg.value).startsWith('http') ? (data.hero_bg.image || data.hero_bg.value) : (
-                        (data.hero_bg.image || data.hero_bg.value).startsWith('/') ? (data.hero_bg.image || data.hero_bg.value) : (
-                        (data.hero_bg.image || data.hero_bg.value).startsWith('img/') ? '/' + (data.hero_bg.image || data.hero_bg.value) :
-                        '/storage/' + (data.hero_bg.image || data.hero_bg.value)
-                    ))"
+                    <img :src="resolveUrl(data.hero_bg.image || data.hero_bg.value)"
                          class="w-full h-full object-cover opacity-40"
                          onerror="this.style.display='none'">
                 </template>
@@ -340,8 +336,8 @@
                             <template x-if="previews['{{ $key }}_img']">
                                 <img :src="previews['{{ $key }}_img']" class="w-full h-full object-cover">
                             </template>
-                            <template x-if="!previews['{{ $key }}_img'] && data.{{ $key }}_img && (data.{{ $key }}_img.image || data.{{ $key }}_img.value) && (data.{{ $key }}_img.image || data.{{ $key }}_img.value).startsWith('http')">
-                                <img :src="data.{{ $key }}_img.image || data.{{ $key }}_img.value" class="w-full h-full object-cover">
+                            <template x-if="!previews['{{ $key }}_img'] && data.{{ $key }}_img && (data.{{ $key }}_img.image || data.{{ $key }}_img.value)">
+                                <img :src="resolveUrl(data.{{ $key }}_img.image || data.{{ $key }}_img.value)" class="w-full h-full object-cover">
                             </template>
                             <template x-if="!previews['{{ $key }}_img'] && (!data.{{ $key }}_img || (!data.{{ $key }}_img.image && !data.{{ $key }}_img.value))">
                                 <div class="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
@@ -353,8 +349,8 @@
                             <template x-if="previews['{{ $key }}_img_hover']">
                                 <img :src="previews['{{ $key }}_img_hover']" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 z-10 bg-white">
                             </template>
-                            <template x-if="!previews['{{ $key }}_img_hover'] && data.{{ $key }}_img_hover && (data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value) && (data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value).startsWith('http')">
-                                <img :src="data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value" 
+                            <template x-if="!previews['{{ $key }}_img_hover'] && data.{{ $key }}_img_hover && (data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value)">
+                                <img :src="resolveUrl(data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value)" 
                                      class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 z-10 bg-white">
                             </template>
                             
@@ -684,6 +680,14 @@
                 saving: false,
                 showSuccess: false,
                 currentUploadKey: 'hero_bg',
+
+                resolveUrl(path) {
+                    if (!path) return '';
+                    if (path.startsWith('http') || path.startsWith('blob:') || path.startsWith('data:')) return path;
+                    if (path.startsWith('/')) return path;
+                    if (path.startsWith('img/')) return '/' + path;
+                    return '/storage/' + path;
+                },
                 
                 // Toolbar State
                 activeElement: null,

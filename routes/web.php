@@ -46,6 +46,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('admin/landing')->name('admin.landing.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\LandingController::class, 'index'])->name('index');
         Route::put('/', [\App\Http\Controllers\Admin\LandingController::class, 'update'])->name('update');
+        Route::post('/upload', [\App\Http\Controllers\Admin\LandingImageController::class, 'upload'])->name('image.upload');
     });
 
     Route::get('/dashboard', [WaterQualityController::class, 'dashboard'])->name('dashboard');
