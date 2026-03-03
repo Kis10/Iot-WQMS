@@ -180,6 +180,9 @@
 
         <!-- Dynamic Hero Section (Refined Visibility) -->
         <section id="home" class="relative min-h-screen flex items-center justify-center bg-[#0f172a] overflow-hidden pt-24 sm:pt-32 pb-12 sm:pb-20">
+            <!-- Network Constellation Canvas -->
+            <canvas id="networkBgHero" class="absolute inset-0 z-[1] pointer-events-none" style="opacity: 0.55;"></canvas>
+
             <!-- Optional Dynamic Background Texture -->
             @php
                 $heroEntry = $contents['hero_bg'] ?? null;
@@ -632,6 +635,8 @@
                 }
             });
         </script>
+        <script src="{{ asset('js/network-bg.js') }}"></script>
+        <script>initNetworkBg('networkBgHero');</script>
     </body>
 </html>
 

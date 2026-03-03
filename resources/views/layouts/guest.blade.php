@@ -25,6 +25,9 @@
             <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-600/30 rounded-full blur-[100px] animate-pulse"></div>
             <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-cyan-500/20 rounded-full blur-[100px] animate-pulse delay-1000"></div>
             
+            <!-- Network Constellation Canvas -->
+            <canvas id="networkBgLogin" class="absolute inset-0 z-[1] pointer-events-none" style="opacity: 0.55;"></canvas>
+
             <!-- Logo/Title Area (Optional, for context) -->
             <div class="z-10 mb-6 text-center">
                 <a href="/" class="flex flex-col items-center gap-2">
@@ -37,5 +40,7 @@
                 {{ $slot }}
             </div>
         </div>
+        <script src="{{ asset('js/network-bg.js') }}"></script>
+        <script>initNetworkBg('networkBgLogin');</script>
     </body>
 </html>
