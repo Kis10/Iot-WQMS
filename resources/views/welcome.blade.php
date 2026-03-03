@@ -139,9 +139,9 @@
                     <!-- Desktop Nav Links (Right) -->
                     <div class="hidden md:flex items-center space-x-8 text-sm font-semibold ml-auto">
                         <a href="#home" class="text-gray-600 hover:text-blue-600 transition tracking-wide">Home</a>
-                        <a href="#about" class="text-gray-600 hover:text-blue-600 transition tracking-wide">About</a>
                         <a href="#features" class="text-gray-600 hover:text-blue-600 transition tracking-wide">Sensors</a>
                         <a href="#services" class="text-gray-600 hover:text-blue-600 transition tracking-wide">Services</a>
+                        <a href="#about" class="text-gray-600 hover:text-blue-600 transition tracking-wide">About</a>
                         <a href="#contact" class="text-gray-600 hover:text-blue-600 transition tracking-wide">Contact</a>
                     </div>
 
