@@ -79,43 +79,54 @@
     <div class="py-12">
         <div id="dashboardContainer" class="max-w-none mx-auto px-4 sm:px-6 lg:px-8 relative">
             <!-- Overall Water Quality Status -->
-            <div class="mb-8 p-6 pb-7 bg-white/60 backdrop-blur-md rounded-2xl border border-white shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-                <!-- Background Decoration (pointer-events-none to prevent blocking clicks) -->
+            <div class="mb-8 bg-white/60 backdrop-blur-md rounded-2xl border border-white shadow-sm relative overflow-hidden">
+                <!-- Background Decoration -->
                 <div class="absolute top-0 right-0 -mt-8 -mr-8 w-48 h-48 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
-                
-                <div class="flex items-center gap-6 relative z-10">
-                    <div class="relative w-20 h-20 sm:w-24 sm:h-24">
-                         <svg class="w-full h-full" viewBox="0 0 100 100">
-                            <circle cx="50" cy="50" r="45" fill="none" stroke="#f3f4f6" stroke-width="8"/>
-                            <circle id="overall-health-circle" cx="50" cy="50" r="45" fill="none" stroke="#10b981" stroke-width="8" 
-                                stroke-dasharray="282.7" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 50 50)"/>
-                            <text id="overall-health-text" x="50" y="55" text-anchor="middle" font-size="18" font-weight="bold" fill="#111827">100%</text>
-                         </svg>
+
+                <!-- Top Row: Knob + Title + Sensor Buttons -->
+                <div class="flex flex-col md:flex-row items-stretch relative z-10">
+                    <!-- Left: Knob + Title/Description -->
+                    <div class="flex items-center gap-5 p-6 flex-1 min-w-0">
+                        <div class="relative shrink-0">
+                             <svg class="w-16 h-16 sm:w-20 sm:h-20" viewBox="0 0 120 120">
+                                <circle cx="60" cy="60" r="50" fill="none" stroke="#f3f4f6" stroke-width="8"/>
+                                <circle id="overall-health-circle" cx="60" cy="60" r="50" fill="none" stroke="#10b981" stroke-width="8" 
+                                    stroke-dasharray="314.1" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+                                <text id="overall-health-text" x="60" y="65" text-anchor="middle" font-size="20" font-weight="bold" fill="#111827">100%</text>
+                             </svg>
+                        </div>
+                        <div class="min-w-0">
+                            <h2 class="text-base sm:text-lg font-bold text-gray-900">Overall Water Quality</h2>
+                            <p id="overall-health-desc" class="text-gray-500 text-[10px] sm:text-xs font-medium mt-1 leading-relaxed">Analyzing real-time sensor contributions based on lab standards...</p>
+                        </div>
                     </div>
-                    <div class="max-w-2xl">
-                        <h2 class="text-lg sm:text-xl font-bold text-gray-900">Overall Water Quality</h2>
-                        <p id="overall-health-desc" class="text-gray-500 text-[10px] sm:text-xs font-medium mt-1">Analyzing real-time sensor contributions based on lab standards...</p>
-                        <p id="overall-health-recommendation" class="text-gray-600 text-[10px] sm:text-xs font-medium mt-2 leading-relaxed">Waiting for the latest reading to generate recommendation.</p>
+
+                    <!-- Right: Sensor Buttons in Gray Panel -->
+                    <div class="bg-gray-50/80 md:rounded-r-2xl flex items-center justify-center px-4 sm:px-6 py-4 md:py-0 shrink-0">
+                        <div class="flex flex-row items-center gap-4 sm:gap-7">
+                            <div class="flex flex-col items-center justify-center cursor-pointer hover:scale-110 transition-transform" onclick="showFormulaModal('ph')">
+                                <span id="contrib-ph" class="text-xs sm:text-sm font-bold text-gray-900 whitespace-nowrap">pH=0.0%</span>
+                                <span class="text-[8px] sm:text-[9px] text-gray-400 uppercase font-bold whitespace-nowrap tracking-wide">pH Level (30%)</span>
+                            </div>
+                            <div class="flex flex-col items-center justify-center cursor-pointer hover:scale-110 transition-transform" onclick="showFormulaModal('temp')">
+                                <span id="contrib-temp" class="text-xs sm:text-sm font-bold text-gray-900 whitespace-nowrap">Temp=0.0%</span>
+                                <span class="text-[8px] sm:text-[9px] text-gray-400 uppercase font-bold whitespace-nowrap tracking-wide">Temperature (25%)</span>
+                            </div>
+                            <div class="flex flex-col items-center justify-center cursor-pointer hover:scale-110 transition-transform" onclick="showFormulaModal('turbidity')">
+                                <span id="contrib-turbidity" class="text-xs sm:text-sm font-bold text-gray-900 whitespace-nowrap">Turb=0.0%</span>
+                                <span class="text-[8px] sm:text-[9px] text-gray-400 uppercase font-bold whitespace-nowrap tracking-wide">Turbidity (25%)</span>
+                            </div>
+                            <div class="flex flex-col items-center justify-center cursor-pointer hover:scale-110 transition-transform" onclick="showFormulaModal('tds')">
+                                <span id="contrib-tds" class="text-xs sm:text-sm font-bold text-gray-900 whitespace-nowrap">TDS=0.0%</span>
+                                <span class="text-[8px] sm:text-[9px] text-gray-400 uppercase font-bold whitespace-nowrap tracking-wide">TDS (20%)</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="flex flex-wrap justify-center md:justify-end gap-3 sm:gap-6">
-                    <div class="flex flex-col items-center cursor-pointer hover:scale-110 transition-transform" onclick="showFormulaModal('ph')">
-                        <span id="contrib-ph" class="text-xs sm:text-base font-bold text-gray-900">pH=30.0%</span>
-                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">pH Level (30%)</span>
-                    </div>
-                    <div class="flex flex-col items-center cursor-pointer hover:scale-110 transition-transform" onclick="showFormulaModal('temp')">
-                        <span id="contrib-temp" class="text-xs sm:text-base font-bold text-gray-900">Temp=25.0%</span>
-                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">Temperature (25%)</span>
-                    </div>
-                    <div class="flex flex-col items-center cursor-pointer hover:scale-110 transition-transform" onclick="showFormulaModal('turbidity')">
-                        <span id="contrib-turbidity" class="text-xs sm:text-base font-bold text-gray-900">Turb=25.0%</span>
-                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">Turbidity (25%)</span>
-                    </div>
-                    <div class="flex flex-col items-center cursor-pointer hover:scale-110 transition-transform" onclick="showFormulaModal('tds')">
-                        <span id="contrib-tds" class="text-xs sm:text-base font-bold text-gray-900">TDS=20.0%</span>
-                        <span class="text-[9px] sm:text-[10px] text-gray-400 uppercase font-bold">TDS (20%)</span>
-                    </div>
+                <!-- Bottom: Recommendation (full width, expands with text) -->
+                <div class="px-6 pb-5 pt-1 relative z-10">
+                    <p id="overall-health-recommendation" class="text-gray-600 text-[10px] sm:text-xs font-medium leading-relaxed">Waiting for the latest reading to generate recommendation.</p>
                 </div>
             </div>
 
@@ -741,7 +752,7 @@
                     const recommendation = document.getElementById('overall-health-recommendation');
 
                     if (circle && text) {
-                        const circumference = 282.7;
+                        const circumference = 314.1;
                         const offset = circumference - (info.wqi / 100) * circumference;
                         circle.style.transition = 'stroke-dashoffset 1s ease-in-out, stroke 1s';
                         circle.setAttribute('stroke-dashoffset', offset);
