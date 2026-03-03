@@ -10,10 +10,20 @@
                 position: absolute;
                 left: 0; top: 0;
                 width: 100%;
+                min-height: 100vh;
                 margin: 0;
                 padding: 40px;
+                padding-bottom: 100px;
                 box-shadow: none !important;
                 border: none !important;
+            }
+            #printFooter {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 16px 40px;
+                background: white;
             }
             nav, aside, footer, header, .py-12 { display: none !important; }
             * {
@@ -64,8 +74,10 @@
             <!-- AI Analysis -->
             <div id="printAiSection" style="margin-bottom: 24px; padding: 20px; background-color: #eff6ff; border-radius: 12px; border: 1px solid #dbeafe;"></div>
 
-            <!-- Footer -->
-            <div style="text-align: center; border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: auto;">
+        </div>
+
+            <!-- Footer (fixed at bottom of printed page) -->
+            <div id="printFooter" style="text-align: center; border-top: 1px solid #e5e7eb; padding-top: 16px;">
                 <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px;">
                     <img src="{{ asset('img/logo/logo-wq.png') }}" alt="Logo" style="width: 20px; height: 20px; object-fit: contain; opacity: 0.7;">
                     <span style="font-size: 16px; font-weight: 700; color: #374151; letter-spacing: 1px;">AquaSense</span>
@@ -73,7 +85,6 @@
                 <p style="font-size: 12px; color: #6b7280; margin-bottom: 4px;">&copy; 2026 AquaSense. All rights reserved.</p>
                 <p style="font-size: 12px; color: #6b7280; font-weight: 500;">Developed by: Kirstine A. Sanchez, Dannica J. Besinio and Joy Mae A. Samra</p>
             </div>
-        </div>
     </div>
 
     <div class="py-12">
@@ -1372,20 +1383,29 @@
                     aiSection.innerHTML = '<p style="color:#6b7280;font-style:italic;">Awaiting AI analysis for these readings...</p>';
                     return;
                 }
+                // Strip individual sensor reading values from the AI insight
+                let cleanInsight = analysis.ai_insight || 'No analysis insight available.';
+                // Remove sentences that contain specific sensor readings like "Turbidity at X%", "TDS at X ppm", "pH at X", "temperature at X°C"
+                cleanInsight = cleanInsight.replace(/\s*Turbidity at [\d.]+%?,?\s*/gi, ' ');
+                cleanInsight = cleanInsight.replace(/\s*TDS at [\d.]+ ?(?:ppm|mg\/L)?,?\s*/gi, ' ');
+                cleanInsight = cleanInsight.replace(/\s*pH at [\d.]+,?\s*/gi, ' ');
+                cleanInsight = cleanInsight.replace(/\s*(?:water )?temperature at [\d.]+°?C?,?\s*/gi, ' ');
+                cleanInsight = cleanInsight.replace(/\s*and\s+(?:water )?temperature/gi, '').trim();
+                // Clean up any leftover double spaces or trailing punctuation issues
+                cleanInsight = cleanInsight.replace(/\s{2,}/g, ' ').replace(/,\s*\./g, '.').replace(/\s+\./g, '.').trim();
+
                 let aiHtml = `<h4 style="font-size:12px;font-weight:700;color:#1e3a5f;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;gap:8px;">
                     <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                     Analyzed by AquaSense
                 </h4>`;
-                aiHtml += `<p style="color:#374151;line-height:1.6;font-weight:500;">${analysis.ai_insight || 'No analysis insight available.'}</p>`;
+                aiHtml += `<p style="color:#374151;line-height:1.6;font-weight:500;">${cleanInsight}</p>`;
 
                 if (analysis.recommendations && analysis.recommendations.length > 0) {
+                    const topRec = analysis.recommendations[0];
                     aiHtml += `<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(219,234,254,0.5);">
-                        <h5 style="font-size:11px;font-weight:700;color:#1e40af;text-transform:uppercase;margin-bottom:8px;">Recommendations:</h5>
-                        <ul style="list-style:disc;padding-left:20px;margin:0;">`;
-                    analysis.recommendations.forEach(rec => {
-                        aiHtml += `<li style="font-size:13px;color:rgba(30,58,95,0.8);margin-bottom:4px;">${rec}</li>`;
-                    });
-                    aiHtml += `</ul></div>`;
+                        <h5 style="font-size:11px;font-weight:700;color:#1e40af;text-transform:uppercase;margin-bottom:8px;">Recommendation:</h5>
+                        <p style="font-size:13px;color:rgba(30,58,95,0.8);margin:0;padding-left:4px;">${topRec}</p>
+                    </div>`;
                 }
                 aiSection.innerHTML = aiHtml;
             }
