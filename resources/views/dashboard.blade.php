@@ -79,7 +79,7 @@
     <div class="py-12">
         <div id="dashboardContainer" class="max-w-none mx-auto px-4 sm:px-6 lg:px-8 relative">
             <!-- Overall Water Quality Status -->
-            <div class="mb-8 p-6 bg-white/60 backdrop-blur-md rounded-2xl border border-white shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+            <div class="mb-8 p-6 pb-7 bg-white/60 backdrop-blur-md rounded-2xl border border-white shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
                 <!-- Background Decoration (pointer-events-none to prevent blocking clicks) -->
                 <div class="absolute top-0 right-0 -mt-8 -mr-8 w-48 h-48 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
                 
@@ -92,9 +92,10 @@
                             <text id="overall-health-text" x="50" y="55" text-anchor="middle" font-size="18" font-weight="bold" fill="#111827">100%</text>
                          </svg>
                     </div>
-                    <div>
+                    <div class="max-w-2xl">
                         <h2 class="text-lg sm:text-xl font-bold text-gray-900">Overall Water Quality</h2>
                         <p id="overall-health-desc" class="text-gray-500 text-[10px] sm:text-xs font-medium mt-1">Analyzing real-time sensor contributions based on lab standards...</p>
+                        <p id="overall-health-recommendation" class="text-gray-600 text-[10px] sm:text-xs font-medium mt-2 leading-relaxed">Waiting for the latest reading to generate recommendation.</p>
                     </div>
                 </div>
 
@@ -121,8 +122,8 @@
             <!-- Measurement Cards Grid -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <!-- Turbidity Card -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md hover:border-indigo-200 transition-all duration-200 cursor-pointer" onclick="showFormulaModal('turbidity')">
-                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">Turbidity (25%)</h3>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-all duration-200 cursor-pointer" onclick="showFormulaModal('turbidity')">
+                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold  tracking-widest mb-3">Turbidity (25%)</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
@@ -145,8 +146,8 @@
                 </div>
 
                 <!-- TDS Card -->
-                <div class="relative z-10 bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md hover:border-indigo-200 transition-all duration-200 cursor-pointer" onclick="showFormulaModal('tds')">
-                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">TDS (20%)</h3>
+                <div class="relative z-10 bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-all duration-200 cursor-pointer" onclick="showFormulaModal('tds')">
+                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold  tracking-widest mb-3">TDS (20%)</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
@@ -169,8 +170,8 @@
                 </div>
 
                 <!-- pH Level Card -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md hover:border-indigo-200 transition-all duration-200 cursor-pointer" onclick="showFormulaModal('ph')">
-                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">pH Level (30%)</h3>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-all duration-200 cursor-pointer" onclick="showFormulaModal('ph')">
+                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold  tracking-widest mb-3">pH Level (30%)</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
@@ -193,8 +194,8 @@
                 </div>
 
                 <!-- Temperature Card -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md hover:border-indigo-200 transition-all duration-200 cursor-pointer" onclick="showFormulaModal('temp')">
-                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold uppercase tracking-widest mb-3">Water Temp (25%)</h3>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-all duration-200 cursor-pointer" onclick="showFormulaModal('temp')">
+                    <h3 class="text-gray-500 text-xs sm:text-sm font-bold  tracking-widest mb-3">Water Temp (25%)</h3>
                     <div class="flex justify-center">
                         <svg class="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32" viewBox="0 0 120 120">
                             <!-- Background Circle -->
@@ -684,6 +685,52 @@
                      populatePrintReport();
                 }
 
+                const buildFAOGrowthRecommendation = (r, info) => {
+                    const ph = Number.parseFloat(r.ph);
+                    const temp = Number.parseFloat(r.temperature);
+                    const turbidity = Number.parseFloat(r.turbidity);
+                    const tds = Number.parseFloat(r.tds);
+                    const formatValue = (value, suffix = '') => Number.isFinite(value) ? `${value.toFixed(2)}${suffix}` : 'N/A';
+
+                    const values = [ph, temp, turbidity, tds];
+                    if (values.every(v => !Number.isFinite(v) || v <= 0)) {
+                        return 'Waiting for a valid latest reading to generate recommendation.';
+                    }
+
+                    const snapshot = `Latest reading - pH: ${formatValue(ph)}, Temp: ${formatValue(temp, 'C')}, Turbidity: ${formatValue(turbidity, '%')}, TDS: ${formatValue(tds, ' mg/L')}.`;
+
+                    const issues = [];
+                    if (Number.isFinite(ph)) {
+                        if (ph < 6.5) issues.push('raise pH toward 6.5-8.5');
+                        else if (ph > 8.5) issues.push('lower pH toward 6.5-8.5');
+                    }
+
+                    if (Number.isFinite(temp)) {
+                        if (temp < 25) issues.push('increase water temperature toward 25-32C');
+                        else if (temp > 32) issues.push('cool water toward 25-32C');
+                    }
+
+                    if (Number.isFinite(turbidity)) {
+                        if (turbidity < 50) issues.push('improve clarity toward 50-100%');
+                        else if (turbidity > 100) issues.push('reduce turbidity toward 50-100%');
+                    }
+
+                    if (Number.isFinite(tds)) {
+                        if (tds < 300) issues.push('increase dissolved minerals toward 300-500 mg/L');
+                        else if (tds > 500) issues.push('reduce dissolved solids toward 300-500 mg/L');
+                    }
+
+                    const overallText = info.wqi >= 70
+                        ? 'Overall recommendation: suitable for fish growth.'
+                        : 'Overall recommendation: not yet optimal for fish growth.';
+
+                    if (issues.length === 0) {
+                        return `${snapshot} ${overallText} Keep current management and continue monitoring to hold pH 6.5-8.5, Temp 25-32C, Turbidity 50-100%, and TDS 300-500 mg/L.`;
+                    }
+
+                    return `${snapshot} ${overallText} Priority action: ${issues.join('; ')}.`;
+                };
+
                 const updateOverallHealth = (r) => {
                     const info = window.getWQIInfo(r);
                     if (!info) return;
@@ -691,6 +738,7 @@
                     const circle = document.getElementById('overall-health-circle');
                     const text = document.getElementById('overall-health-text');
                     const desc = document.getElementById('overall-health-desc');
+                    const recommendation = document.getElementById('overall-health-recommendation');
 
                     if (circle && text) {
                         const circumference = 282.7;
@@ -700,6 +748,7 @@
                         circle.setAttribute('stroke', info.color);
                         text.textContent = Math.round(info.wqi) + '%';
                         if (desc) desc.textContent = info.msg;
+                        if (recommendation) recommendation.textContent = buildFAOGrowthRecommendation(r, info);
 
                         // Update individual contributions in UI
                         const updateContrib = (id, score, weight, prefix) => {
@@ -1339,7 +1388,23 @@
                 const modal = document.getElementById('formulaModal');
                 const content = document.getElementById('modal-content');
                 const reading = lastReadingState;
-                if (!reading || !modal || !content) return;
+                if (!modal || !content) return;
+
+                if (!reading) {
+                    document.getElementById('modal-title-text').textContent = 'No Data Available';
+                    content.innerHTML = `
+                        <div class="flex flex-col items-center justify-center p-8 space-y-4 text-center">
+                            <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 mb-2 border border-gray-100 shadow-sm">
+                                <svg class="w-8 h-8 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                            </div>
+                            <h4 class="text-lg font-bold text-gray-700 tracking-tight">No data gathered</h4>
+                            <p class="text-xs text-gray-500 max-w-[250px] mx-auto leading-relaxed">The system is waiting for the sensor to transmit real-time readings to calculate the WQI.</p>
+                        </div>
+                    `;
+                    modal.classList.remove('hidden');
+                    document.body.style.overflow = 'hidden';
+                    return;
+                }
 
                 const info = getWQIInfo(reading);
                 let title = '';

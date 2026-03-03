@@ -24,8 +24,12 @@
                             Alerts
                         @elseif(request()->routeIs('analysis.index'))
                             AI Analysis
+                        @elseif(request()->routeIs('information') || request()->routeIs('information*'))
+                            Information
                         @elseif(request()->routeIs('profile.edit'))
                             Profile
+                        @elseif(request()->routeIs('admin.landing.*') || request()->routeIs('admin.landing.index'))
+                            Landing Page
                         @else
                             Dashboard
                         @endif

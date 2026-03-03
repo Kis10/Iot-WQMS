@@ -143,8 +143,8 @@
                 </template>
                 <template x-if="!heroBgPreview && data.hero_bg && (data.hero_bg.image || data.hero_bg.value)">
                     <img :src="resolveUrl(data.hero_bg.image || data.hero_bg.value)"
-                         class="w-full h-full object-cover opacity-40"
-                         onerror="this.style.display='none'">
+                         x-on:error="if (data.hero_bg && data.hero_bg.value && !data.hero_bg.value.startsWith('http')) { $event.target.src = resolveUrl(data.hero_bg.value); } else { $event.target.style.display = 'none'; }"
+                         class="w-full h-full object-cover opacity-40">
                 </template>
             </div>
             <div class="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-slate-900/40 to-slate-950/40 z-0"></div>
@@ -337,7 +337,9 @@
                                 <img :src="previews['{{ $key }}_img']" class="w-full h-full object-cover">
                             </template>
                             <template x-if="!previews['{{ $key }}_img'] && data.{{ $key }}_img && (data.{{ $key }}_img.image || data.{{ $key }}_img.value)">
-                                <img :src="resolveUrl(data.{{ $key }}_img.image || data.{{ $key }}_img.value)" class="w-full h-full object-cover">
+                                <img :src="resolveUrl(data.{{ $key }}_img.image || data.{{ $key }}_img.value)"
+                                     x-on:error="if (data.{{ $key }}_img && data.{{ $key }}_img.value && !data.{{ $key }}_img.value.startsWith('http')) { $event.target.src = resolveUrl(data.{{ $key }}_img.value); }"
+                                     class="w-full h-full object-cover">
                             </template>
                             <template x-if="!previews['{{ $key }}_img'] && (!data.{{ $key }}_img || (!data.{{ $key }}_img.image && !data.{{ $key }}_img.value))">
                                 <div class="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
@@ -351,6 +353,7 @@
                             </template>
                             <template x-if="!previews['{{ $key }}_img_hover'] && data.{{ $key }}_img_hover && (data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value)">
                                 <img :src="resolveUrl(data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value)" 
+                                     x-on:error="if (data.{{ $key }}_img_hover && data.{{ $key }}_img_hover.value && !data.{{ $key }}_img_hover.value.startsWith('http')) { $event.target.src = resolveUrl(data.{{ $key }}_img_hover.value); }"
                                      class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 z-10 bg-white">
                             </template>
                             
@@ -1138,4 +1141,3 @@
         }
     </script>
 </x-app-layout>
-

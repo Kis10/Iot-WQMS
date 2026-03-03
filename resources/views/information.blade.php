@@ -19,28 +19,28 @@
                         <div class="p-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- pH Standard -->
-                                <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-100">
+                                <div class="p-4 rounded-xl bg-gradient-to-br from-emerald-100/55 via-white to-white border border-emerald-200/70 shadow-sm">
                                     <h3 class="text-base font-bold text-emerald-900 tracking-tight mb-2 flex justify-between">
                                         pH Level <span>6.5 - 8.5</span>
                                     </h3>
                                     <p class="text-xs text-emerald-800 leading-relaxed italic font-medium">"Optimal for nutrient availability and fish metabolism. Below 6.0 causes slow growth; above 9.0 increases ammonia toxicity."</p>
                                 </div>
                                 <!-- Temperature Standard -->
-                                <div class="p-4 rounded-xl bg-orange-50 border border-orange-100">
+                                <div class="p-4 rounded-xl bg-gradient-to-br from-orange-100/55 via-white to-white border border-orange-200/70 shadow-sm">
                                     <h3 class="text-base font-bold text-orange-900 tracking-tight mb-2 flex justify-between">
                                         Temperature <span>25°C - 32°C</span>
                                     </h3>
                                     <p class="text-sm text-orange-800 leading-relaxed italic font-medium">"FAO African Regional Aquaculture Centre standard for warm-water fish like Tilapia. Productivity peaks in this range, controlling all biological processes."</p>
                                 </div>
                                 <!-- TDS Standard -->
-                                <div class="p-4 rounded-xl bg-purple-50 border border-purple-100">
+                                <div class="p-4 rounded-xl bg-gradient-to-br from-purple-100/55 via-white to-white border border-purple-200/70 shadow-sm">
                                     <h3 class="text-base font-bold text-purple-900 tracking-tight mb-2 flex justify-between">
                                         TDS <span>300 - 500 ppm</span>
                                     </h3>
                                     <p class="text-sm text-purple-800 leading-relaxed italic font-medium">"FAO AGIRS research indicates 300-440 mg/L mineralization is suitable for freshwater ponds. High TDS (>2000) is the upper limit for irrigation use."</p>
                                 </div>
                                 <!-- Turbidity Standard -->
-                                <div class="p-4 rounded-xl bg-blue-50 border border-blue-100">
+                                <div class="p-4 rounded-xl bg-gradient-to-br from-blue-100/55 via-white to-white border border-blue-200/70 shadow-sm">
                                     <h3 class="text-base font-bold text-blue-900 tracking-tight mb-2 flex justify-between">
                                         Turbidity <span>50 - 100%</span>
                                     </h3>

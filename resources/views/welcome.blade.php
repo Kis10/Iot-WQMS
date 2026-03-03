@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <title>{{ config('app.name', 'AquaSense') }} - IoT Water Quality Monitoring</title>
+        <title>{{ config('app.name', 'AquaSense') }} </title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,22 +28,93 @@
                 -webkit-backdrop-filter: blur(10px);
             }
             .fade-in-up {
-                opacity: 1;
-                transform: translateY(0);
-                transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+                opacity: 0;
+                translate: 0 22px;
+                transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1), translate 0.85s cubic-bezier(0.22, 1, 0.36, 1);
             }
             .fade-in-up.visible {
                 opacity: 1;
-                transform: translateY(0);
+                translate: 0 0;
+            }
+            .fade-stagger > .fade-in-up:nth-child(1) { transition-delay: 70ms; }
+            .fade-stagger > .fade-in-up:nth-child(2) { transition-delay: 150ms; }
+            .fade-stagger > .fade-in-up:nth-child(3) { transition-delay: 230ms; }
+            .fade-stagger > .fade-in-up:nth-child(4) { transition-delay: 310ms; }
+            .fade-stagger > .fade-in-up:nth-child(5) { transition-delay: 390ms; }
+            .fade-stagger > .fade-in-up:nth-child(6) { transition-delay: 470ms; }
+            .smooth-pop-card {
+                transition: transform 300ms ease-out, box-shadow 300ms ease-out, border-color 300ms ease-out;
+                will-change: transform;
+            }
+            .smooth-pop-card:hover {
+                transform: translate3d(0, -10px, 0);
+                box-shadow: 0 20px 30px -12px rgba(15, 23, 42, 0.2), 0 10px 16px -12px rgba(15, 23, 42, 0.2);
+            }
+            .sensor-card {
+                transition: transform 300ms ease-out, box-shadow 300ms ease-out, border-color 300ms ease-out;
+                will-change: transform;
             }
             .sensor-card:hover {
-                transform: translateY(-10px);
-                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                transform: translate3d(0, -10px, 0);
+                box-shadow: 0 20px 30px -12px rgba(15, 23, 42, 0.2), 0 10px 16px -12px rgba(15, 23, 42, 0.2);
             }
             .gradient-text {
                 background: linear-gradient(135deg, #2563eb 0%, #0891b2 100%);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
+            }
+            @keyframes heroFloat {
+                0%, 100% {
+                    transform: translate3d(0, 0, 0) rotate(0deg);
+                }
+                50% {
+                    transform: translate3d(0, -18px, 0) rotate(3deg);
+                }
+            }
+            .hero-float {
+                animation: heroFloat 8s ease-in-out infinite;
+                will-change: transform;
+            }
+            .hero-float-delayed {
+                animation-delay: 1.8s;
+            }
+            .hero-float-slow {
+                animation-duration: 11s;
+            }
+            @keyframes heroTextIn {
+                0% {
+                    opacity: 0;
+                    transform: translate3d(0, 24px, 0);
+                }
+                60% {
+                    opacity: 0.88;
+                    transform: translate3d(0, 4px, 0);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translate3d(0, 0, 0);
+                }
+            }
+            .hero-text-in {
+                opacity: 0;
+                transform: translate3d(0, 24px, 0);
+                animation: heroTextIn 1.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+                will-change: transform, opacity;
+                backface-visibility: hidden;
+            }
+            .hero-text-in-delay {
+                animation-delay: 0.38s;
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .hero-text-in,
+                .hero-text-in-delay,
+                .fade-in-up {
+                    animation: none;
+                    opacity: 1;
+                    transform: none;
+                    translate: 0 0;
+                    transition: none;
+                }
             }
         </style>
     </head>
@@ -58,7 +129,7 @@
                         <a href="/" 
                            ontouchend="event.preventDefault(); var now=Date.now(); if(now - (window._lastLogoTap||0) < 500){ fetch('/logo-access',{method:'POST',headers:{'X-CSRF-TOKEN':document.querySelector('meta[name=csrf-token]').content}}).then(function(){window.location.href='/login';}); } window._lastLogoTap=now;"
                            class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl overflow-hidden shadow-sm bg-white p-1">
+                            <div class="w-10 h-10 overflow-hidden p-1">
                                 <img src="{{ asset('img/logo/logo-wq.png') }}" alt="Logo" class="w-full h-full object-contain" />
                             </div>
                             <span class="text-2xl font-bold tracking-tight text-gray-900">{{ config('app.name', 'AquaSense') }}</span>
@@ -99,40 +170,54 @@
                  class="md:hidden border-t border-gray-100 mt-4 pt-4 pb-2 px-4">
                 <div class="flex flex-col space-y-3">
                     <a href="#home" @click="mobileOpen = false" class="text-gray-700 hover:text-blue-600 font-semibold text-base py-2 px-3 rounded-lg hover:bg-blue-50 transition">Home</a>
-                    <a href="#about" @click="mobileOpen = false" class="text-gray-700 hover:text-blue-600 font-semibold text-base py-2 px-3 rounded-lg hover:bg-blue-50 transition">About</a>
                     <a href="#features" @click="mobileOpen = false" class="text-gray-700 hover:text-blue-600 font-semibold text-base py-2 px-3 rounded-lg hover:bg-blue-50 transition">Sensors</a>
                     <a href="#services" @click="mobileOpen = false" class="text-gray-700 hover:text-blue-600 font-semibold text-base py-2 px-3 rounded-lg hover:bg-blue-50 transition">Services</a>
+                    <a href="#about" @click="mobileOpen = false" class="text-gray-700 hover:text-blue-600 font-semibold text-base py-2 px-3 rounded-lg hover:bg-blue-50 transition">About</a>
                     <a href="#contact" @click="mobileOpen = false" class="text-gray-700 hover:text-blue-600 font-semibold text-base py-2 px-3 rounded-lg hover:bg-blue-50 transition">Contact</a>
                 </div>
             </div>
         </nav>
 
         <!-- Dynamic Hero Section (Refined Visibility) -->
-        <!-- Dynamic Hero Section (Refined Visibility) -->
-        <section id="home" class="relative min-h-[85vh] flex items-center justify-center bg-slate-900 overflow-hidden pt-24 sm:pt-32 pb-12 sm:pb-20">
-            <!-- Dynamic Background Image -->
-            @if(isset($contents['hero_bg']) && $contents['hero_bg']->image)
-                 <div class="absolute inset-0 z-0">
-                    <img src="{{ str_starts_with($contents['hero_bg']->image, 'http') ? $contents['hero_bg']->image : asset($contents['hero_bg']->image) }}" class="w-full h-full object-cover opacity-40">
-                 </div>
+        <section id="home" class="relative min-h-screen flex items-center justify-center bg-[#0f172a] overflow-hidden pt-24 sm:pt-32 pb-12 sm:pb-20">
+            <!-- Optional Dynamic Background Texture -->
+            @php
+                $heroEntry = $contents['hero_bg'] ?? null;
+                $heroImage = $heroEntry->image ?? null;
+                $heroLocal = $heroEntry->value ?? null;
+                $heroSrc = $heroImage ? (str_starts_with($heroImage, 'http') ? $heroImage : asset($heroImage)) : null;
+                $heroLocalSrc = ($heroLocal && !str_starts_with($heroLocal, 'http')) ? asset($heroLocal) : null;
+            @endphp
+            @if($heroSrc)
+                <div class="absolute inset-0 z-0">
+                    <img src="{{ $heroSrc }}" class="w-full h-full object-cover opacity-[0.15] mix-blend-screen" @if($heroLocalSrc) onerror="this.onerror=null; this.src='{{ $heroLocalSrc }}';" @endif>
+                </div>
             @endif
-            <div class="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-slate-900/40 to-slate-950/40 z-0"></div>
-            
+            <div class="absolute inset-0 z-0 bg-gradient-to-br from-blue-900/40 via-cyan-900/20 to-slate-900"></div>
+            <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-600/30 rounded-full blur-[100px] animate-pulse z-0"></div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-cyan-500/20 rounded-full blur-[100px] animate-pulse delay-1000 z-0"></div>
+
+        
             <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
                 <div class="fade-in-up visible">
                     <br><br>
-                    <h1 class="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 sm:mb-8 leading-tight tracking-tight">
+                    <h1 class="hero-text-in text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 sm:mb-8 leading-tight tracking-tight">
                         {!! $contents['hero_title']->value ?? 'IoT-Based Water Quality <br> <span class="gradient-text">Monitoring System</span>' !!}
                     </h1>
-                    <p class="text-base sm:text-xl md:text-2xl text-blue-100 mb-8 sm:mb-12 max-w-3xl mx-auto font-medium leading-relaxed opacity-90 px-2">
+                    <p class="hero-text-in hero-text-in-delay text-base sm:text-xl md:text-2xl text-blue-100 mb-8 sm:mb-12 max-w-3xl mx-auto font-medium leading-relaxed opacity-90 px-2">
                         {{ $contents['hero_subtitle']->value ?? 'Ensuring a sustainable aquaculture environment through high-precision IoT sensors and real-time data analytics.' }}
                     </p>
                 </div>
             </div>
         </section>
 
+        <!-- Continuous Dotted Pattern Background (Stops Before Footer) -->
+        <div class="relative overflow-hidden bg-white">
+            <div class="absolute inset-0 z-0 pointer-events-none opacity-[0.3] bg-[radial-gradient(circle_at_1px_1px,rgba(148,163,184,0.45)_1px,transparent_0)] [background-size:28px_28px]"></div>
+            <div class="relative z-10">
+
         <!-- General Caption Section -->
-        <section class="py-12 sm:py-24 bg-white overflow-hidden">
+        <section class="py-12 sm:py-24 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <div class="max-w-3xl mx-auto fade-in-up">
                     <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-sm font-bold mb-6">
@@ -147,17 +232,17 @@
         </section>
 
         <!-- Sensor Features Section -->
-        <section id="features" class="py-12 sm:py-24 bg-gray-50 overflow-hidden">
+        <section id="features" class="py-12 sm:py-24 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16 fade-in-up">
                     <h2 class="text-2xl sm:text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['sensors_title']->value ?? 'Integrated Sensor Technology' }}</h2>
                     <p class="text-gray-500 text-lg">{{ $contents['sensors_subtitle']->value ?? 'Our system utilizes four high-precision sensors to capture every critical metric.' }}</p>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-12">
+                <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-12 fade-stagger">
                     <!-- Sensor 1: pH -->
-                    <div class="sensor-card bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-4 sm:mb-8">
-                        <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-gray-900 group-hover:text-white transition-all duration-300 shadow-sm">
+                    <div class="sensor-card bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 transition-all duration-300 ease-out group hover:border-blue-200 fade-in-up mb-4 sm:mb-8">
+                        <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.691.383a4 4 0 01-2.573.344l-2.387-.477a2 2 0 00-1.022.547l-.736.736a2 2 0 000 2.828l.736.736a2 2 0 001.022.547l2.387.477a6 6 0 003.86-.517l.691-.383a4 4 0 012.573-.344l2.387.477a2 2 0 001.022-.547l.736-.736a2 2 0 000-2.828l-.736-.736z"></path>
                             </svg>
@@ -167,8 +252,8 @@
                     </div>
 
                     <!-- Sensor 2: Turbidity -->
-                    <div class="sensor-card bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-4 sm:mb-8">
-                        <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-gray-900 group-hover:text-white transition-all duration-300 shadow-sm">
+                    <div class="sensor-card bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 transition-all duration-300 ease-out group hover:border-blue-200 fade-in-up mb-4 sm:mb-8">
+                        <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 110 2h-4a1 1 0 01-1-1z"></path>
@@ -182,7 +267,7 @@
                     </div>
 
                     <!-- Sensor 3: TDS -->
-                    <div class="sensor-card bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-4 sm:mb-8">
+                    <div class="sensor-card bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 transition-all duration-300 ease-out group hover:border-blue-200 fade-in-up mb-4 sm:mb-8">
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.691.383a4 4 0 01-2.573.344l-2.387-.477a2 2 0 00-1.022.547l-.736.736a2 2 0 000 2.828l.736.736a2 2 0 001.022.547l2.387.477a6 6 0 003.86-.517l.691-.383a4 4 0 012.573-.344l2.387.477a2 2 0 001.022-.547l.736-.736a2 2 0 000-2.828l-.736-.736z"></path>
@@ -197,7 +282,7 @@
                     </div>
 
                     <!-- Sensor 4: Temperature -->
-                    <div class="sensor-card bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 transition-all duration-300 group fade-in-up mb-4 sm:mb-8">
+                    <div class="sensor-card bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 transition-all duration-300 ease-out group hover:border-blue-200 fade-in-up mb-4 sm:mb-8">
                         <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-6 text-gray-900 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300 shadow-sm">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19c-1.657 0-3-1.343-3-3V6a3 3 0 116 0v10c0 1.657-1.343 3-3 3z"></path>
@@ -212,29 +297,29 @@
         </section>
 
         <!-- Services Section -->
-        <section id="services" class="py-12 sm:py-24 bg-white overflow-hidden">
+        <section id="services" class="py-12 sm:py-24 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16 fade-in-up">
                     <h2 class="text-2xl sm:text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['services_title']->value ?? 'Our Services' }}</h2>
                     <p class="text-gray-500 text-lg">{{ $contents['services_subtitle']->value ?? 'We provide end-to-end solutions for aquaculture technology integration.' }}</p>
                 </div>
 
-                <div class="max-w-4xl mx-auto space-y-12 fade-in-up">
-                    <div class="flex gap-4 sm:gap-8 items-start">
+                <div class="max-w-4xl mx-auto space-y-12 fade-stagger">
+                    <div class="flex gap-4 sm:gap-8 items-start fade-in-up">
                         <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">{{ $contents['service1_num']->value ?? '01' }}</div>
                         <div>
                             <h4 class="text-lg sm:text-2xl font-bold mb-2 sm:mb-3 tracking-tight" style="color: #0D1A63;">{{ $contents['service1_title']->value ?? 'Automated Data Collection' }}</h4>
                             <p class="text-gray-600 leading-relaxed text-sm sm:text-lg">{{ $contents['service1_desc']->value ?? 'Continuous background data harvesting from a pond, simultaneously without manual intervention.' }}</p>
                         </div>
                     </div>
-                    <div class="flex gap-4 sm:gap-8 items-start">
+                    <div class="flex gap-4 sm:gap-8 items-start fade-in-up">
                         <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">{{ $contents['service2_num']->value ?? '02' }}</div>
                         <div>
                             <h4 class="text-lg sm:text-2xl font-bold mb-2 sm:mb-3 tracking-tight" style="color: #0D1A63;">{{ $contents['service2_title']->value ?? 'Smart Alert Notifications' }}</h4>
                             <p class="text-gray-600 leading-relaxed text-sm sm:text-lg">{{ $contents['service2_desc']->value ?? 'Instant Alert notifications when water parameters exceed safe threshold limits for your specific fish species.' }}</p>
                         </div>
                     </div>
-                    <div class="flex gap-4 sm:gap-8 items-start">
+                    <div class="flex gap-4 sm:gap-8 items-start fade-in-up">
                         <div class="shrink-0 w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center text-black font-bold text-xl">{{ $contents['service3_num']->value ?? '03' }}</div>
                         <div>
                             <h4 class="text-lg sm:text-2xl font-bold mb-2 sm:mb-3 tracking-tight" style="color: #0D1A63;">{{ $contents['service3_title']->value ?? 'AI Condition Analysis' }}</h4>
@@ -246,28 +331,44 @@
         </section>
 
         <!-- About / Team Section -->
-        <section id="about" class="py-12 sm:py-24 bg-gray-50 overflow-hidden border-t border-gray-100">
+        <section id="about" class="py-12 sm:py-24 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16 fade-in-up">
                     <h2 class="text-2xl sm:text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['about_title']->value ?? 'Meet the Team' }}</h2>
                     <p class="text-gray-500 text-lg max-w-2xl mx-auto">{{ $contents['about_subtitle']->value ?? 'The dedicated minds behind AquaSense, working together to revolutionize aquaculture monitoring.' }}</p>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 fade-in-up">
+                <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 fade-stagger">
                     
                     <!-- Team Member 1 -->
-                    <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
+                    <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center smooth-pop-card fade-in-up">
                         <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative border-4 bg-white" style="border-color: #0D1A63;">
-                            @if(isset($contents['team1_img']) && $contents['team1_img']->image)
-                                <img src="{{ str_starts_with($contents['team1_img']->image, 'http') ? $contents['team1_img']->image : asset($contents['team1_img']->image) }}" class="w-full h-full object-cover">
+                            @php
+                                $team1ImageEntry = $contents['team1_img'] ?? null;
+                                $team1Image = $team1ImageEntry->image ?? null;
+                                $team1Local = $team1ImageEntry->value ?? null;
+                                $team1Src = $team1Image ? (str_starts_with($team1Image, 'http') ? $team1Image : asset($team1Image)) : null;
+                                $team1LocalSrc = ($team1Local && !str_starts_with($team1Local, 'http')) ? asset($team1Local) : null;
+                            @endphp
+                            @if($team1Src)
+                                <img src="{{ $team1Src }}" class="w-full h-full object-cover" @if($team1LocalSrc) onerror="this.onerror=null; this.src='{{ $team1LocalSrc }}';" @endif>
                             @else
                                 <div class="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
                                     <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
                                 </div>
                             @endif
 
-                            @if(isset($contents['team1_img_hover']) && $contents['team1_img_hover']->image)
-                                <img src="{{ str_starts_with($contents['team1_img_hover']->image, 'http') ? $contents['team1_img_hover']->image : asset($contents['team1_img_hover']->image) }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white">
+                            @php
+                                $team1HoverEntry = $contents['team1_img_hover'] ?? null;
+                                $team1HoverImage = $team1HoverEntry->image ?? null;
+                                $team1HoverLocal = $team1HoverEntry->value ?? null;
+                                $team1HoverSrc = $team1HoverImage ? (str_starts_with($team1HoverImage, 'http') ? $team1HoverImage : asset($team1HoverImage)) : null;
+                                $team1HoverLocalSrc = ($team1HoverLocal && !str_starts_with($team1HoverLocal, 'http')) ? asset($team1HoverLocal) : null;
+                            @endphp
+                            @if($team1HoverSrc)
+                                <img src="{{ $team1HoverSrc }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out bg-white" @if($team1HoverLocalSrc) onerror="this.onerror=null; this.src='{{ $team1HoverLocalSrc }}';" @endif>
+                            @else
+                                <div class="absolute inset-0 bg-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             @endif
                         </div>
                         <h3 class="text-lg font-bold mb-1" style="color: #0D1A63;">{{ $contents['team1_name']->value ?? 'Kirstine A. Sanchez' }}</h3>
@@ -276,18 +377,34 @@
                     </div>
 
                     <!-- Team Member 2 -->
-                    <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
+                    <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center smooth-pop-card fade-in-up">
                          <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative border-4 bg-white" style="border-color: #0D1A63;">
-                            @if(isset($contents['team2_img']) && $contents['team2_img']->image)
-                                <img src="{{ str_starts_with($contents['team2_img']->image, 'http') ? $contents['team2_img']->image : asset($contents['team2_img']->image) }}" class="w-full h-full object-cover">
+                            @php
+                                $team2ImageEntry = $contents['team2_img'] ?? null;
+                                $team2Image = $team2ImageEntry->image ?? null;
+                                $team2Local = $team2ImageEntry->value ?? null;
+                                $team2Src = $team2Image ? (str_starts_with($team2Image, 'http') ? $team2Image : asset($team2Image)) : null;
+                                $team2LocalSrc = ($team2Local && !str_starts_with($team2Local, 'http')) ? asset($team2Local) : null;
+                            @endphp
+                            @if($team2Src)
+                                <img src="{{ $team2Src }}" class="w-full h-full object-cover" @if($team2LocalSrc) onerror="this.onerror=null; this.src='{{ $team2LocalSrc }}';" @endif>
                             @else
                                 <div class="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
                                     <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
                                 </div>
                             @endif
 
-                            @if(isset($contents['team2_img_hover']) && $contents['team2_img_hover']->image)
-                                <img src="{{ str_starts_with($contents['team2_img_hover']->image, 'http') ? $contents['team2_img_hover']->image : asset($contents['team2_img_hover']->image) }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white">
+                            @php
+                                $team2HoverEntry = $contents['team2_img_hover'] ?? null;
+                                $team2HoverImage = $team2HoverEntry->image ?? null;
+                                $team2HoverLocal = $team2HoverEntry->value ?? null;
+                                $team2HoverSrc = $team2HoverImage ? (str_starts_with($team2HoverImage, 'http') ? $team2HoverImage : asset($team2HoverImage)) : null;
+                                $team2HoverLocalSrc = ($team2HoverLocal && !str_starts_with($team2HoverLocal, 'http')) ? asset($team2HoverLocal) : null;
+                            @endphp
+                            @if($team2HoverSrc)
+                                <img src="{{ $team2HoverSrc }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out bg-white" @if($team2HoverLocalSrc) onerror="this.onerror=null; this.src='{{ $team2HoverLocalSrc }}';" @endif>
+                            @else
+                                <div class="absolute inset-0 bg-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             @endif
                         </div>
                         <h3 class="text-lg font-bold mb-1" style="color: #0D1A63;">{{ $contents['team2_name']->value ?? 'Dannica J. Besinio' }}</h3>
@@ -296,18 +413,34 @@
                     </div>
 
                     <!-- Team Member 3 -->
-                    <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
+                    <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center smooth-pop-card fade-in-up">
                          <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative border-4 bg-white" style="border-color: #0D1A63;">
-                            @if(isset($contents['team3_img']) && $contents['team3_img']->image)
-                                <img src="{{ str_starts_with($contents['team3_img']->image, 'http') ? $contents['team3_img']->image : asset($contents['team3_img']->image) }}" class="w-full h-full object-cover">
+                            @php
+                                $team3ImageEntry = $contents['team3_img'] ?? null;
+                                $team3Image = $team3ImageEntry->image ?? null;
+                                $team3Local = $team3ImageEntry->value ?? null;
+                                $team3Src = $team3Image ? (str_starts_with($team3Image, 'http') ? $team3Image : asset($team3Image)) : null;
+                                $team3LocalSrc = ($team3Local && !str_starts_with($team3Local, 'http')) ? asset($team3Local) : null;
+                            @endphp
+                            @if($team3Src)
+                                <img src="{{ $team3Src }}" class="w-full h-full object-cover" @if($team3LocalSrc) onerror="this.onerror=null; this.src='{{ $team3LocalSrc }}';" @endif>
                             @else
                                 <div class="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
                                     <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
                                 </div>
                             @endif
 
-                            @if(isset($contents['team3_img_hover']) && $contents['team3_img_hover']->image)
-                                <img src="{{ str_starts_with($contents['team3_img_hover']->image, 'http') ? $contents['team3_img_hover']->image : asset($contents['team3_img_hover']->image) }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white">
+                            @php
+                                $team3HoverEntry = $contents['team3_img_hover'] ?? null;
+                                $team3HoverImage = $team3HoverEntry->image ?? null;
+                                $team3HoverLocal = $team3HoverEntry->value ?? null;
+                                $team3HoverSrc = $team3HoverImage ? (str_starts_with($team3HoverImage, 'http') ? $team3HoverImage : asset($team3HoverImage)) : null;
+                                $team3HoverLocalSrc = ($team3HoverLocal && !str_starts_with($team3HoverLocal, 'http')) ? asset($team3HoverLocal) : null;
+                            @endphp
+                            @if($team3HoverSrc)
+                                <img src="{{ $team3HoverSrc }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out bg-white" @if($team3HoverLocalSrc) onerror="this.onerror=null; this.src='{{ $team3HoverLocalSrc }}';" @endif>
+                            @else
+                                <div class="absolute inset-0 bg-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             @endif
                         </div>
                         <h3 class="text-lg font-bold mb-1" style="color: #0D1A63;">{{ $contents['team3_name']->value ?? 'Joy Mae A. Samra' }}</h3>
@@ -316,21 +449,37 @@
                     </div>
 
                     <!-- Team Member 4 -->
-                    <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center hover:-translate-y-2 transition-all duration-300">
+                    <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center smooth-pop-card fade-in-up">
                          <div class="w-32 h-32 mx-auto rounded-full overflow-hidden bg-gray-100 mb-6 shadow-inner relative border-4 bg-white" style="border-color: #0D1A63;">
-                            @if(isset($contents['team4_img']) && $contents['team4_img']->image)
-                                <img src="{{ str_starts_with($contents['team4_img']->image, 'http') ? $contents['team4_img']->image : asset($contents['team4_img']->image) }}" class="w-full h-full object-cover">
+                            @php
+                                $team4ImageEntry = $contents['team4_img'] ?? null;
+                                $team4Image = $team4ImageEntry->image ?? null;
+                                $team4Local = $team4ImageEntry->value ?? null;
+                                $team4Src = $team4Image ? (str_starts_with($team4Image, 'http') ? $team4Image : asset($team4Image)) : null;
+                                $team4LocalSrc = ($team4Local && !str_starts_with($team4Local, 'http')) ? asset($team4Local) : null;
+                            @endphp
+                            @if($team4Src)
+                                <img src="{{ $team4Src }}" class="w-full h-full object-cover" @if($team4LocalSrc) onerror="this.onerror=null; this.src='{{ $team4LocalSrc }}';" @endif>
                             @else
                                 <div class="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
                                     <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
                                 </div>
                             @endif
 
-                            @if(isset($contents['team4_img_hover']) && $contents['team4_img_hover']->image)
-                                <img src="{{ str_starts_with($contents['team4_img_hover']->image, 'http') ? $contents['team4_img_hover']->image : asset($contents['team4_img_hover']->image) }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white">
+                            @php
+                                $team4HoverEntry = $contents['team4_img_hover'] ?? null;
+                                $team4HoverImage = $team4HoverEntry->image ?? null;
+                                $team4HoverLocal = $team4HoverEntry->value ?? null;
+                                $team4HoverSrc = $team4HoverImage ? (str_starts_with($team4HoverImage, 'http') ? $team4HoverImage : asset($team4HoverImage)) : null;
+                                $team4HoverLocalSrc = ($team4HoverLocal && !str_starts_with($team4HoverLocal, 'http')) ? asset($team4HoverLocal) : null;
+                            @endphp
+                            @if($team4HoverSrc)
+                                <img src="{{ $team4HoverSrc }}" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-in-out bg-white" @if($team4HoverLocalSrc) onerror="this.onerror=null; this.src='{{ $team4HoverLocalSrc }}';" @endif>
+                            @else
+                                <div class="absolute inset-0 bg-blue-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             @endif
                         </div>
-                        <h3 class="text-lg font-bold mb-1" style="color: #0D1A63;">{{ $contents['team4_name']->value ?? 'Jonas D. Parraño' }}</h3>
+                        <h3 class="text-lg font-bold mb-1" style="color: #0D1A63;">{{ $contents['team4_name']->value ?? 'Jonas D. ParraÃƒÆ’Ã‚Â±o' }}</h3>
                         <p class="text-blue-600 font-medium text-xs uppercase tracking-wide mb-4">{{ $contents['team4_role']->value ?? 'System Analyst / Capstone Adviser' }}</p>
                         <p class="text-gray-500 text-sm leading-relaxed">{{ $contents['team4_desc']->value ?? 'Provides expert guidance on system architecture and project direction.' }}</p>
                     </div>
@@ -340,15 +489,15 @@
         </section>
 
         <!-- Contact Us Section -->
-        <section id="contact" class="py-12 sm:py-24 bg-white overflow-hidden">
+        <section id="contact" class="py-12 sm:py-24 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-20 fade-in-up">
                     <h2 class="text-2xl sm:text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['contact_title']->value ?? 'Contact Us' }}</h2>
                     <p class="text-gray-500 text-lg">{{ $contents['contact_subtitle']->value ?? 'Have questions? We\'re here to help you optimize your aquaculture operations.' }}</p>
                 </div>
 
-                <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-12 text-center fade-in-up">
-                    <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm group hover:-translate-y-2 transition-all duration-300">
+                <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-12 text-center fade-stagger">
+                    <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm transition-all duration-300 ease-out group hover:border-blue-200 smooth-pop-card fade-in-up">
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         </div>
@@ -359,7 +508,7 @@
                         </a>
                     </div>
                     
-                    <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm group hover:-translate-y-2 transition-all duration-300">
+                    <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm transition-all duration-300 ease-out group hover:border-blue-200 smooth-pop-card fade-in-up">
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                         </div>
@@ -370,7 +519,7 @@
                         @endforeach
                     </div>
                     
-                    <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm group hover:-translate-y-2 transition-all duration-300">
+                    <div class="p-8 bg-white rounded-3xl border border-gray-100 shadow-sm transition-all duration-300 ease-out group hover:border-blue-200 smooth-pop-card fade-in-up">
                         <div class="w-12 h-12 bg-gray-100 text-black rounded-xl flex items-center justify-center mx-auto mb-6 group-hover:bg-[#0D1A63] group-hover:text-white transition-all duration-300">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         </div>
@@ -383,16 +532,18 @@
                 </div>
             </div>
         </section>
+            </div>
+        </div>
 
         <!-- Improved Footer -->
         <footer class="bg-white py-12 border-t border-gray-100 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center">
+                <div class="text-center fade-in-up">
                     <div class="flex justify-center items-center gap-3 mb-6">
                         <img src="{{ asset('img/logo/logo-wq.png') }}" alt="Logo" class="h-8 w-auto grayscale opacity-50" />
                         <span class="text-lg font-bold text-gray-700 tracking-wider">AquaSense</span>
                     </div>
-                    <p class="text-gray-500 text-sm mb-4">{{ $contents['footer_copyright']->value ?? '© ' . date('Y') . ' AquaSense. All rights reserved.' }}</p>
+                    <p class="text-gray-500 text-sm mb-4">{{ $contents['footer_copyright']->value ?? 'Ãƒâ€šÃ‚Â© ' . date('Y') . ' AquaSense. All rights reserved.' }}</p>
                     <p class="text-sm font-medium text-gray-500 mt-2">
                         {{ $contents['footer_devs']->value ?? 'Developed by: Kirstine A. Sanchez, Dannica J. Besinio and Joy Mae A. Samra' }}
                     </p>
@@ -483,3 +634,4 @@
         </script>
     </body>
 </html>
+

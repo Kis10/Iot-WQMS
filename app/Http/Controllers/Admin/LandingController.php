@@ -58,17 +58,27 @@ class LandingController extends Controller
 
             if ($request->hasFile($fileInput)) {
                 Log::info("LandingController: Found file for key: {$fileInput}");
-                $path = $this->saveLocalFile($request->file($fileInput), $key);
-                if ($path) {
-                    $updateData = ['image' => $path, 'value' => $path, 'type' => 'image'];
+                $localPath = $this->saveLocalFile($request->file($fileInput), $key);
+                if ($localPath) {
+                    $cloudUrl = $this->backupToCloudinary($localPath, $key);
+                    $updateData = [
+                        'image' => $cloudUrl ?: $localPath,
+                        'value' => $localPath,
+                        'type' => 'image',
+                    ];
                 }
             } elseif ($request->filled($urlInput)) {
                 Log::info("LandingController: Found URL for key: {$urlInput}");
                 $url = $request->input($urlInput);
                 if (filter_var($url, FILTER_VALIDATE_URL) && !str_contains($url, request()->getHost())) {
-                    $path = $this->saveFromUrl($url, $key);
-                    if ($path) {
-                        $updateData = ['image' => $path, 'value' => $path, 'type' => 'image'];
+                    $localPath = $this->saveFromUrl($url, $key);
+                    if ($localPath) {
+                        $cloudUrl = $this->backupToCloudinary($localPath, $key);
+                        $updateData = [
+                            'image' => $cloudUrl ?: $localPath,
+                            'value' => $localPath,
+                            'type' => 'image',
+                        ];
                     }
                 }
             }
@@ -98,16 +108,8 @@ class LandingController extends Controller
             $ext = $file->getClientOriginalExtension() ?: 'png';
             $filename = $key . '_' . time() . '.' . $ext;
             
-            // Subfolder mapping
-            $subfolder = 'uploads';
-            if (str_contains($key, 'team')) {
-                $subfolder = str_contains($key, 'hover') ? 'members/hover' : 'members/display';
-            }
-            
-            $directory = public_path('img/' . $subfolder);
-            if (!file_exists($directory)) {
-                mkdir($directory, 0777, true);
-            }
+            $subfolder = $this->resolveImageSubfolder($key);
+            $directory = $this->ensurePublicImgDirectory($subfolder);
 
             $file->move($directory, $filename);
             return 'img/' . $subfolder . '/' . $filename;
@@ -126,15 +128,8 @@ class LandingController extends Controller
             $ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpg';
             $filename = $key . '_' . time() . '.' . $ext;
             
-            $subfolder = 'uploads';
-            if (str_contains($key, 'team')) {
-                $subfolder = str_contains($key, 'hover') ? 'members/hover' : 'members/display';
-            }
-            
-            $directory = public_path('img/' . $subfolder);
-            if (!file_exists($directory)) {
-                mkdir($directory, 0777, true);
-            }
+            $subfolder = $this->resolveImageSubfolder($key);
+            $directory = $this->ensurePublicImgDirectory($subfolder);
 
             $localPath = 'img/' . $subfolder . '/' . $filename;
             file_put_contents(public_path($localPath), $imageContents);
@@ -143,6 +138,70 @@ class LandingController extends Controller
             Log::error("LandingController: Error saving URL image for {$key}: " . $e->getMessage());
             return null;
         }
+    }
+
+    private function backupToCloudinary(string $localPath, string $key): ?string
+    {
+        if (! $this->shouldBackupToCloudinary($key)) {
+            return null;
+        }
+
+        if (! $this->isCloudinaryActive()) {
+            return null;
+        }
+
+        $absolutePath = public_path($localPath);
+        if (! file_exists($absolutePath)) {
+            return null;
+        }
+
+        try {
+            $subfolder = $this->resolveImageSubfolder($key);
+            $folder = 'aquasense/' . $subfolder;
+            $publicId = pathinfo(basename($localPath), PATHINFO_FILENAME);
+
+            $result = Cloudinary::uploadApi()->upload($absolutePath, [
+                'folder' => $folder,
+                'public_id' => $publicId,
+                'overwrite' => true,
+                'resource_type' => 'image',
+            ]);
+
+            return $result['secure_url'] ?? $result['url'] ?? null;
+        } catch (\Exception $e) {
+            Log::error("LandingController: Cloudinary backup failed for {$key}: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    private function shouldBackupToCloudinary(string $key): bool
+    {
+        return str_starts_with($key, 'team') || $key === 'hero_bg';
+    }
+
+    private function isCloudinaryActive(): bool
+    {
+        return (bool)(config('cloudinary.cloud_url') || env('CLOUDINARY_URL'));
+    }
+
+    private function resolveImageSubfolder(string $key): string
+    {
+        if (str_starts_with($key, 'team')) {
+            if (str_ends_with($key, '_img_hover')) return 'members/hover';
+            return 'members/display';
+        }
+
+        return 'uploads';
+    }
+
+    private function ensurePublicImgDirectory(string $subfolder): string
+    {
+        $directory = public_path('img/' . $subfolder);
+        if (!file_exists($directory)) {
+            mkdir($directory, 0777, true);
+        }
+
+        return $directory;
     }
 
     /**
