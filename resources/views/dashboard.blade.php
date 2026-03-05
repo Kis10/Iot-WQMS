@@ -711,45 +711,51 @@
                     const temp = Number.parseFloat(r.temperature);
                     const turbidity = Number.parseFloat(r.turbidity);
                     const tds = Number.parseFloat(r.tds);
-                    const formatValue = (value, suffix = '') => Number.isFinite(value) ? `${value.toFixed(2)}${suffix}` : 'N/A';
 
                     const values = [ph, temp, turbidity, tds];
                     if (values.every(v => !Number.isFinite(v) || v <= 0)) {
-                        return 'Waiting for a valid latest reading to generate recommendation.';
+                        return 'Waiting for a valid latest reading to generate your recommendation.';
                     }
-
-                    const snapshot = `Latest reading - pH: ${formatValue(ph)}, Temp: ${formatValue(temp, 'C')}, Turbidity: ${formatValue(turbidity, '%')}, TDS: ${formatValue(tds, ' mg/L')}.`;
 
                     const issues = [];
                     if (Number.isFinite(ph)) {
-                        if (ph < 6.5) issues.push('raise pH toward 6.5-8.5');
-                        else if (ph > 8.5) issues.push('lower pH toward 6.5-8.5');
+                        if (ph < 6.5) issues.push('the water is too acidic');
+                        else if (ph > 8.5) issues.push('the water is too alkaline');
                     }
 
                     if (Number.isFinite(temp)) {
-                        if (temp < 25) issues.push('increase water temperature toward 25-32C');
-                        else if (temp > 32) issues.push('cool water toward 25-32C');
+                        if (temp < 25) issues.push('the water temperature is too cold');
+                        else if (temp > 32) issues.push('the water temperature is too hot');
                     }
 
                     if (Number.isFinite(turbidity)) {
-                        if (turbidity < 50) issues.push('improve clarity toward 50-100%');
-                        else if (turbidity > 100) issues.push('reduce turbidity toward 50-100%');
+                        if (turbidity < 50) issues.push('the water clarity is too poor');
                     }
 
                     if (Number.isFinite(tds)) {
-                        if (tds > 1500) issues.push('reduce extreme mineralization >1500mg/L');
-                        else if (tds > 500) issues.push('reduce dissolved solids toward 0-500 mg/L');
+                        if (tds > 1500) issues.push('there is extreme mineralization');
+                        else if (tds > 500) issues.push('the dissolved solids are slightly elevated');
                     }
 
-                    const overallText = info.wqi >= 70
-                        ? 'Overall recommendation: suitable for fish growth.'
-                        : 'Overall recommendation: not yet optimal for fish growth.';
-
-                    if (issues.length === 0) {
-                        return `${snapshot} ${overallText} Keep current management and continue monitoring to hold pH 6.5-8.5, Temp 25-32C, Turbidity 50-100%, and TDS 0-500 mg/L.`;
+                    if (info.wqi >= 90) {
+                        return "The water quality is currently excellent. Therefore, keep your current management practices and continue monitoring to maintain these ideal conditions, because your fish will thrive here.";
+                    } else if (info.wqi >= 70) {
+                        let text = "The water quality is generally good and suitable for fish growth.";
+                        if (issues.length > 0) {
+                            text += ` However, because ${issues.join(' and ')}, you should keep a close eye on it or else it might start to stress the fish over time.`;
+                        } else {
+                            text += " Keep monitoring the pond to prevent any sudden drops in quality.";
+                        }
+                        return text;
+                    } else {
+                        let text = "The water quality is poor and not optimal for fish growth right now.";
+                        if (issues.length > 0) {
+                            text += ` This is primarily because ${issues.join(' and ')}. Therefore, we highly recommend taking corrective action immediately, or else the fish could experience severe health issues.`;
+                        } else {
+                            text += " Therefore, we highly recommend taking corrective action immediately to stabilize the pond.";
+                        }
+                        return text;
                     }
-
-                    return `${snapshot} ${overallText} Priority action: ${issues.join('; ')}.`;
                 };
 
                 const updateOverallHealth = (r) => {
