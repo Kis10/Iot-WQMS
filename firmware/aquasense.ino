@@ -13,8 +13,17 @@
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 
 /************ WIFI CREDENTIALS ************/
-const char* ssid     = "NO NETWORK01_2.4";
-const char* password = "Cristy_028";
+struct WiFiNetwork {
+  const char* ssid;
+  const char* password;
+};
+
+WiFiNetwork knownNetworks[] = {
+  {"izEf", "OHmMSYnh"},
+  {"NO NETWORK01_2.4", "Cristy_028"},
+  {"MIS OFFICE", "MISO_Gm@2025"},
+  {"kirstine2G", "@012345_2G"}
+};
 
 /************ LARAVEL API CONFIGURATION ************/
 const char* serverName = "https://aquasense.blog";
@@ -42,7 +51,7 @@ DallasTemperature waterTempSensor(&oneWire);
 
 /************ SENSOR VARIABLES ************/
 float slope = -7.575;
-float offset = 31.64; // 'Software Cheat' Offset for Pond Water Isolation
+float offset = 31.84; // 'Software Cheat' Offset (+3.0 from 28.84) to shift 3-4 pH to 6-7 pH
 float tdsFactor = 0.5;
 const int numSamples = 10;
 
@@ -286,62 +295,120 @@ void loop() {
   }
 }
 
+/************ UPDATED WIFI CONNECTION FUNCTION ************/
 void connectToWiFiWithUI() {
   lcd.setCursor(0,1);
-  lcd.print("Connecting to:");
-  lcd.setCursor(0,2);
-  lcd.print(ssid);
-
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-
-  unsigned long startAttempt = millis();
-  bool connected = false;
+  lcd.print("Scanning Networks");
   
-  while (millis() - startAttempt < 30000) {
-      if (WiFi.status() == WL_CONNECTED) {
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+  delay(100);
+  
+  // Scan for available networks
+  lcd.setCursor(0,2);
+  lcd.print("Scanning...       ");
+  int networksFound = WiFi.scanNetworks();
+  
+  lcd.setCursor(0,2);
+  lcd.print("                ");
+  
+  bool connected = false;
+  int networkCount = sizeof(knownNetworks) / sizeof(knownNetworks[0]);
+  
+  // Try each known network that's available
+  for (int attempt = 0; attempt < 3 && !connected; attempt++) { // Multiple attempts
+    for (int i = 0; i < networkCount && !connected; i++) {
+      
+      // Check if this network is available in scan results
+      bool networkAvailable = false;
+      for (int j = 0; j < networksFound; j++) {
+        if (strcmp(WiFi.SSID(j).c_str(), knownNetworks[i].ssid) == 0) {
+          networkAvailable = true;
+          break;
+        }
+      }
+      
+      // Skip if network not found in scan (optional - you can remove this check
+      // if you want to try connecting anyway)
+      if (!networkAvailable && networksFound > 0) {
+        continue;
+      }
+      
+      lcd.setCursor(0,1);
+      lcd.print("Connecting to:    ");
+      lcd.setCursor(0,2);
+      
+      // Display SSID (truncate if too long)
+      String ssidStr = String(knownNetworks[i].ssid);
+      if (ssidStr.length() > 16) {
+        ssidStr = ssidStr.substring(0, 13) + "...";
+      }
+      lcd.print(ssidStr);
+      lcd.print("                ");
+      
+      WiFi.begin(knownNetworks[i].ssid, knownNetworks[i].password);
+      
+      unsigned long startAttempt = millis();
+      while (millis() - startAttempt < 10000) { // 10s per network
+        if (WiFi.status() == WL_CONNECTED) {
           connected = true;
           break;
-      }
-      
-      int remaining = 30 - ((millis() - startAttempt) / 1000);
-      
-      // Blink Effect on "Waiting..." AND Red LED
-      lcd.setCursor(0, 3);
-      if ((millis() / 500) % 2 == 0) {
-        lcd.printf("Waiting... %ds    ", remaining);
-        digitalWrite(wifiLedPin, HIGH); // LED ON
-      } else {
-        lcd.print("                "); // Blink off
-        digitalWrite(wifiLedPin, LOW);  // LED OFF
-      }
-      
-      Serial.print(".");
-      updateSound(); 
-      delay(200);
-  }
-
-  if (!connected) {
-     lcd.clear();
-     lcd.setCursor(0,0);
-     lcd.print("Aquasense Booting");
-     lcd.setCursor(0,1);
-     lcd.print("Connection Failed");
-     lcd.setCursor(0,2);
-     lcd.print("Check Network");
-     
-     // Stay in "waiting..." with blink forever (Halt)
-     while(1) {
+        }
+        
+        // Blinking animation
+        int remaining = 10 - ((millis() - startAttempt) / 1000);
         lcd.setCursor(0, 3);
         if ((millis() / 500) % 2 == 0) {
-          lcd.print("Waiting...      ");
-          digitalWrite(wifiLedPin, HIGH); // LED ON
+          lcd.printf("Trying... %ds    ", remaining);
+          digitalWrite(wifiLedPin, HIGH);
         } else {
           lcd.print("                ");
-          digitalWrite(wifiLedPin, LOW);  // LED OFF
+          digitalWrite(wifiLedPin, LOW);
         }
+        
+        Serial.print(".");
+        updateSound();
         delay(200);
-     }
+      }
+    }
+    
+    // Rescan if not connected and we have more attempts
+    if (!connected && attempt < 2) {
+      lcd.setCursor(0,1);
+      lcd.print("Rescanning...     ");
+      networksFound = WiFi.scanNetworks();
+      delay(1000);
+    }
+  }
+  
+  // Handle connection result
+  if (!connected) {
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("No Known Networks");
+    lcd.setCursor(0,1);
+    lcd.print("Found");
+    lcd.setCursor(0,2);
+    lcd.print("Check WiFi &");
+    lcd.setCursor(0,3);
+    lcd.print("Restart Device");
+    
+    // Play disconnect sound
+    startSound(SOUND_WIFI_DISCONNECT);
+    
+    // Stay in "waiting..." with blink forever (Halt)
+    while(1) {
+      lcd.setCursor(0, 3);
+      if ((millis() / 500) % 2 == 0) {
+        lcd.print("RESTART DEVICE   ");
+        digitalWrite(wifiLedPin, HIGH);
+      } else {
+        lcd.print("                ");
+        digitalWrite(wifiLedPin, LOW);
+      }
+      updateSound();
+      delay(200);
+    }
   }
 
   // CONNECTED SUCCESS
@@ -352,7 +419,9 @@ void connectToWiFiWithUI() {
   lcd.setCursor(0,0);
   lcd.print("WiFi Connected!");
   lcd.setCursor(0,1);
-  lcd.print("WELCOME!");
+  lcd.print(WiFi.SSID()); // Show which network we connected to
+  lcd.setCursor(0,2);
+  lcd.print(WiFi.localIP().toString());
   
   startSound(SOUND_WIFI_CONNECT);
   
