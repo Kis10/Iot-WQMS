@@ -187,7 +187,7 @@
                     <div class="flex flex-col items-center mt-2">
                         <p class="text-gray-400 text-[11px] sm:text-xs font-medium">mg/L</p>
                         <span id="status-tds" class="mt-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-gray-50 text-gray-400">Normal</span>
-                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">Ideal: 0-500</p>
+                        <p class="mt-1.5 text-[9px] text-gray-400 font-bold uppercase italic">Ideal: 300-500</p>
                     </div>
                 </div>
 
@@ -354,7 +354,7 @@
          *   pH:          6.5 – 8.5
          *   Temperature: 25  – 32 °C
          *   Turbidity:   ≥ 50 % clarity (lower = worse)
-         *   TDS:         0 – 500 mg/L
+         *   TDS:         300 – 500 mg/L
          *
          * Weight allocation follows parameter impact on fish health:
          *   pH         = 0.30 (30%) — most critical for fish survival
@@ -393,10 +393,11 @@
                 return Math.max(0, (val / 50) * 100);
             }
 
-            // TDS Sub-index: Optimal 0-500 mg/L (FAO)
-            // Above 500: -0.1 pts per mg/L excess
+            // TDS Sub-index: Optimal 300-500 mg/L (FAO)
+            // Below 300: linear scale; Above 500: -0.1 pts per mg/L excess
             function scoreTDS(val) {
-                if (val >= 0 && val <= 500) return 100;
+                if (val >= 300 && val <= 500) return 100;
+                if (val < 300) return Math.max(0, (val / 300) * 100);
                 return Math.max(0, 100 - (val - 500) * 0.1);
             }
 
@@ -737,8 +738,8 @@
                     }
 
                     if (Number.isFinite(tds)) {
-                        if (tds > 1500) issues.push('reduce extreme mineralization >1500mg/L');
-                        else if (tds > 500) issues.push('reduce dissolved solids toward 0-500 mg/L');
+                        if (tds < 300) issues.push('increase dissolved minerals toward 300-500 mg/L');
+                        else if (tds > 500) issues.push('reduce dissolved solids toward 300-500 mg/L');
                     }
 
                     const overallText = info.wqi >= 70
@@ -746,7 +747,7 @@
                         : 'Overall recommendation: not yet optimal for fish growth.';
 
                     if (issues.length === 0) {
-                        return `${snapshot} ${overallText} Keep current management and continue monitoring to hold pH 6.5-8.5, Temp 25-32C, Turbidity 50-100%, and TDS 0-500 mg/L.`;
+                        return `${snapshot} ${overallText} Keep current management and continue monitoring to hold pH 6.5-8.5, Temp 25-32C, Turbidity 50-100%, and TDS 300-500 mg/L.`;
                     }
 
                     return `${snapshot} ${overallText} Priority action: ${issues.join('; ')}.`;
@@ -797,8 +798,8 @@
                             else if (val < 6.5 || val > 8.5) color = '#f59e0b'; // Amber (Suboptimal)
                             else color = '#10b981'; // Green (Safe 6.5-8.5)
                         } else if (param === 'tds') {
-                            if (val > 1500) color = '#ef4444'; // Red (Critical)
-                            else if (val > 500) color = '#f59e0b'; // Amber (Warning)
+                            if (val > 1000) color = '#ef4444'; // Red (Critical)
+                            else if (val > 500 || val < 300) color = '#f59e0b'; // Amber (Warning)
                             else color = '#8b5cf6'; // Violet (Normal)
                         } else if (param === 'turbidity') {
                             if (val < 20) color = '#ef4444'; // Red (Critical)
@@ -1357,42 +1358,21 @@
 
                 // Parameter Table
                 const tbody = document.getElementById('printTableBody');
-                const getStatus = (param, val) => {
-                    if (param === 'turbidity') {
-                        if (val < 20) return { text: 'Critical', bg: 'background-color:#fef2f2;color:#991b1b;' };
-                        if (val < 50) return { text: 'Warning', bg: 'background-color:#fffbeb;color:#92400e;' };
-                        return { text: 'Normal', bg: 'background-color:#f0fdf4;color:#166534;' };
-                    }
-                    if (param === 'tds') {
-                        if (val > 1500) return { text: 'Critical', bg: 'background-color:#fef2f2;color:#991b1b;' };
-                        if (val > 500) return { text: 'Warning', bg: 'background-color:#fffbeb;color:#92400e;' };
-                        return { text: 'Normal', bg: 'background-color:#f0fdf4;color:#166534;' };
-                    }
-                    if (param === 'ph') {
-                        if (val < 6.0 || val > 9.0) return { text: 'Critical', bg: 'background-color:#fef2f2;color:#991b1b;' };
-                        if (val < 6.5 || val > 8.5) return { text: 'Warning', bg: 'background-color:#fffbeb;color:#92400e;' };
-                        return { text: 'Normal', bg: 'background-color:#f0fdf4;color:#166534;' };
-                    }
-                    if (param === 'temp') {
-                        if (val < 15 || val > 35) return { text: 'Critical', bg: 'background-color:#fef2f2;color:#991b1b;' };
-                        if (val < 25 || val > 32) return { text: 'Warning', bg: 'background-color:#fffbeb;color:#92400e;' };
-                        return { text: 'Normal', bg: 'background-color:#f0fdf4;color:#166534;' };
-                    }
-                };
-
                 const params = [
-                    { name: 'Turbidity', value: parseFloat(reading.turbidity).toFixed(2) + '%', standard: '50-100%', status: getStatus('turbidity', reading.turbidity) },
-                    { name: 'TDS', value: parseFloat(reading.tds).toFixed(2) + ' ppm', standard: '0-500', status: getStatus('tds', reading.tds) },
-                    { name: 'pH Level', value: parseFloat(reading.ph).toFixed(2), standard: '6.5-8.5', status: getStatus('ph', reading.ph) },
-                    { name: 'Water Temp', value: parseFloat(reading.temperature).toFixed(2) + '°C', standard: '25-32°C', status: getStatus('temp', reading.temperature) },
+                    { name: 'Turbidity', value: parseFloat(reading.turbidity).toFixed(2) + '%', standard: '50-100%', critical: reading.turbidity < 50 },
+                    { name: 'TDS', value: parseFloat(reading.tds).toFixed(2) + ' ppm', standard: '100-500', critical: reading.tds > 500 },
+                    { name: 'pH Level', value: parseFloat(reading.ph).toFixed(2), standard: '6.5-8.5', critical: reading.ph < 6.5 || reading.ph > 8.5 },
+                    { name: 'Water Temp', value: parseFloat(reading.temperature).toFixed(2) + '°C', standard: '24-30°C', critical: reading.temperature < 20 || reading.temperature > 32 },
                 ];
 
                 tbody.innerHTML = params.map(p => {
+                    const statusBg = p.critical ? 'background-color:#fef2f2;color:#991b1b;' : 'background-color:#f0fdf4;color:#166534;';
+                    const statusText = p.critical ? 'Critical' : 'Normal';
                     return `<tr style="border-top:1px solid #e5e7eb;">
                         <td style="padding:12px 20px;font-size:13px;font-weight:500;color:#111827;">${p.name}</td>
                         <td style="padding:12px 20px;font-size:13px;color:#111827;">${p.value} <span style="font-size:10px;color:#9ca3af;font-style:italic;margin-left:4px;">(Standard: ${p.standard})</span></td>
                         <td style="padding:12px 20px;">
-                            <span style="display:inline-block;padding:2px 10px;border-radius:9999px;font-size:11px;font-weight:600;${p.status.bg}">${p.status.text}</span>
+                            <span style="display:inline-block;padding:2px 10px;border-radius:9999px;font-size:11px;font-weight:600;${statusBg}">${statusText}</span>
                         </td>
                     </tr>`;
                 }).join('');
@@ -1403,11 +1383,22 @@
                     aiSection.innerHTML = '<p style="color:#6b7280;font-style:italic;">Awaiting AI analysis for these readings...</p>';
                     return;
                 }
+                // Strip individual sensor reading values from the AI insight
+                let cleanInsight = analysis.ai_insight || 'No analysis insight available.';
+                // Remove sentences that contain specific sensor readings like "Turbidity at X%", "TDS at X ppm", "pH at X", "temperature at X°C"
+                cleanInsight = cleanInsight.replace(/\s*Turbidity at [\d.]+%?,?\s*/gi, ' ');
+                cleanInsight = cleanInsight.replace(/\s*TDS at [\d.]+ ?(?:ppm|mg\/L)?,?\s*/gi, ' ');
+                cleanInsight = cleanInsight.replace(/\s*pH at [\d.]+,?\s*/gi, ' ');
+                cleanInsight = cleanInsight.replace(/\s*(?:water )?temperature at [\d.]+°?C?,?\s*/gi, ' ');
+                cleanInsight = cleanInsight.replace(/\s*and\s+(?:water )?temperature/gi, '').trim();
+                // Clean up any leftover double spaces or trailing punctuation issues
+                cleanInsight = cleanInsight.replace(/\s{2,}/g, ' ').replace(/,\s*\./g, '.').replace(/\s+\./g, '.').trim();
+
                 let aiHtml = `<h4 style="font-size:12px;font-weight:700;color:#1e3a5f;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;gap:8px;">
                     <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                     Analyzed by AquaSense
                 </h4>`;
-                aiHtml += `<p style="color:#374151;line-height:1.6;font-weight:500;">${analysis.ai_insight || 'No analysis insight available.'}</p>`;
+                aiHtml += `<p style="color:#374151;line-height:1.6;font-weight:500;">${cleanInsight}</p>`;
 
                 if (analysis.recommendations && analysis.recommendations.length > 0) {
                     const topRec = analysis.recommendations[0];
@@ -1510,11 +1501,14 @@
                         weight = info.weights.tds;
                         score = info.scores.tds;
                         unit = 'mg/L';
-                        if (reading.tds > 500) {
+                        if (reading.tds < 300) {
+                            formulaText = '(Current Reading / 300) * 100';
+                            calcText = `(${val} / 300) * 100 = ${score.toFixed(1)}`;
+                        } else if (reading.tds > 500) {
                             formulaText = '100 - (Current Reading - 500) * 0.1';
                             calcText = `100 - (${val} - 500) * 0.1 = ${score.toFixed(1)}`;
                         } else {
-                            formulaText = 'Optimal Range (0 - 500 mg/L) = Score 100';
+                            formulaText = 'Optimal Range (300 - 500 mg/L) = Score 100';
                             calcText = `Current ${val} mg/L is within range = 100`;
                         }
                         break;
@@ -1566,7 +1560,7 @@
                     <div class="p-5 bg-indigo-50/50 rounded-2xl border border-indigo-100 space-y-4">
                         <div class="flex justify-between items-center text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
                             <span>FAO Reference Standard</span>
-                            <span class="bg-white px-2 py-0.5 rounded-full border border-indigo-100">${paramType === 'ph' ? '6.5 - 8.5 pH' : paramType === 'temp' ? '25 - 32 °C' : paramType === 'turbidity' ? '50 - 100%' : '0 - 500 mg/L'}</span>
+                            <span class="bg-white px-2 py-0.5 rounded-full border border-indigo-100">${paramType === 'ph' ? '6.5 - 8.5 pH' : paramType === 'temp' ? '25 - 32 °C' : paramType === 'turbidity' ? '50 - 100%' : '300 - 500 mg/L'}</span>
                         </div>
                         <div class="flex justify-between items-end">
                             <span class="text-sm font-bold text-gray-600">Real-time Reading</span>
