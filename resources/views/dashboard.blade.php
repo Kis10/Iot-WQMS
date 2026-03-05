@@ -1358,21 +1358,42 @@
 
                 // Parameter Table
                 const tbody = document.getElementById('printTableBody');
+                const getStatus = (param, val) => {
+                    if (param === 'turbidity') {
+                        if (val < 20) return { text: 'Critical', bg: 'background-color:#fef2f2;color:#991b1b;' };
+                        if (val < 50) return { text: 'Warning', bg: 'background-color:#fffbeb;color:#92400e;' };
+                        return { text: 'Normal', bg: 'background-color:#f0fdf4;color:#166534;' };
+                    }
+                    if (param === 'tds') {
+                        if (val > 1000) return { text: 'Critical', bg: 'background-color:#fef2f2;color:#991b1b;' };
+                        if (val > 500 || val < 300) return { text: 'Warning', bg: 'background-color:#fffbeb;color:#92400e;' };
+                        return { text: 'Normal', bg: 'background-color:#f0fdf4;color:#166534;' };
+                    }
+                    if (param === 'ph') {
+                        if (val < 6.0 || val > 9.0) return { text: 'Critical', bg: 'background-color:#fef2f2;color:#991b1b;' };
+                        if (val < 6.5 || val > 8.5) return { text: 'Warning', bg: 'background-color:#fffbeb;color:#92400e;' };
+                        return { text: 'Normal', bg: 'background-color:#f0fdf4;color:#166534;' };
+                    }
+                    if (param === 'temp') {
+                        if (val < 15 || val > 35) return { text: 'Critical', bg: 'background-color:#fef2f2;color:#991b1b;' };
+                        if (val < 25 || val > 32) return { text: 'Warning', bg: 'background-color:#fffbeb;color:#92400e;' };
+                        return { text: 'Normal', bg: 'background-color:#f0fdf4;color:#166534;' };
+                    }
+                };
+
                 const params = [
-                    { name: 'Turbidity', value: parseFloat(reading.turbidity).toFixed(2) + '%', standard: '50-100%', critical: reading.turbidity < 50 },
-                    { name: 'TDS', value: parseFloat(reading.tds).toFixed(2) + ' ppm', standard: '100-500', critical: reading.tds > 500 },
-                    { name: 'pH Level', value: parseFloat(reading.ph).toFixed(2), standard: '6.5-8.5', critical: reading.ph < 6.5 || reading.ph > 8.5 },
-                    { name: 'Water Temp', value: parseFloat(reading.temperature).toFixed(2) + '°C', standard: '24-30°C', critical: reading.temperature < 20 || reading.temperature > 32 },
+                    { name: 'Turbidity', value: parseFloat(reading.turbidity).toFixed(2) + '%', standard: '50-100%', status: getStatus('turbidity', reading.turbidity) },
+                    { name: 'TDS', value: parseFloat(reading.tds).toFixed(2) + ' ppm', standard: '300-500', status: getStatus('tds', reading.tds) },
+                    { name: 'pH Level', value: parseFloat(reading.ph).toFixed(2), standard: '6.5-8.5', status: getStatus('ph', reading.ph) },
+                    { name: 'Water Temp', value: parseFloat(reading.temperature).toFixed(2) + '°C', standard: '25-32°C', status: getStatus('temp', reading.temperature) },
                 ];
 
                 tbody.innerHTML = params.map(p => {
-                    const statusBg = p.critical ? 'background-color:#fef2f2;color:#991b1b;' : 'background-color:#f0fdf4;color:#166534;';
-                    const statusText = p.critical ? 'Critical' : 'Normal';
                     return `<tr style="border-top:1px solid #e5e7eb;">
                         <td style="padding:12px 20px;font-size:13px;font-weight:500;color:#111827;">${p.name}</td>
                         <td style="padding:12px 20px;font-size:13px;color:#111827;">${p.value} <span style="font-size:10px;color:#9ca3af;font-style:italic;margin-left:4px;">(Standard: ${p.standard})</span></td>
                         <td style="padding:12px 20px;">
-                            <span style="display:inline-block;padding:2px 10px;border-radius:9999px;font-size:11px;font-weight:600;${statusBg}">${statusText}</span>
+                            <span style="display:inline-block;padding:2px 10px;border-radius:9999px;font-size:11px;font-weight:600;${p.status.bg}">${p.status.text}</span>
                         </td>
                     </tr>`;
                 }).join('');
