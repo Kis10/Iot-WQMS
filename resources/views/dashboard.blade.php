@@ -1097,14 +1097,7 @@
                     growthBadge.textContent = 'No Data';
                 }
 
-                let cleanInsight = analysis.ai_insight || 'No analysis insight available.';
-                cleanInsight = cleanInsight.replace(/\s*Turbidity at [\d.]+%?,?\s*/gi, ' ');
-                cleanInsight = cleanInsight.replace(/\s*TDS at [\d.]+ ?(?:ppm|mg\/L)?,?\s*/gi, ' ');
-                cleanInsight = cleanInsight.replace(/\s*pH at [\d.]+,?\s*/gi, ' ');
-                cleanInsight = cleanInsight.replace(/\s*(?:water )?temperature at [\d.]+°?C?,?\s*/gi, ' ');
-                cleanInsight = cleanInsight.replace(/\s*and\s+(?:water )?temperature/gi, '').trim();
-                cleanInsight = cleanInsight.replace(/\s{2,}/g, ' ').replace(/,\s*\./g, '.').replace(/\s+\./g, '.').trim();
-                insight.textContent = cleanInsight;
+                insight.textContent = analysis.ai_insight || 'No analysis insight available.';
                 renderRecommendations(analysis.recommendations);
 
                 const formatted = formatManilaDateTime(analysis.analyzed_at);
@@ -1388,22 +1381,11 @@
                     aiSection.innerHTML = '<p style="color:#6b7280;font-style:italic;">Awaiting AI analysis for these readings...</p>';
                     return;
                 }
-                // Strip individual sensor reading values from the AI insight
-                let cleanInsight = analysis.ai_insight || 'No analysis insight available.';
-                // Remove sentences that contain specific sensor readings like "Turbidity at X%", "TDS at X ppm", "pH at X", "temperature at X°C"
-                cleanInsight = cleanInsight.replace(/\s*Turbidity at [\d.]+%?,?\s*/gi, ' ');
-                cleanInsight = cleanInsight.replace(/\s*TDS at [\d.]+ ?(?:ppm|mg\/L)?,?\s*/gi, ' ');
-                cleanInsight = cleanInsight.replace(/\s*pH at [\d.]+,?\s*/gi, ' ');
-                cleanInsight = cleanInsight.replace(/\s*(?:water )?temperature at [\d.]+°?C?,?\s*/gi, ' ');
-                cleanInsight = cleanInsight.replace(/\s*and\s+(?:water )?temperature/gi, '').trim();
-                // Clean up any leftover double spaces or trailing punctuation issues
-                cleanInsight = cleanInsight.replace(/\s{2,}/g, ' ').replace(/,\s*\./g, '.').replace(/\s+\./g, '.').trim();
-
                 let aiHtml = `<h4 style="font-size:12px;font-weight:700;color:#1e3a5f;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;gap:8px;">
                     <svg style="width:18px;height:18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                     Analyzed by AquaSense
                 </h4>`;
-                aiHtml += `<p style="color:#374151;line-height:1.6;font-weight:500;">${cleanInsight}</p>`;
+                aiHtml += `<p style="color:#374151;line-height:1.6;font-weight:500;">${analysis.ai_insight || 'No analysis insight available.'}</p>`;
 
                 if (analysis.recommendations && analysis.recommendations.length > 0) {
                     const topRec = analysis.recommendations[0];

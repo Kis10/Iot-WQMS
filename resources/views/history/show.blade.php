@@ -135,16 +135,6 @@
                         @php
                             $analysis = $reading->waterAnalyses->first();
                             $cleanInsight = $analysis->ai_insight ?? '';
-                            // Strip individual sensor reading values
-                            $cleanInsight = preg_replace('/\s*Turbidity at [\d.]+%?,?\s*/i', ' ', $cleanInsight);
-                            $cleanInsight = preg_replace('/\s*TDS at [\d.]+ ?(?:ppm|mg\/L)?,?\s*/i', ' ', $cleanInsight);
-                            $cleanInsight = preg_replace('/\s*pH at [\d.]+,?\s*/i', ' ', $cleanInsight);
-                            $cleanInsight = preg_replace('/\s*(?:water )?temperature at [\d.]+°?C?,?\s*/i', ' ', $cleanInsight);
-                            $cleanInsight = preg_replace('/\s*and\s+(?:water )?temperature/i', '', $cleanInsight);
-                            $cleanInsight = preg_replace('/\s{2,}/', ' ', $cleanInsight);
-                            $cleanInsight = preg_replace('/,\s*\./', '.', $cleanInsight);
-                            $cleanInsight = preg_replace('/\s+\./', '.', $cleanInsight);
-                            $cleanInsight = trim($cleanInsight);
                             $recommendations = $analysis->recommendations ?? [];
                             $topRec = is_array($recommendations) && count($recommendations) > 0 ? $recommendations[0] : null;
                         @endphp
