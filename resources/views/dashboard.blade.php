@@ -1097,7 +1097,14 @@
                     growthBadge.textContent = 'No Data';
                 }
 
-                insight.textContent = analysis.ai_insight || 'No analysis insight available.';
+                let cleanInsight = analysis.ai_insight || 'No analysis insight available.';
+                cleanInsight = cleanInsight.replace(/\s*Turbidity at [\d.]+%?,?\s*/gi, ' ');
+                cleanInsight = cleanInsight.replace(/\s*TDS at [\d.]+ ?(?:ppm|mg\/L)?,?\s*/gi, ' ');
+                cleanInsight = cleanInsight.replace(/\s*pH at [\d.]+,?\s*/gi, ' ');
+                cleanInsight = cleanInsight.replace(/\s*(?:water )?temperature at [\d.]+°?C?,?\s*/gi, ' ');
+                cleanInsight = cleanInsight.replace(/\s*and\s+(?:water )?temperature/gi, '').trim();
+                cleanInsight = cleanInsight.replace(/\s{2,}/g, ' ').replace(/,\s*\./g, '.').replace(/\s+\./g, '.').trim();
+                insight.textContent = cleanInsight;
                 renderRecommendations(analysis.recommendations);
 
                 const formatted = formatManilaDateTime(analysis.analyzed_at);
