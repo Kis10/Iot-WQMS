@@ -45,4 +45,36 @@ class WaterReading extends Model
     }
 
     // Analysis is triggered by the scheduled command (every 5 minutes).
+
+    public function getPhStatusAttribute(): string
+    {
+        $val = $this->ph;
+        if ($val < 6.0 || $val > 9.0) return 'Critical';
+        if ($val < 6.5 || $val > 8.5) return 'Warning';
+        return 'Normal';
+    }
+
+    public function getTdsStatusAttribute(): string
+    {
+        $val = $this->tds;
+        if ($val > 1000) return 'Critical';
+        if ($val > 500 || $val < 300) return 'Warning';
+        return 'Normal';
+    }
+
+    public function getTurbidityStatusAttribute(): string
+    {
+        $val = $this->turbidity;
+        if ($val < 20) return 'Critical';
+        if ($val < 50) return 'Warning';
+        return 'Normal';
+    }
+
+    public function getTemperatureStatusAttribute(): string
+    {
+        $val = $this->temperature;
+        if ($val < 15 || $val > 35) return 'Critical';
+        if ($val < 25 || $val > 32) return 'Warning';
+        return 'Normal';
+    }
 }

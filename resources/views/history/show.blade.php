@@ -86,50 +86,44 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Turbidity</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->turbidity }}% <span class="text-gray-400 text-xs font-normal ml-1 italic">(Standard: 50-100%)</span></td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($reading->turbidity < 20)
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Critical</span>
-                                        @elseif($reading->turbidity < 50)
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">Warning</span>
-                                        @else
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Normal</span>
-                                        @endif
+                                        @php
+                                            $status = $reading->turbidity_status;
+                                            $color = $status === 'Critical' ? 'bg-red-100 text-red-800' : ($status === 'Warning' ? 'bg-amber-100 text-amber-800' : 'bg-green-100 text-green-800');
+                                        @endphp
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $color }}">{{ $status }}</span>
                                     </td>
                                 </tr>
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TDS</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->tds }} ppm <span class="text-gray-400 text-xs font-normal ml-1 italic">(Standard: 300-500)</span></td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($reading->tds > 1000)
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Critical</span>
-                                        @elseif($reading->tds > 500 || $reading->tds < 300)
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">Warning</span>
-                                        @else
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Normal</span>
-                                        @endif
+                                        @php
+                                            $status = $reading->tds_status;
+                                            $color = $status === 'Critical' ? 'bg-red-100 text-red-800' : ($status === 'Warning' ? 'bg-amber-100 text-amber-800' : 'bg-green-100 text-green-800');
+                                        @endphp
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $color }}">{{ $status }}</span>
                                     </td>
                                 </tr>
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">pH Level</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->ph }} <span class="text-gray-400 text-xs font-normal ml-1 italic">(Standard: 6.5-8.5)</span></td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($reading->ph < 6.5 || $reading->ph > 8.5)
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Critical</span>
-                                        @else
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Normal</span>
-                                        @endif
+                                        @php
+                                            $status = $reading->ph_status;
+                                            $color = $status === 'Critical' ? 'bg-red-100 text-red-800' : ($status === 'Warning' ? 'bg-amber-100 text-amber-800' : 'bg-green-100 text-green-800');
+                                        @endphp
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $color }}">{{ $status }}</span>
                                     </td>
                                 </tr>
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Water Temp</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->temperature }}°C <span class="text-gray-400 text-xs font-normal ml-1 italic">(Standard: 25-32°C)</span></td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($reading->temperature < 20 || $reading->temperature > 35)
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Critical</span>
-                                        @elseif($reading->temperature < 25 || $reading->temperature > 32)
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">Warning</span>
-                                        @else
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Normal</span>
-                                        @endif
+                                        @php
+                                            $status = $reading->temperature_status;
+                                            $color = $status === 'Critical' ? 'bg-red-100 text-red-800' : ($status === 'Warning' ? 'bg-amber-100 text-amber-800' : 'bg-green-100 text-green-800');
+                                        @endphp
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $color }}">{{ $status }}</span>
                                     </td>
                                 </tr>
                             </tbody>

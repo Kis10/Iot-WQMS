@@ -798,9 +798,9 @@
                             else if (val < 6.5 || val > 8.5) color = '#f59e0b'; // Amber (Suboptimal)
                             else color = '#10b981'; // Green (Safe 6.5-8.5)
                         } else if (param === 'tds') {
-                            if (val > 1000) color = '#ef4444';
-                            else if (val > 500) color = '#f59e0b';
-                            else color = '#8b5cf6'; // Violet
+                            if (val > 1000) color = '#ef4444'; // Red (Critical)
+                            else if (val > 500 || val < 300) color = '#f59e0b'; // Amber (Warning)
+                            else color = '#8b5cf6'; // Violet (Normal)
                         } else if (param === 'turbidity') {
                             if (val < 20) color = '#ef4444'; // Red (Critical)
                             else if (val < 50) color = '#f59e0b'; // Amber (Suboptimal)
