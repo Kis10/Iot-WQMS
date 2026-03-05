@@ -51,7 +51,7 @@ DallasTemperature waterTempSensor(&oneWire);
 
 /************ SENSOR VARIABLES ************/
 float slope = -7.575;
-float offset = 31.84; // 'Software Cheat' Offset (+3.0 from 28.84) to shift 3-4 pH to 6-7 pH
+float offset = 28.84;
 float tdsFactor = 0.5;
 const int numSamples = 10;
 

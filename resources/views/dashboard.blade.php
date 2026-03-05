@@ -115,14 +115,6 @@
                     <!-- Right: Sensor Buttons in Gray Panel -->
                     <div class="bg-gray-50/80 md:rounded-r-2xl flex items-center justify-center px-4 sm:px-6 py-4 md:py-0 shrink-0">
                         <div class="flex flex-row items-center gap-4 sm:gap-7">
-                            <div class="flex flex-col items-center justify-center cursor-pointer hover:scale-110 transition-transform" onclick="showFormulaModal('ph')">
-                                <span id="contrib-ph" class="text-xs sm:text-sm font-bold text-gray-900 whitespace-nowrap">pH=0.0%</span>
-                                <span class="text-[8px] sm:text-[9px] text-gray-400 uppercase font-bold whitespace-nowrap tracking-wide">pH Level (30%)</span>
-                            </div>
-                            <div class="flex flex-col items-center justify-center cursor-pointer hover:scale-110 transition-transform" onclick="showFormulaModal('temp')">
-                                <span id="contrib-temp" class="text-xs sm:text-sm font-bold text-gray-900 whitespace-nowrap">Temp=0.0%</span>
-                                <span class="text-[8px] sm:text-[9px] text-gray-400 uppercase font-bold whitespace-nowrap tracking-wide">Temperature (25%)</span>
-                            </div>
                             <div class="flex flex-col items-center justify-center cursor-pointer hover:scale-110 transition-transform" onclick="showFormulaModal('turbidity')">
                                 <span id="contrib-turbidity" class="text-xs sm:text-sm font-bold text-gray-900 whitespace-nowrap">Turb=0.0%</span>
                                 <span class="text-[8px] sm:text-[9px] text-gray-400 uppercase font-bold whitespace-nowrap tracking-wide">Turbidity (25%)</span>
@@ -131,6 +123,16 @@
                                 <span id="contrib-tds" class="text-xs sm:text-sm font-bold text-gray-900 whitespace-nowrap">TDS=0.0%</span>
                                 <span class="text-[8px] sm:text-[9px] text-gray-400 uppercase font-bold whitespace-nowrap tracking-wide">TDS (20%)</span>
                             </div>
+                            <div class="flex flex-col items-center justify-center cursor-pointer hover:scale-110 transition-transform" onclick="showFormulaModal('ph')">
+                                <span id="contrib-ph" class="text-xs sm:text-sm font-bold text-gray-900 whitespace-nowrap">pH=0.0%</span>
+                                <span class="text-[8px] sm:text-[9px] text-gray-400 uppercase font-bold whitespace-nowrap tracking-wide">pH Level (30%)</span>
+                            </div>
+                            <div class="flex flex-col items-center justify-center cursor-pointer hover:scale-110 transition-transform" onclick="showFormulaModal('temp')">
+                                <span id="contrib-temp" class="text-xs sm:text-sm font-bold text-gray-900 whitespace-nowrap">Temp=0.0%</span>
+                                <span class="text-[8px] sm:text-[9px] text-gray-400 uppercase font-bold whitespace-nowrap tracking-wide">Temperature (25%)</span>
+                            </div>
+                            
+                            
                         </div>
                     </div>
                 </div>
