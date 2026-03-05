@@ -95,7 +95,7 @@
                                 </tr>
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">TDS</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->tds }} ppm <span class="text-gray-400 text-xs font-normal ml-1 italic">(Standard: 300-500)</span></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $reading->tds }} ppm <span class="text-gray-400 text-xs font-normal ml-1 italic">(Standard: 0-500)</span></td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @php
                                             $status = $reading->tds_status;

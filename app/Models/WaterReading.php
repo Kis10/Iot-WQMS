@@ -57,8 +57,8 @@ class WaterReading extends Model
     public function getTdsStatusAttribute(): string
     {
         $val = $this->tds;
-        if ($val > 1000) return 'Critical';
-        if ($val > 500 || $val < 300) return 'Warning';
+        if ($val > 1500) return 'Critical';
+        if ($val > 500) return 'Warning';
         return 'Normal';
     }
 

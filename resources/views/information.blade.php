@@ -35,9 +35,9 @@
                                 <!-- TDS Standard -->
                                 <div class="p-4 rounded-xl bg-gradient-to-br from-purple-100/55 via-white to-white border border-purple-200/70 shadow-sm">
                                     <h3 class="text-base font-bold text-purple-900 tracking-tight mb-2 flex justify-between">
-                                        TDS <span>300 - 500 ppm</span>
+                                        TDS <span>0 - 500 ppm</span>
                                     </h3>
-                                    <p class="text-sm text-purple-800 leading-relaxed italic font-medium">"FAO AGIRS research indicates 300-440 mg/L mineralization is suitable for freshwater ponds. High TDS (>2000) is the upper limit for irrigation use."</p>
+                                    <p class="text-sm text-purple-800 leading-relaxed italic font-medium">"FAO AGIRS research indicates 0-500 mg/L mineralization is typical freshwater suitable for ponds. High TDS (>1500) approaches saline conditions."</p>
                                 </div>
                                 <!-- Turbidity Standard -->
                                 <div class="p-4 rounded-xl bg-gradient-to-br from-blue-100/55 via-white to-white border border-blue-200/70 shadow-sm">

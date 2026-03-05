@@ -27,7 +27,7 @@
                                         $alertTypes[] = ['param' => 'Turbidity', 'value' => $alert->turbidity . '%', 'status' => $alert->turbidity_status, 'effect' => $alert->turbidity_status === 'Critical' ? 'Extremely Muddy - Fish death likely' : 'Poor Clarity - Slower growth, gill stress', 'severity' => strtolower($alert->turbidity_status)];
                                     }
                                     if ($alert->tds_status !== 'Normal') {
-                                        $effect = $alert->tds < 300 ? 'Below FAO ideal 300mg/L' : ($alert->tds_status === 'Critical' ? 'Extremely high mineralization' : 'Reduce growth, chronic stress');
+                                        $effect = $alert->tds_status === 'Critical' ? 'Extreme mineralization (>1500mg/L)' : 'Above typical freshwater (500-1500mg/L)';
                                         $alertTypes[] = ['param' => 'TDS', 'value' => $alert->tds . ' mg/L', 'status' => $alert->tds_status, 'effect' => $effect, 'severity' => strtolower($alert->tds_status)];
                                     }
                                     if ($alert->ph_status !== 'Normal') {
