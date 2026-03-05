@@ -5,9 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\LandingContent;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Cloudinary\Cloudinary;
 
 class LandingController extends Controller
 {
@@ -49,7 +48,7 @@ class LandingController extends Controller
             );
         }
 
-        // 4. Process Image Updates
+        // 4. Process Image Updates — Upload directly to Cloudinary
         Log::info("LandingController: Processing images...");
         foreach ($imageKeys as $key) {
             $fileInput = $key . '_file';
@@ -58,12 +57,11 @@ class LandingController extends Controller
 
             if ($request->hasFile($fileInput)) {
                 Log::info("LandingController: Found file for key: {$fileInput}");
-                $localPath = $this->saveLocalFile($request->file($fileInput), $key);
-                if ($localPath) {
-                    $cloudUrl = $this->backupToCloudinary($localPath, $key);
+                $cloudUrl = $this->uploadToCloudinary($request->file($fileInput), $key);
+                if ($cloudUrl) {
                     $updateData = [
-                        'image' => $cloudUrl ?: $localPath,
-                        'value' => $localPath,
+                        'image' => $cloudUrl,
+                        'value' => $cloudUrl,
                         'type' => 'image',
                     ];
                 }
@@ -71,12 +69,11 @@ class LandingController extends Controller
                 Log::info("LandingController: Found URL for key: {$urlInput}");
                 $url = $request->input($urlInput);
                 if (filter_var($url, FILTER_VALIDATE_URL) && !str_contains($url, request()->getHost())) {
-                    $localPath = $this->saveFromUrl($url, $key);
-                    if ($localPath) {
-                        $cloudUrl = $this->backupToCloudinary($localPath, $key);
+                    $cloudUrl = $this->uploadUrlToCloudinary($url, $key);
+                    if ($cloudUrl) {
                         $updateData = [
-                            'image' => $cloudUrl ?: $localPath,
-                            'value' => $localPath,
+                            'image' => $cloudUrl,
+                            'value' => $cloudUrl,
                             'type' => 'image',
                         ];
                     }
@@ -84,7 +81,7 @@ class LandingController extends Controller
             }
 
             if (!empty($updateData)) {
-                Log::info("LandingController: Saving image to DB for key: {$key} - Path: " . $updateData['image']);
+                Log::info("LandingController: Saved to Cloudinary for key: {$key} - URL: " . $updateData['image']);
                 LandingContent::updateOrCreate(['key' => $key], $updateData);
             }
         }
@@ -102,81 +99,76 @@ class LandingController extends Controller
         return redirect()->route('admin.landing.index')->with('status', 'Landing Page Updated Successfully!');
     }
 
-    private function saveLocalFile($file, $key)
+    /**
+     * Upload a file directly to Cloudinary.
+     */
+    private function uploadToCloudinary($file, string $key): ?string
     {
         try {
-            $ext = $file->getClientOriginalExtension() ?: 'png';
-            $filename = $key . '_' . time() . '.' . $ext;
-            
-            $subfolder = $this->resolveImageSubfolder($key);
-            $directory = $this->ensurePublicImgDirectory($subfolder);
+            $folder = $this->resolveImageSubfolder($key);
+            $publicId = $key . '_' . time();
 
-            $file->move($directory, $filename);
-            return 'img/' . $subfolder . '/' . $filename;
-        } catch (\Exception $e) {
-            Log::error("LandingController: Error saving local file for {$key}: " . $e->getMessage());
-            return null;
-        }
-    }
-
-    private function saveFromUrl($url, $key)
-    {
-        try {
-            $imageContents = @file_get_contents($url);
-            if ($imageContents === false) return null;
-
-            $ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpg';
-            $filename = $key . '_' . time() . '.' . $ext;
-            
-            $subfolder = $this->resolveImageSubfolder($key);
-            $directory = $this->ensurePublicImgDirectory($subfolder);
-
-            $localPath = 'img/' . $subfolder . '/' . $filename;
-            file_put_contents(public_path($localPath), $imageContents);
-            return $localPath;
-        } catch (\Exception $e) {
-            Log::error("LandingController: Error saving URL image for {$key}: " . $e->getMessage());
-            return null;
-        }
-    }
-
-    private function backupToCloudinary(string $localPath, string $key): ?string
-    {
-        if (! $this->shouldBackupToCloudinary($key)) {
-            return null;
-        }
-
-        if (! $this->isCloudinaryActive()) {
-            return null;
-        }
-
-        $absolutePath = public_path($localPath);
-        if (! file_exists($absolutePath)) {
-            return null;
-        }
-
-        try {
-            $subfolder = $this->resolveImageSubfolder($key);
-            $folder = 'aquasense/' . $subfolder;
-            $publicId = pathinfo(basename($localPath), PATHINFO_FILENAME);
-
-            $result = Cloudinary::uploadApi()->upload($absolutePath, [
+            $cloudinary = $this->getCloudinaryInstance();
+            $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
                 'folder' => $folder,
                 'public_id' => $publicId,
                 'overwrite' => true,
                 'resource_type' => 'image',
             ]);
 
-            return $result['secure_url'] ?? $result['url'] ?? null;
+            $url = $result['secure_url'] ?? $result['url'] ?? null;
+            Log::info("LandingController: Uploaded to Cloudinary for {$key}: {$url}");
+            return $url;
         } catch (\Exception $e) {
-            Log::error("LandingController: Cloudinary backup failed for {$key}: " . $e->getMessage());
+            Log::error("LandingController: Cloudinary upload failed for {$key}: " . $e->getMessage());
             return null;
         }
     }
 
-    private function shouldBackupToCloudinary(string $key): bool
+    /**
+     * Upload an image from a URL directly to Cloudinary.
+     * Cloudinary can fetch remote URLs natively — no need to download first.
+     */
+    private function uploadUrlToCloudinary(string $url, string $key): ?string
     {
-        return str_starts_with($key, 'team') || $key === 'hero_bg';
+        try {
+            $folder = $this->resolveImageSubfolder($key);
+            $publicId = $key . '_' . time();
+
+            $cloudinary = $this->getCloudinaryInstance();
+            // Cloudinary can accept a remote URL directly!
+            $result = $cloudinary->uploadApi()->upload($url, [
+                'folder' => $folder,
+                'public_id' => $publicId,
+                'overwrite' => true,
+                'resource_type' => 'image',
+            ]);
+
+            $cloudUrl = $result['secure_url'] ?? $result['url'] ?? null;
+            Log::info("LandingController: Uploaded URL to Cloudinary for {$key}: {$cloudUrl}");
+            return $cloudUrl;
+        } catch (\Exception $e) {
+            Log::error("LandingController: Cloudinary URL upload failed for {$key}: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Get a configured Cloudinary instance.
+     * We use the direct SDK because the Laravel Facade had initialization issues.
+     */
+    private function getCloudinaryInstance(): Cloudinary
+    {
+        return new Cloudinary([
+            'cloud' => [
+                'cloud_name' => env('CLOUDINARY_CLOUD_NAME'),
+                'api_key'    => env('CLOUDINARY_API_KEY'),
+                'api_secret' => env('CLOUDINARY_API_SECRET'),
+            ],
+            'url' => [
+                'secure' => true
+            ]
+        ]);
     }
 
     private function isCloudinaryActive(): bool
@@ -192,16 +184,6 @@ class LandingController extends Controller
         }
 
         return 'uploads';
-    }
-
-    private function ensurePublicImgDirectory(string $subfolder): string
-    {
-        $directory = public_path('img/' . $subfolder);
-        if (!file_exists($directory)) {
-            mkdir($directory, 0777, true);
-        }
-
-        return $directory;
     }
 
     /**
