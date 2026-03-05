@@ -13,6 +13,10 @@ class LandingController extends Controller
     public function index()
     {
         $contents = LandingContent::all()->keyBy('key');
+        // Ensure it's an object even if empty for Alpine.js
+        if ($contents->isEmpty()) {
+            $contents = (object)[];
+        }
         return view('admin.landing.index', compact('contents'));
     }
 
