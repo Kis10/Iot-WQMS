@@ -1499,8 +1499,8 @@
                         weight = info.weights.turbidity;
                         score = info.scores.turbidity;
                         unit = '%';
-                        formulaText = 'Exact Percentage Mapping';
-                        calcText = `${val}% = ${score.toFixed(1)}`;
+                        formulaText = '(Current Reading / 100) * 100';
+                        calcText = `(${val} / 100) * 100 = ${score.toFixed(1)}`;
                         break;
                     case 'tds':
                         title = 'TDS (20%)';
