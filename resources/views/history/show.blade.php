@@ -134,7 +134,42 @@
                     @if($reading->waterAnalyses->isNotEmpty())
                         @php
                             $analysis = $reading->waterAnalyses->first();
-                            $cleanInsight = $analysis->ai_insight ?? '';
+                            
+                            // Re-calculate the Peak Target WQI directly in PHP for historical printouts
+                            $ph = (float)($reading->ph ?? 0);
+                            $temp = (float)($reading->temperature ?? 0);
+                            $turb = (float)($reading->turbidity ?? 0);
+                            $tds = (float)($reading->tds ?? 0);
+                            
+                            $scorePH = $ph <= 7.5 ? max(0, ($ph / 7.5) * 100) : max(0, ((14.0 - $ph) / 6.5) * 100);
+                            $scoreTemp = $temp <= 28 ? max(0, ($temp / 28) * 100) : max(0, ((56 - $temp) / 28) * 100);
+                            $scoreTurb = max(0, min(100, $turb));
+                            $scoreTDS = max(0, 100 - ($tds / 10));
+                            
+                            $wqiRaw = min(100, max(0, 
+                                $scorePH * 0.30 + $scoreTemp * 0.25 + $scoreTurb * 0.25 + $scoreTDS * 0.20
+                            ));
+                            $wqiScore = round($wqiRaw);
+                            
+                            $wqiColor = '#ef4444';
+                            $wqiMsg = 'Critical water quality — dangerous conditions for aquaculture, urgent intervention required.';
+                            if ($wqiScore >= 90) {
+                                $wqiColor = '#10b981';
+                                $wqiMsg = 'Excellent water quality — all parameters near perfect peak targets for aquaculture.';
+                            } elseif ($wqiScore >= 70) {
+                                $wqiColor = '#22c55e';
+                                $wqiMsg = 'Good water quality — minor deviations from perfect targets, suitable for fish growth.';
+                            } elseif ($wqiScore >= 50) {
+                                $wqiColor = '#f59e0b';
+                                $wqiMsg = 'Fair water quality — some parameters deviating notably from targets, action recommended.';
+                            } elseif ($wqiScore >= 25) {
+                                $wqiColor = '#f97316';
+                                $wqiMsg = 'Poor water quality — multiple parameters far from safe limits, immediate action needed.';
+                            }
+                            
+                            // Build the final display HTML
+                            $cleanInsight = "Overall Water Quality: <span style='font-weight:800;color:{$wqiColor}'>{$wqiScore}%</span> - {$wqiMsg}";
+                            
                             $recommendations = $analysis->recommendations ?? [];
                             $topRec = is_array($recommendations) && count($recommendations) > 0 ? $recommendations[0] : null;
                         @endphp
@@ -144,7 +179,7 @@
                                 Analyzed by AquaSense
                             </h4>
                             <p class="text-gray-700 leading-relaxed font-medium">
-                                {{ $cleanInsight }}
+                                {!! $cleanInsight !!}
                             </p>
                             @if($topRec)
                                 <div class="mt-4 pt-4 border-t border-blue-200/50">
