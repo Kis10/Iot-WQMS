@@ -1462,6 +1462,7 @@
                 let score = 0;
                 let formulaText = '';
                 let calcText = '';
+                let formulaExplanation = '';
                 let unit = '';
 
                 switch(paramType) {
@@ -1474,9 +1475,11 @@
                         if (reading.ph <= 7.5) {
                             formulaText = '(Current Reading / 7.5) * 100';
                             calcText = `(${val} / 7.5) * 100 = ${score.toFixed(1)}`;
+                            formulaExplanation = "Since 7.5 is the peak perfect target for pH, we divide the reading by 7.5 to calculate its percentage towards that goal.";
                         } else {
                             formulaText = '((14.0 - Current Reading) / 6.5) * 100';
                             calcText = `((14.0 - ${val}) / 6.5) * 100 = ${score.toFixed(1)}`;
+                            formulaExplanation = "The reading is above the 7.5 peak. We subtract the reading from the max pH of 14, and divide by the 6.5 difference (14.0 - 7.5) to scale it down.";
                         }
                         break;
                     case 'temp':
@@ -1488,9 +1491,11 @@
                         if (reading.temperature <= 28) {
                             formulaText = '(Current Reading / 28) * 100';
                             calcText = `(${val} / 28) * 100 = ${score.toFixed(1)}`;
+                            formulaExplanation = "Since 28°C is the peak target, we divide the reading by 28 to see how close it is to perfection.";
                         } else {
                             formulaText = '((56 - Current Reading) / 28) * 100';
                             calcText = `((56 - ${val}) / 28) * 100 = ${score.toFixed(1)}`;
+                            formulaExplanation = "The reading is above 28°C. We subtract it from an upper limit (56°C) and divide by 28 to symmetrically scale the score down.";
                         }
                         break;
                     case 'turbidity':
@@ -1501,6 +1506,7 @@
                         unit = '%';
                         formulaText = '(Current Reading / 100) * 100';
                         calcText = `(${val} / 100) * 100 = ${score.toFixed(1)}`;
+                        formulaExplanation = "Turbidity clarity is measured purely out of a 100% scale, so we divide by 100 to map it continuously.";
                         break;
                     case 'tds':
                         title = 'TDS (20%)';
@@ -1510,6 +1516,7 @@
                         unit = 'mg/L';
                         formulaText = '100 - (Current Reading / 10)';
                         calcText = `100 - (${val} / 10) = ${score.toFixed(1)}`;
+                        formulaExplanation = "For TDS, 0 is the perfect score. It decreases by 1% for every 10 mg/L, so we divide the reading by 10 to act as the exact deduction algorithm.";
                         break;
                 }
 
@@ -1582,7 +1589,8 @@
                              </div>
                              <div class="flex-1">
                                 <p class="text-[10px] text-gray-400 font-bold uppercase mb-1">Standard Formula</p>
-                                <span class="font-bold text-gray-700 italic tracking-tight">${formulaText}</span>
+                                <span class="font-bold text-gray-700 italic tracking-tight block">${formulaText}</span>
+                                <p class="text-[9px] text-indigo-600 font-medium leading-relaxed bg-white border border-indigo-100/50 rounded p-2 mt-2 shadow-sm">${formulaExplanation}</p>
                              </div>
                         </div>
                     </div>
