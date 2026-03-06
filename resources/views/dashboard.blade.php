@@ -370,36 +370,37 @@
             const weights = { ph: 0.30, temp: 0.25, turbidity: 0.25, tds: 0.20 };
 
             // --- Sub-index scoring functions (qi) ---
-            // Each returns 0-100 where 100 = ideal FAO range
+            // Each returns 0-100 score which will be multiplied by its weight
 
-            // pH Sub-index: Optimal 6.5-8.5 (FAO)
-            // Penalty: 50 points per unit outside optimal range
+            // pH Sub-index: Peak at 7.5 = 100%
+            // Drops down towards 0% gracefully in both directions
             function scorePH(val) {
-                if (val >= 6.5 && val <= 8.5) return 100;
-                if (val < 6.5) return Math.max(0, 100 - (6.5 - val) * 50);
-                return Math.max(0, 100 - (val - 8.5) * 50);
+                if (val <= 7.5) {
+                    return Math.max(0, (val / 7.5) * 100);
+                } else {
+                    return Math.max(0, ((14.0 - val) / (14.0 - 7.5)) * 100);
+                }
             }
 
-            // Temperature Sub-index: Optimal 25-32°C (FAO)
-            // Below: -10 pts per °C; Above: -15 pts per °C (heat stress is more dangerous)
+            // Temperature Sub-index: Peak at 28°C = 100%
+            // Decreases symmetrically
             function scoreTemp(val) {
-                if (val >= 25 && val <= 32) return 100;
-                if (val < 25) return Math.max(0, 100 - (25 - val) * 10);
-                return Math.max(0, 100 - (val - 32) * 15);
+                if (val <= 28) {
+                    return Math.max(0, (val / 28) * 100);
+                } else {
+                    // Assuming 56°C is absolute 0 score symmetrically
+                    return Math.max(0, ((56 - val) / 28) * 100);
+                }
             }
 
-            // Turbidity Sub-index: Clarity % (higher = better)
-            // Optimal ≥ 50%; below 50% scales linearly
+            // Turbidity Sub-index: Exact percentage mapping
             function scoreTurbidity(val) {
-                if (val >= 50) return 100;
-                return Math.max(0, (val / 50) * 100);
+                return Math.max(0, Math.min(100, val));
             }
 
-            // TDS Sub-index: Optimal 0-500 mg/L (FAO)
-            // Above 500: -0.1 pts per mg/L excess
+            // TDS Sub-index: Lower is better. 0 = 100%, 500 = 50%, 1000 = 0%
             function scoreTDS(val) {
-                if (val >= 0 && val <= 500) return 100;
-                return Math.max(0, 100 - (val - 500) * 0.1);
+                return Math.max(0, 100 - (val / 10));
             }
 
             const ph = parseFloat(reading.ph) || 0;
@@ -1470,15 +1471,12 @@
                         weight = info.weights.ph;
                         score = info.scores.ph;
                         unit = 'pH';
-                        if (reading.ph < 6.5) {
-                            formulaText = '100 - (6.5 - Current Reading) * 50';
-                            calcText = `100 - (6.5 - ${val}) * 50 = ${score.toFixed(1)}`;
-                        } else if (reading.ph > 8.5) {
-                            formulaText = '100 - (Current Reading - 8.5) * 50';
-                            calcText = `100 - (${val} - 8.5) * 50 = ${score.toFixed(1)}`;
+                        if (reading.ph <= 7.5) {
+                            formulaText = '(Current Reading / 7.5) * 100';
+                            calcText = `(${val} / 7.5) * 100 = ${score.toFixed(1)}`;
                         } else {
-                            formulaText = 'Optimal Range (6.5 - 8.5) = Score 100';
-                            calcText = `Current ${val} is within range = 100`;
+                            formulaText = '((14.0 - Current Reading) / 6.5) * 100';
+                            calcText = `((14.0 - ${val}) / 6.5) * 100 = ${score.toFixed(1)}`;
                         }
                         break;
                     case 'temp':
@@ -1487,15 +1485,12 @@
                         weight = info.weights.temp;
                         score = info.scores.temp;
                         unit = '°C';
-                        if (reading.temperature < 25) {
-                            formulaText = '100 - (25 - Current Reading) * 10';
-                            calcText = `100 - (25 - ${val}) * 10 = ${score.toFixed(1)}`;
-                        } else if (reading.temperature > 32) {
-                            formulaText = '100 - (Current Reading - 32) * 15';
-                            calcText = `100 - (${val} - 32) * 15 = ${score.toFixed(1)}`;
+                        if (reading.temperature <= 28) {
+                            formulaText = '(Current Reading / 28) * 100';
+                            calcText = `(${val} / 28) * 100 = ${score.toFixed(1)}`;
                         } else {
-                            formulaText = 'Optimal Range (25°C - 32°C) = Score 100';
-                            calcText = `Current ${val}°C is within range = 100`;
+                            formulaText = '((56 - Current Reading) / 28) * 100';
+                            calcText = `((56 - ${val}) / 28) * 100 = ${score.toFixed(1)}`;
                         }
                         break;
                     case 'turbidity':
@@ -1504,13 +1499,8 @@
                         weight = info.weights.turbidity;
                         score = info.scores.turbidity;
                         unit = '%';
-                        if (reading.turbidity < 50) {
-                            formulaText = '(Current Reading / 50) * 100';
-                            calcText = `(${val} / 50) * 100 = ${score.toFixed(1)}`;
-                        } else {
-                            formulaText = 'Optimal Range (50% - 100%) = Score 100';
-                            calcText = `Current ${val}% is within range = 100`;
-                        }
+                        formulaText = 'Exact Percentage Mapping';
+                        calcText = `${val}% = ${score.toFixed(1)}`;
                         break;
                     case 'tds':
                         title = 'TDS (20%)';
@@ -1518,13 +1508,8 @@
                         weight = info.weights.tds;
                         score = info.scores.tds;
                         unit = 'mg/L';
-                        if (reading.tds > 500) {
-                            formulaText = '100 - (Current Reading - 500) * 0.1';
-                            calcText = `100 - (${val} - 500) * 0.1 = ${score.toFixed(1)}`;
-                        } else {
-                            formulaText = 'Optimal Range (0 - 500 mg/L) = Score 100';
-                            calcText = `Current ${val} mg/L is within range = 100`;
-                        }
+                        formulaText = '100 - (Current Reading / 10)';
+                        calcText = `100 - (${val} / 10) = ${score.toFixed(1)}`;
                         break;
                 }
 
@@ -1557,7 +1542,7 @@
                     <div class="p-4 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-2xl border border-indigo-100 space-y-3">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-[9px] font-black text-indigo-400 uppercase tracking-[2px] mb-1">FAO Weighted Arithmetic WQI</p>
+                                <p class="text-[9px] font-black text-indigo-400 uppercase tracking-[2px] mb-1">Peak Target WQI</p>
                                 <p class="text-[11px] text-gray-500 font-medium italic">WQI = Σ (W<sub>i</sub> × q<sub>i</sub>)</p>
                             </div>
                             <div class="text-right">
@@ -1573,8 +1558,8 @@
                     <!-- Parameter Reading -->
                     <div class="p-5 bg-indigo-50/50 rounded-2xl border border-indigo-100 space-y-4">
                         <div class="flex justify-between items-center text-[10px] font-bold text-indigo-400 uppercase tracking-widest">
-                            <span>FAO Reference Standard</span>
-                            <span class="bg-white px-2 py-0.5 rounded-full border border-indigo-100">${paramType === 'ph' ? '6.5 - 8.5 pH' : paramType === 'temp' ? '25 - 32 °C' : paramType === 'turbidity' ? '50 - 100%' : '0 - 500 mg/L'}</span>
+                            <span>Calculation Target</span>
+                            <span class="bg-white px-2 py-0.5 rounded-full border border-indigo-100">${paramType === 'ph' ? 'Target: 7.5 pH' : paramType === 'temp' ? 'Target: 28 °C' : paramType === 'turbidity' ? 'Clarity Percentage' : 'Target: 0 mg/L (Max 1000)'}</span>
                         </div>
                         <div class="flex justify-between items-end">
                             <span class="text-sm font-bold text-gray-600">Real-time Reading</span>
@@ -1639,13 +1624,13 @@
                         <div class="flex-shrink-0 w-8 h-8 rounded-xl bg-white flex items-center justify-center text-sm shadow-sm">📐</div>
                         <p class="text-[11px] text-amber-900 leading-relaxed font-medium">
                             This parameter contributes <b>${(score * weight).toFixed(1)}%</b> out of its maximum <b>${(weight * 100)}%</b> toward the overall WQI of <b>${Math.round(info.wqi)}%</b>.
-                            ${score < 100 ? 'Points are deducted because the reading deviates from the FAO optimal range for freshwater aquaculture.' : 'Full contribution — the reading is within the ideal FAO range for fish health.'}
+                            ${score < 100 ? 'Points are proportionally calculated based on deviation from the perfect target.' : 'Full contribution — the reading is perfectly at the target value.'}
                         </p>
                     </div>
 
                     <div class="p-3 bg-gray-50 rounded-xl border border-gray-100">
                         <p class="text-[9px] text-gray-400 font-medium text-center italic">
-                            Reference: FAO (Food and Agriculture Organization of the United Nations) — Water Quality for Aquaculture Guidelines
+                            Calculation Mode: Exact Proportion Peak Target Algorithm
                         </p>
                     </div>
                 `;

@@ -50,9 +50,17 @@ OneWire oneWire(ds18b20Pin);
 DallasTemperature waterTempSensor(&oneWire);
 
 /************ SENSOR VARIABLES ************/
-float slope = -7.575;
-float offset = 28.84;
+// --- pH Calibration ---
+float phSlope = -7.575;
+float phOffset = 30.126; //(28.24) Set to the user's preferred 30.126
+
+// --- Turbidity Calibration ---
+float turbidityOffset = 0.0; // In case turbidity needs its own offset later
+
+// --- TDS Calibration ---
 float tdsFactor = 0.5;
+float tdsOffset = 0.0;  // In case TDS needs its own offset later
+
 const int numSamples = 10;
 
 /************ NON-BLOCKING SOUND SYSTEM ************/
@@ -194,7 +202,7 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
   Serial.println("\n\n--- AQUASENSE SYSTEM STARTING ---");
-  Serial.print("Baseline Offset: "); Serial.println(offset);
+  Serial.print("pH Offset: "); Serial.println(phOffset);
 
   // Initialize pins
   pinMode(buzzerPin, OUTPUT);
@@ -448,6 +456,11 @@ void performSingleReadingAndSend() {
       Serial.println("[DS18B20] Sensor error, using fallback 25.0C");
     }
 
+    // Ensure other sensors are OFF to prevent interference in one bottle
+    digitalWrite(tdsPowerPin, LOW);
+    digitalWrite(turbidityPowerPin, LOW);
+    delay(2000); 
+
     // --- STEP 3: READ pH ---
     long pHAvg = 0;
     for(int i = 0; i < 20; i++) { 
@@ -456,9 +469,13 @@ void performSingleReadingAndSend() {
     }
     float pHVoltage = (pHAvg / 20.0) * (3.3 / 4095.0);
     Serial.print("DEBUG: pH Voltage = "); Serial.println(pHVoltage, 3);
-    float pHVal = slope * pHVoltage + offset;
+    float pHVal = phSlope * pHVoltage + phOffset;
     
     // --- STEP 4: READ TURBIDITY ---
+    // Ensure TDS is OFF before starting Turbidity
+    digitalWrite(tdsPowerPin, LOW);
+    delay(2000); // 2-second settling time for common water container
+    
     pinMode(turbidityPowerPin, OUTPUT);
     digitalWrite(turbidityPowerPin, HIGH);
     delay(2000); // Increased warmup for stability
@@ -473,15 +490,23 @@ void performSingleReadingAndSend() {
     int turbRaw = turbSum / 15;
     Serial.print("DEBUG: Turbidity Raw ADC = "); Serial.println(turbRaw);
     
-    // Map Raw to Clarity: Based on your debug data, 1086 is your "Clean Water" max
-    // Changed 2100 -> 1100 to match your specific sensor's output
-    int clarity = map(turbRaw, 0, 1100, 0, 100); 
+    // Map Raw to Voltage, then to Clarity
+    float turbVoltage = turbRaw * (3.3 / 4095.0);
+    
+    // Updated Mapping for your specific hardware:
+    // In your last test, Purified Water (Clean) resulted in 40% with the old 2.5V limit.
+    // This confirms your sensor's peak clean output is roughly 1.3V.
+    // We now map 1.3V and above to 100% Clarity, and 0.4V to 0% Clarity.
+    int clarity = map(turbVoltage * 1000, 400, 1300, 0, 100);
     clarity = constrain(clarity, 0, 100);
+    delay(2000); // Electrical settling for one-bottle test
 
     // --- STEP 5: READ TDS ---
     pinMode(tdsPowerPin, OUTPUT);
     digitalWrite(tdsPowerPin, HIGH);
-    delay(1500); // Longer warmup for TDS
+    // The TDS sensor (especially DFRobot types) has filtering capacitors that take time to charge.
+    // 1500ms was likely too short, causing it to read ~0V (0.20 ppm). We increase this to 3000ms.
+    delay(3000); 
     
     long tdsSum = 0;
     for(int i = 0; i < 30; i++) { 
@@ -497,7 +522,11 @@ void performSingleReadingAndSend() {
     // Calculate TDS with actual water temperature compensation
     float compCoeff = 1.0 + 0.02 * (waterTemp - 25.0);
     float compVolt = tdsVolt / compCoeff;
-    float tdsVal = (133.42 * pow(compVolt, 3) - 255.86 * pow(compVolt, 2) + 857.39 * compVolt) * tdsFactor;
+    
+    float tdsVal = 0;
+    if (compVolt > 0.01) { // Only calculate if we have a real voltage reading
+        tdsVal = (133.42 * pow(compVolt, 3) - 255.86 * pow(compVolt, 2) + 857.39 * compVolt) * tdsFactor;
+    }
 
     // --- SEND DATA ---
     sendToRailway(pHVal, clarity, tdsVal, waterTemp);
