@@ -27,21 +27,22 @@
                 backdrop-filter: blur(10px);
                 -webkit-backdrop-filter: blur(10px);
             }
+            @keyframes fadeInUpAnim {
+                0% { opacity: 0; translate: 0 22px; }
+                100% { opacity: 1; translate: 0 0; }
+            }
             .fade-in-up {
                 opacity: 0;
-                translate: 0 22px;
-                transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1), translate 0.85s cubic-bezier(0.22, 1, 0.36, 1);
             }
             .fade-in-up.visible {
-                opacity: 1;
-                translate: 0 0;
+                animation: fadeInUpAnim 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
             }
-            .fade-stagger > .fade-in-up:nth-child(1) { transition-delay: 70ms; }
-            .fade-stagger > .fade-in-up:nth-child(2) { transition-delay: 150ms; }
-            .fade-stagger > .fade-in-up:nth-child(3) { transition-delay: 230ms; }
-            .fade-stagger > .fade-in-up:nth-child(4) { transition-delay: 310ms; }
-            .fade-stagger > .fade-in-up:nth-child(5) { transition-delay: 390ms; }
-            .fade-stagger > .fade-in-up:nth-child(6) { transition-delay: 470ms; }
+            .fade-stagger > .fade-in-up:nth-child(1) { animation-delay: 70ms; }
+            .fade-stagger > .fade-in-up:nth-child(2) { animation-delay: 150ms; }
+            .fade-stagger > .fade-in-up:nth-child(3) { animation-delay: 230ms; }
+            .fade-stagger > .fade-in-up:nth-child(4) { animation-delay: 310ms; }
+            .fade-stagger > .fade-in-up:nth-child(5) { animation-delay: 390ms; }
+            .fade-stagger > .fade-in-up:nth-child(6) { animation-delay: 470ms; }
             .smooth-pop-card {
                 transition: transform 300ms ease-out, box-shadow 300ms ease-out, border-color 300ms ease-out;
                 will-change: transform;
@@ -616,23 +617,7 @@
                     }
                 });
 
-                // Dynamic Location Feature
-                const locationElement = document.getElementById('dynamic-location');
-                if (navigator.geolocation && locationElement) {
-                    locationElement.textContent = 'Locating device...';
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            const { latitude, longitude } = position.coords;
-                            locationElement.href = `https://www.google.com/maps?q=${latitude},${longitude}`;
-                            locationElement.textContent = `Device Location: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`;
-                        },
-                        (error) => {
-                            console.error('Location detection failed/denied');
-                            locationElement.textContent = 'Po-Ok, Hinoba-an, Negros Occidental'; 
-                            locationElement.href = "https://www.google.com/maps/search/?api=1&query=Po-Ok%2C+Hinoba-an%2C+Negros+Occidental";
-                        }
-                    );
-                }
+
             });
         </script>
         <script src="{{ asset('js/network-bg.js') }}"></script>
