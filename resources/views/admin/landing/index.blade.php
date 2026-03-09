@@ -319,7 +319,96 @@
         <!-- About / Team Section -->
         <section class="py-24 bg-gray-50 overflow-hidden border-t border-gray-100">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Project Info / Flowchart -->
                 <div class="text-center mb-16">
+                    <h2 @click="makeEditable($event)" @blur="stopEditing($event, 'project_title')"
+                        class="editable-hover text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;"
+                        x-html="data.project_title.value" :style="data.project_title.style || ''"></h2>
+                    <p @click="makeEditable($event)" @blur="stopEditing($event, 'project_desc')"
+                       class="editable-hover text-gray-500 text-lg max-w-3xl mx-auto"
+                       x-html="data.project_desc.value" :style="data.project_desc.style || ''"></p>
+                </div>
+
+                <!-- Step-by-Step Flowchart -->
+                <div class="max-w-5xl mx-auto mb-20 fade-in-up">
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-6 relative">
+                        <!-- Connecting Line (Desktop) -->
+                        <div class="hidden md:block absolute top-1/2 left-10 right-10 h-1 bg-gradient-to-r from-blue-200 via-blue-400 to-blue-200 -translate-y-1/2 z-0"></div>
+                        
+                        <!-- Step 1 -->
+                        <div class="relative z-10 w-full md:w-1/3 text-center bg-white p-6 rounded-3xl shadow-[0_10px_40px_-15px_rgba(37,99,235,0.15)] border border-blue-50 hover:-translate-y-2 transition-transform duration-300">
+                            <div class="w-16 h-16 mx-auto bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-5 shadow-sm transform rotate-3">
+                                <svg class="w-8 h-8 -rotate-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.691.383a4 4 0 01-2.573.344l-2.387-.477a2 2 0 00-1.022.547l-.736.736a2 2 0 000 2.828l.736.736a2 2 0 001.022.547l2.387.477a6 6 0 003.86-.517l.691-.383a4 4 0 012.573-.344l2.387.477a2 2 0 001.022-.547l.736-.736a2 2 0 000-2.828l-.736-.736z"></path></svg>
+                            </div>
+                            <h3 @click="makeEditable($event)" @blur="stopEditing($event, 'flow_step1_title')" class="editable-hover font-bold text-xl mb-3" style="color: #0D1A63;" x-html="data.flow_step1_title.value"></h3>
+                            <p @click="makeEditable($event)" @blur="stopEditing($event, 'flow_step1_desc')" class="editable-hover text-gray-500 text-sm leading-relaxed" x-html="data.flow_step1_desc.value"></p>
+                        </div>
+                        
+                        <!-- Arrow (Mobile) -->
+                        <div class="md:hidden text-blue-300">
+                            <svg class="w-8 h-8 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </div>
+                        
+                        <!-- Step 2 -->
+                        <div class="relative z-10 w-full md:w-1/3 text-center bg-white p-6 rounded-3xl shadow-[0_10px_40px_-15px_rgba(37,99,235,0.15)] border border-blue-50 hover:-translate-y-2 transition-transform duration-300">
+                            <div class="w-16 h-16 mx-auto bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-5 shadow-lg transform -rotate-3">
+                                <svg class="w-8 h-8 rotate-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
+                            </div>
+                            <h3 @click="makeEditable($event)" @blur="stopEditing($event, 'flow_step2_title')" class="editable-hover font-bold text-xl mb-3" style="color: #0D1A63;" x-html="data.flow_step2_title.value"></h3>
+                            <p @click="makeEditable($event)" @blur="stopEditing($event, 'flow_step2_desc')" class="editable-hover text-gray-500 text-sm leading-relaxed" x-html="data.flow_step2_desc.value"></p>
+                        </div>
+
+                        <!-- Arrow (Mobile) -->
+                        <div class="md:hidden text-blue-300">
+                            <svg class="w-8 h-8 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="relative z-10 w-full md:w-1/3 text-center bg-white p-6 rounded-3xl shadow-[0_10px_40px_-15px_rgba(37,99,235,0.15)] border border-blue-50 hover:-translate-y-2 transition-transform duration-300">
+                            <div class="w-16 h-16 mx-auto bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-5 shadow-sm transform rotate-3">
+                                <svg class="w-8 h-8 -rotate-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+                            </div>
+                            <h3 @click="makeEditable($event)" @blur="stopEditing($event, 'flow_step3_title')" class="editable-hover font-bold text-xl mb-3" style="color: #0D1A63;" x-html="data.flow_step3_title.value"></h3>
+                            <p @click="makeEditable($event)" @blur="stopEditing($event, 'flow_step3_desc')" class="editable-hover text-gray-500 text-sm leading-relaxed" x-html="data.flow_step3_desc.value"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image Slider Editor -->
+                <div class="mb-16">
+                    <div class="flex items-center justify-center gap-2 mb-6 text-gray-500">
+                        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <h3 class="font-bold text-sm tracking-widest uppercase">Add Carousel Pictures</h3>
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-4">
+                        @foreach(['slider1', 'slider2', 'slider3', 'slider4', 'slider5'] as $key)
+                        <div class="relative w-32 h-32 bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden group/img hover:border-blue-400 transition">
+                            <!-- Main Image -->
+                            <template x-if="previews['{{ $key }}_img']">
+                                <img :src="previews['{{ $key }}_img']" class="w-full h-full object-cover">
+                            </template>
+                            <template x-if="!previews['{{ $key }}_img'] && data.{{ $key }}_img && (data.{{ $key }}_img.image || data.{{ $key }}_img.value)">
+                                <img :src="resolveUrl(data.{{ $key }}_img.image || data.{{ $key }}_img.value)"
+                                     x-on:error="if (data.{{ $key }}_img && data.{{ $key }}_img.value && !data.{{ $key }}_img.value.startsWith('http')) { $event.target.src = resolveUrl(data.{{ $key }}_img.value); }"
+                                     class="w-full h-full object-cover">
+                            </template>
+                            <template x-if="!previews['{{ $key }}_img'] && (!data.{{ $key }}_img || (!data.{{ $key }}_img.image && !data.{{ $key }}_img.value))">
+                                <div class="w-full h-full flex flex-col items-center justify-center bg-gray-50 text-gray-400 group-hover/img:text-blue-500 group-hover/img:bg-blue-50 transition cursor-pointer" @click="openUploadModal('{{ $key }}_img')">
+                                    <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                </div>
+                            </template>
+                            
+                            <!-- Edit Overlay -->
+                            <div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover/img:opacity-100 transition duration-200 z-20">
+                                <button @click="openUploadModal('{{ $key }}_img')" class="text-white text-xs font-bold uppercase tracking-wider mb-2 hover:text-blue-300 bg-white/20 px-3 py-1 rounded">Update</button>
+                                <button @click="data.{{ $key }}_img = null; previews['{{ $key }}_img'] = null;" x-show="previews['{{ $key }}_img'] || (data.{{ $key }}_img && (data.{{ $key }}_img.image || data.{{ $key }}_img.value))" class="text-red-300 hover:text-red-400 text-xs font-bold uppercase tracking-wider bg-red-900/30 px-3 py-1 rounded">Clear</button>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="text-center mb-16 mt-24">
                     <h2 @click="makeEditable($event)" @blur="stopEditing($event, 'about_title')"
                         class="editable-hover text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;"
                         x-html="data.about_title.value" :style="data.about_title.style || ''"></h2>
@@ -626,6 +715,15 @@
                 service3_title: { value: "AI Condition Analysis" },
                 service3_desc: { value: "Advanced algorithms that analyze patterns to predict water quality health and recommend corrective actions." },
 
+                project_title: { value: "About the Project" },
+                project_desc: { value: "AquaSense provides a robust and reliable platform for monitoring aquatic conditions by tracking physical and chemical data." },
+                flow_step1_title: { value: "Water Measurement" },
+                flow_step1_desc: { value: "Four high-precision sensors deployed in the water continuously gather real-time data." },
+                flow_step2_title: { value: "Data Processing" },
+                flow_step2_desc: { value: "An ESP32 microcontroller processes the sensor data and displays local readings on an LCD screen." },
+                flow_step3_title: { value: "System Monitoring" },
+                flow_step3_desc: { value: "The data is securely transmitted to the cloud, allowing users to monitor water quality from any device." },
+
                 about_title: { value: "Meet the Team" },
                 about_subtitle: { value: "The dedicated minds behind AquaSense, working together to revolutionize aquaculture monitoring." },
                 team1_name: { value: "Kirstine A. Sanchez" },
@@ -648,6 +746,11 @@
                 team4_desc: { value: "Provides expert guidance on system architecture and project direction." },
                 team4_img: { value: null },
                 team4_img_hover: { value: null },
+                slider1_img: { value: null },
+                slider2_img: { value: null },
+                slider3_img: { value: null },
+                slider4_img: { value: null },
+                slider5_img: { value: null },
 
                 contact_title: { value: "Contact Us" },
                 contact_subtitle: { value: "Have questions? We're here to help you optimize your aquaculture operations." },

@@ -337,12 +337,103 @@
         <!-- About / Team Section -->
         <section id="about" class="py-12 sm:py-24 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Project Info / Flowchart -->
                 <div class="text-center mb-16 fade-in-up">
+                    <h2 class="text-3xl sm:text-5xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['project_title']->value ?? 'About the Project' }}</h2>
+                    <p class="text-gray-500 text-lg max-w-3xl mx-auto">{{ $contents['project_desc']->value ?? 'AquaSense provides a robust and reliable platform for monitoring aquatic conditions by tracking physical and chemical data.' }}</p>
+                </div>
+
+                <!-- Step-by-Step Flowchart -->
+                <div class="max-w-5xl mx-auto mb-20 fade-in-up">
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-6 relative">
+                        <!-- Connecting Line (Desktop) -->
+                        <div class="hidden md:block absolute top-1/2 left-10 right-10 h-1 bg-gradient-to-r from-blue-200 via-blue-400 to-blue-200 -translate-y-1/2 z-0"></div>
+                        
+                        <!-- Step 1 -->
+                        <div class="relative z-10 w-full md:w-1/3 text-center bg-white p-6 rounded-3xl shadow-[0_10px_40px_-15px_rgba(37,99,235,0.15)] border border-blue-50 hover:-translate-y-2 transition-transform duration-300">
+                            <div class="w-16 h-16 mx-auto bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-5 shadow-sm transform rotate-3">
+                                <svg class="w-8 h-8 -rotate-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.691.383a4 4 0 01-2.573.344l-2.387-.477a2 2 0 00-1.022.547l-.736.736a2 2 0 000 2.828l.736.736a2 2 0 001.022.547l2.387.477a6 6 0 003.86-.517l.691-.383a4 4 0 012.573-.344l2.387.477a2 2 0 001.022-.547l.736-.736a2 2 0 000-2.828l-.736-.736z"></path></svg>
+                            </div>
+                            <h3 class="font-bold text-xl mb-3" style="color: #0D1A63;">{{ $contents['flow_step1_title']->value ?? 'Water Measurement' }}</h3>
+                            <p class="text-gray-500 text-sm leading-relaxed">{{ $contents['flow_step1_desc']->value ?? 'Four high-precision sensors deployed in the water continuously gather real-time data.' }}</p>
+                        </div>
+                        
+                        <!-- Arrow (Mobile) -->
+                        <div class="md:hidden text-blue-300">
+                            <svg class="w-8 h-8 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </div>
+                        
+                        <!-- Step 2 -->
+                        <div class="relative z-10 w-full md:w-1/3 text-center bg-white p-6 rounded-3xl shadow-[0_10px_40px_-15px_rgba(37,99,235,0.15)] border border-blue-50 hover:-translate-y-2 transition-transform duration-300">
+                            <div class="w-16 h-16 mx-auto bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-5 shadow-lg transform -rotate-3">
+                                <svg class="w-8 h-8 rotate-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
+                            </div>
+                            <h3 class="font-bold text-xl mb-3" style="color: #0D1A63;">{{ $contents['flow_step2_title']->value ?? 'Data Processing' }}</h3>
+                            <p class="text-gray-500 text-sm leading-relaxed">{{ $contents['flow_step2_desc']->value ?? 'An ESP32 microcontroller processes the sensor data and displays local readings on an LCD screen.' }}</p>
+                        </div>
+
+                        <!-- Arrow (Mobile) -->
+                        <div class="md:hidden text-blue-300">
+                            <svg class="w-8 h-8 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="relative z-10 w-full md:w-1/3 text-center bg-white p-6 rounded-3xl shadow-[0_10px_40px_-15px_rgba(37,99,235,0.15)] border border-blue-50 hover:-translate-y-2 transition-transform duration-300">
+                            <div class="w-16 h-16 mx-auto bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-5 shadow-sm transform rotate-3">
+                                <svg class="w-8 h-8 -rotate-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg>
+                            </div>
+                            <h3 class="font-bold text-xl mb-3" style="color: #0D1A63;">{{ $contents['flow_step3_title']->value ?? 'System Monitoring' }}</h3>
+                            <p class="text-gray-500 text-sm leading-relaxed">{{ $contents['flow_step3_desc']->value ?? 'The data is securely transmitted to the cloud, allowing users to monitor water quality from any device.' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Automated Sliding Fade Transition Carousel -->
+                @php
+                    $sliderImages = [];
+                    for($i=1; $i<=5; $i++) {
+                        $sl = $contents['slider'.$i.'_img'] ?? null;
+                        $sSrc = $sl->image ?? $sl->value ?? null;
+                        if ($sSrc) {
+                            $sliderImages[] = str_starts_with($sSrc, 'http') ? $sSrc : asset($sSrc);
+                        }
+                    }
+                @endphp
+                <div class="mb-16 fade-in-up" x-data="{ currentSlide: 1, slides: {{ json_encode($sliderImages) }} }" x-init="
+                    if(slides.length > 0) {
+                        setInterval(() => { currentSlide = currentSlide < slides.length ? currentSlide + 1 : 1; }, 4000);
+                    }
+                ">
+                    <template x-if="slides.length > 0">
+                        <div class="relative w-full max-w-5xl mx-auto h-[300px] sm:h-[500px] rounded-3xl overflow-hidden shadow-xl border border-gray-100 bg-gray-100">
+                            <template x-for="(slide, index) in slides" :key="index">
+                                <div x-show="currentSlide === index + 1"
+                                     x-transition:enter="transition-opacity ease-in-out duration-1000"
+                                     x-transition:enter-start="opacity-0"
+                                     x-transition:enter-end="opacity-100"
+                                     x-transition:leave="transition-opacity ease-in-out duration-1000"
+                                     x-transition:leave-start="opacity-100"
+                                     x-transition:leave-end="opacity-0"
+                                     class="absolute inset-0 w-full h-full">
+                                    <img :src="slide" class="w-full h-full object-cover">
+                                </div>
+                            </template>
+                            <!-- Navigation dots -->
+                            <div class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
+                                <template x-for="(slide, index) in slides" :key="index">
+                                    <button @click="currentSlide = index + 1" :class="{'bg-[#0D1A63] w-6': currentSlide === index + 1, 'bg-white/70 w-2': currentSlide !== index + 1}" class="h-2 rounded-full transition-all duration-300"></button>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                
+                <div class="text-center mb-16 mt-24 fade-in-up">
                     <h2 class="text-2xl sm:text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['about_title']->value ?? 'Meet the Team' }}</h2>
                     <p class="text-gray-500 text-lg max-w-2xl mx-auto">{{ $contents['about_subtitle']->value ?? 'The dedicated minds behind AquaSense, working together to revolutionize aquaculture monitoring.' }}</p>
                 </div>
 
-                <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 fade-stagger">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 fade-stagger">
                     
                     <!-- Team Member 1 -->
                     <div class="group relative bg-white rounded-3xl p-6 shadow-sm border border-gray-100 text-center smooth-pop-card fade-in-up">

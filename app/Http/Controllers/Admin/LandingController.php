@@ -30,7 +30,8 @@ class LandingController extends Controller
             'team1_img', 'team1_img_hover', 
             'team2_img', 'team2_img_hover', 
             'team3_img', 'team3_img_hover', 
-            'team4_img', 'team4_img_hover'
+            'team4_img', 'team4_img_hover',
+            'slider1_img', 'slider2_img', 'slider3_img', 'slider4_img', 'slider5_img'
         ];
 
         // 2. Separate Inputs
@@ -52,7 +53,7 @@ class LandingController extends Controller
             );
         }
 
-        // 4. Process Image Updates — Upload directly to Cloudinary
+        // 4. Process Image Updates — Upload to Local AND Cloudinary
         Log::info("LandingController: Processing images...");
         foreach ($imageKeys as $key) {
             $fileInput = $key . '_file';
@@ -61,14 +62,26 @@ class LandingController extends Controller
 
             if ($request->hasFile($fileInput)) {
                 Log::info("LandingController: Found file for key: {$fileInput}");
-                $cloudUrl = $this->uploadToCloudinary($request->file($fileInput), $key);
-                if ($cloudUrl) {
-                    $updateData = [
-                        'image' => $cloudUrl,
-                        'value' => $cloudUrl,
-                        'type' => 'image',
-                    ];
+                $file = $request->file($fileInput);
+                
+                // 1. Save locally
+                $folder = $this->resolveImageSubfolder($key);
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('img/' . $folder), $filename);
+                $localPath = 'img/' . $folder . '/' . $filename;
+                
+                // 2. Upload to Cloudinary (using the moved local file)
+                $cloudUrl = null;
+                if ($this->isCloudinaryActive()) {
+                    $cloudUrl = $this->uploadToCloudinary(public_path($localPath), $key);
                 }
+                
+                $updateData = [
+                    'image' => $cloudUrl ?? $localPath, // Cloud fallback to local
+                    'value' => $localPath,              // value is always local
+                    'type' => 'image',
+                ];
+
             } elseif ($request->filled($urlInput)) {
                 Log::info("LandingController: Found URL for key: {$urlInput}");
                 $url = $request->input($urlInput);
@@ -77,7 +90,7 @@ class LandingController extends Controller
                     if ($cloudUrl) {
                         $updateData = [
                             'image' => $cloudUrl,
-                            'value' => $cloudUrl,
+                            'value' => $url, // local URL is just the source URL
                             'type' => 'image',
                         ];
                     }
@@ -85,7 +98,7 @@ class LandingController extends Controller
             }
 
             if (!empty($updateData)) {
-                Log::info("LandingController: Saved to Cloudinary for key: {$key} - URL: " . $updateData['image']);
+                Log::info("LandingController: Saved image for key: {$key} - URL: " . $updateData['image']);
                 LandingContent::updateOrCreate(['key' => $key], $updateData);
             }
         }
@@ -113,7 +126,8 @@ class LandingController extends Controller
             $publicId = $key . '_' . time();
 
             $cloudinary = $this->getCloudinaryInstance();
-            $result = $cloudinary->uploadApi()->upload($file->getRealPath(), [
+            $path = is_string($file) ? $file : $file->getRealPath();
+            $result = $cloudinary->uploadApi()->upload($path, [
                 'folder' => $folder,
                 'public_id' => $publicId,
                 'overwrite' => true,
@@ -185,6 +199,9 @@ class LandingController extends Controller
         if (str_starts_with($key, 'team')) {
             if (str_ends_with($key, '_img_hover')) return 'members/hover';
             return 'members/display';
+        }
+        if (str_starts_with($key, 'slider')) {
+            return 'sliders';
         }
 
         return 'uploads';
