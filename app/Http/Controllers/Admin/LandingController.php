@@ -62,7 +62,7 @@ class LandingController extends Controller
                         Log::info("LandingController: Clearing media for key: {$delKey}");
                         LandingContent::updateOrCreate(
                             ['key' => $delKey],
-                            ['image' => null, 'value' => null, 'type' => null]
+                            ['image' => null, 'value' => null, 'type' => 'image']
                         );
                     }
                 }
