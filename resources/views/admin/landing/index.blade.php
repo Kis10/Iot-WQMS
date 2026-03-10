@@ -347,7 +347,8 @@
                             </button>
 
                             <div class="absolute inset-0 bg-black/60 rounded-full flex flex-col items-center justify-center opacity-0 group-hover/vid:opacity-100 transition z-20">
-                                <button @click="openUploadModal('project_video')" class="text-white text-xs font-bold uppercase tracking-wider hover:text-blue-300">Change Video</button>
+                                <button @click="openUploadModal('project_video')" class="text-white text-xs font-bold uppercase tracking-wider hover:text-blue-300 mb-1">Change Video</button>
+                                <button @click="data.project_video = null; previews['project_video'] = null; clearedMedia.push('project_video'); $refs.demoVideoPreview.src='';" x-show="previews['project_video'] || (data.project_video && (data.project_video.image || data.project_video.value))" class="text-red-300 hover:text-red-400 text-xs font-bold uppercase tracking-wider hover:bg-black/40 px-2 py-0.5 rounded">Clear</button>
                             </div>
 
                             <!-- Video Demo Modal Preview -->
@@ -461,7 +462,7 @@
                             <!-- Edit Overlay -->
                             <div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover/img:opacity-100 transition duration-200 z-20">
                                 <button @click="openUploadModal('{{ $key }}_img')" class="text-white text-xs font-bold uppercase tracking-wider mb-2 hover:text-blue-300 bg-white/20 px-3 py-1 rounded">Update</button>
-                                <button @click="data.{{ $key }}_img = null; previews['{{ $key }}_img'] = null;" x-show="previews['{{ $key }}_img'] || (data.{{ $key }}_img && (data.{{ $key }}_img.image || data.{{ $key }}_img.value))" class="text-red-300 hover:text-red-400 text-xs font-bold uppercase tracking-wider bg-red-900/30 px-3 py-1 rounded">Clear</button>
+                                <button @click="data.{{ $key }}_img = null; previews['{{ $key }}_img'] = null; clearedMedia.push('{{ $key }}_img');" x-show="previews['{{ $key }}_img'] || (data.{{ $key }}_img && (data.{{ $key }}_img.image || data.{{ $key }}_img.value))" class="text-red-300 hover:text-red-400 text-xs font-bold uppercase tracking-wider bg-red-900/30 px-3 py-1 rounded">Clear</button>
                             </div>
                         </div>
                         @endforeach
@@ -507,8 +508,9 @@
                             </template>
                             
                             <!-- Edit Overlay -->
-                            <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition duration-200 z-20">
-                                <button @click="openUploadModal('{{ $key }}_img')" class="text-white text-xs font-bold uppercase tracking-wider hover:text-blue-300">Change</button>
+                            <div class="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover/img:opacity-100 transition duration-200 z-20">
+                                <button @click="openUploadModal('{{ $key }}_img')" class="text-white text-xs font-bold uppercase tracking-wider mb-2 hover:text-blue-300">Change</button>
+                                <button @click="data.{{ $key }}_img = null; previews['{{ $key }}_img'] = null; clearedMedia.push('{{ $key }}_img');" x-show="previews['{{ $key }}_img'] || (data.{{ $key }}_img && (data.{{ $key }}_img.image || data.{{ $key }}_img.value))" class="text-red-300 hover:text-red-400 text-xs font-bold uppercase tracking-wider bg-red-900/30 px-3 py-1 rounded">Clear</button>
                             </div>
                         </div>
 
@@ -791,6 +793,7 @@
                 heroBgFile: null,
                 files: {},
                 previews: {},
+                clearedMedia: [],
                 showBgModal: false,
                 showUrlModal: false,
                 tempUrl: '',
@@ -1098,9 +1101,17 @@
                     // Append ONLY New Image URLs (if any were set via modal)
                     // We can track this by checking if previews exist but no file
                     for (const key in this.previews) {
-                        if (key !== 'hero_bg' && !this.files[key] && this.previews[key].startsWith('http')) {
+                        if (key !== 'hero_bg' && !this.files[key] && this.previews[key] && this.previews[key].startsWith('http')) {
                              formData.append(key + '_url', this.previews[key]);
                         }
+                    }
+
+                    // Append cleared media
+                    if (this.clearedMedia && this.clearedMedia.length > 0) {
+                        this.clearedMedia.forEach(k => {
+                            formData.append('deleted_media[]', k);
+                        });
+                        // Do not reset here, reset after successful save if needed, or leave it since page might refresh/state keeps syncing
                     }
 
                     // formData.append('_method', 'PUT'); // Removed as we switched the route to POST

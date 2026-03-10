@@ -35,7 +35,7 @@ class LandingController extends Controller
         ];
 
         // 2. Separate Inputs
-        $exclude = ['_token', '_method'];
+        $exclude = ['_token', '_method', 'deleted_media'];
         foreach ($imageKeys as $key) {
             $exclude[] = $key . '_file';
             $exclude[] = $key . '_url';
@@ -51,6 +51,22 @@ class LandingController extends Controller
                 ['key' => $key],
                 ['value' => $value]
             );
+        }
+
+        // 3.5. Process explicit media deletions
+        if ($request->has('deleted_media')) {
+            $deletedKeys = $request->input('deleted_media');
+            if (is_array($deletedKeys)) {
+                foreach ($deletedKeys as $delKey) {
+                    if (in_array($delKey, $imageKeys)) {
+                        Log::info("LandingController: Clearing media for key: {$delKey}");
+                        LandingContent::updateOrCreate(
+                            ['key' => $delKey],
+                            ['image' => null, 'value' => null, 'type' => null]
+                        );
+                    }
+                }
+            }
         }
 
         // 4. Process Image Updates — Upload to Local AND Cloudinary
