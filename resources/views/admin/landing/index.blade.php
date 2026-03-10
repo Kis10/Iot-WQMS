@@ -966,7 +966,8 @@
                     const file = e.target.files[0];
                     if (file) {
                         // Bypass cropper completely if uploading a video!
-                        if (file.type.startsWith('video/')) {
+                        if (file.type && file.type.indexOf('video/') === 0) {
+                            alert("Videos cannot be cropped. The video will be uploaded in its original resolution and saved automatically.");
                             this.files[this.currentUploadKey] = file;
                             this.previews[this.currentUploadKey] = URL.createObjectURL(file);
                             this.saveChanges();
@@ -974,7 +975,7 @@
                             return;
                         }
 
-                        this.cropShape = this.currentUploadKey.includes('team') ? 'circle' : (this.currentUploadKey.includes('slider') || this.currentUploadKey.includes('project') || this.currentUploadKey.includes('hero') ? 'landscape' : 'rect');
+                        this.cropShape = (this.currentUploadKey && this.currentUploadKey.indexOf('team') !== -1) ? 'circle' : 'rect';
 
                         const reader = new FileReader();
                         reader.onload = (evt) => {
