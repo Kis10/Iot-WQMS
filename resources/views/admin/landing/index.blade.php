@@ -26,6 +26,8 @@
 
     <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
     <div class="py-6" x-data="landingEditor(@js($contents))">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -612,62 +614,12 @@
             </div>
 
             <!-- Cropper Viewport -->
-            <div class="relative flex-1 bg-slate-900 overflow-hidden cursor-grab active:cursor-grabbing group min-h-[400px]"
-                 @mousedown="startDrag"
-                 @mousemove="onDrag"
-                 @mouseup="stopDrag"
-                 @mouseleave="stopDrag"
-                 @touchstart="startDrag"
-                 @touchmove="onDrag"
-                 @touchend="stopDrag"
-                 @wheel.prevent="handleWheel"
-                 x-ref="viewport">
-                
-                <!-- Checkerboard Pattern for Transparency -->
-                <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#4d4d4d 1px, transparent 1px); background-size: 20px 20px;"></div>
-
-                <!-- Image Wrapper -->
-                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                     <div class="relative origin-center user-select-none transition-transform duration-75" :style="imageStyle">
-                        <img :src="cropImageSrc" x-ref="cropImg" class="max-w-none shadow-2xl pointer-events-none select-none block" @load="initCrop">
-                    </div>
-                </div>
-
-                <!-- Overlay/Mask -->
-                <!-- The mask is essentially a giant border around a transparent hole -->
-                <div class="absolute inset-0 pointer-events-none z-10 flex items-center justify-center">
-                    <div class="relative" :class="cropShape === 'circle' ? 'w-64 h-64 rounded-full' : 'w-[90%] h-[70%] border-white/50 border-2'">
-                        <!-- Darken outside -->
-                        <div class="absolute -inset-[100vh] border-[100vh] border-black/60 scale-[2]" 
-                             :class="cropShape === 'circle' ? 'rounded-[50%]' : ''"></div>
-                        
-                        <!-- Guidelines -->
-                        <div class="absolute inset-0 border-2 border-white/80 shadow-sm" :class="cropShape === 'circle' ? 'rounded-full' : ''"></div>
-                        
-                        <!-- Grid Lines (Rule of Thirds) - Optional, mainly for rect -->
-                        <div x-show="cropShape !== 'circle'" class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-30">
-                            <div class="flex-1 border-b border-white"></div>
-                            <div class="flex-1 border-b border-white"></div>
-                            <div class="flex-1"></div>
-                        </div>
-                        <div x-show="cropShape !== 'circle'" class="absolute inset-0 flex flex-row justify-between pointer-events-none opacity-30">
-                            <div class="flex-1 border-r border-white"></div>
-                            <div class="flex-1 border-r border-white"></div>
-                            <div class="flex-1"></div>
-                        </div>
-                    </div>
-                </div>
+            <div class="relative flex-1 bg-slate-900 min-h-[400px] h-[60vh]" x-ref="viewport">
+                <img :src="cropImageSrc" id="cropperImage" class="block max-w-full" style="opacity: 0;" @load="initCrop">
             </div>
 
             <!-- Controls -->
             <div class="px-6 py-4 bg-white border-t border-gray-100 z-10">
-                <div class="flex items-center gap-4 mb-4">
-                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
-                    <input type="range" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                           :min="minScale" :max="maxScale" step="0.01" x-model.number="cropScale">
-                    <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"></path></svg>
-                </div>
-
                 <div class="flex justify-end gap-3">
                     <button @click="closeCropModal" class="px-6 py-2.5 rounded-xl text-gray-600 font-bold hover:bg-gray-100 transition border border-gray-200 hover:border-gray-300">Cancel</button>
                     <button @click="applyCrop" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-600/20 transition flex items-center gap-2 transform active:scale-95">
@@ -952,204 +904,69 @@
                 handleFileSelect(e) {
                     const file = e.target.files[0];
                     if (file) {
-                        // Reset Crop State
-                        this.cropScale = 1;
-                        this.cropX = 0;
-                        this.cropY = 0;
                         this.cropShape = this.currentUploadKey.includes('team') ? 'circle' : 'rect';
 
                         const reader = new FileReader();
                         reader.onload = (evt) => {
                             this.cropImageSrc = evt.target.result;
-                            this.$nextTick(() => { this.showCropModal = true; });
+                            this.showCropModal = true;
                         };
                         reader.readAsDataURL(file);
                     }
-                    // Reset input so same file can be selected again if cancelled
                     e.target.value = '';
                 },
 
                 initCrop() {
-                    const img = this.$refs.cropImg;
-                    const viewport = this.$refs.viewport;
-                    
-                    // Wait for layout
                     this.$nextTick(() => {
-                        const vw = viewport.clientWidth;
-                        const vh = viewport.clientHeight;
-                        const iw = img.naturalWidth;
-                        const ih = img.naturalHeight;
+                        const img = document.getElementById('cropperImage');
+                        if (!img || img.naturalWidth === 0) return;
 
-                        // Calculate fit scale (contain)
-                        const scaleW = vw / iw;
-                        const scaleH = vh / ih;
-                        const fitScale = Math.min(scaleW, scaleH) * 0.8; // 0.8 to leave some room
+                        if (window.cropper) {
+                            window.cropper.destroy();
+                        }
 
-                        this.minScale = fitScale * 0.5; // Allow zooming out a bit more than fit
-                        this.maxScale = Math.max(fitScale * 5, 2); // Allow 5x zoom or at least 2x
-                        
-                        this.cropScale = fitScale;
-                        this.cropX = 0;
-                        this.cropY = 0;
+                        window.cropper = new Cropper(img, {
+                            aspectRatio: this.cropShape === 'circle' ? 1 : NaN,
+                            viewMode: 1, 
+                            background: false,
+                            dragMode: 'move',
+                            autoCropArea: 0.8,
+                            cropBoxResizable: true,
+                            toggleDragModeOnDblclick: false,
+                            ready: () => {
+                                img.style.opacity = '1';
+                                if (this.cropShape === 'circle') {
+                                    document.querySelector('.cropper-view-box').style.borderRadius = '50%';
+                                    document.querySelector('.cropper-face').style.borderRadius = '50%';
+                                }
+                            }
+                        });
                     });
-                },
-
-                startDrag(e) {
-                    e.preventDefault();
-                    this.isDragging = true;
-                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                    
-                    this.dragStartX = clientX;
-                    this.dragStartY = clientY;
-                    this.initialCropX = this.cropX;
-                    this.initialCropY = this.cropY;
-                },
-
-                onDrag(e) {
-                    if (!this.isDragging) return;
-                    e.preventDefault();
-                    
-                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-                    const dx = clientX - this.dragStartX;
-                    const dy = clientY - this.dragStartY;
-
-                    this.cropX = this.initialCropX + dx;
-                    this.cropY = this.initialCropY + dy;
-                },
-
-                stopDrag() {
-                    this.isDragging = false;
-                },
-
-                handleWheel(e) {
-                    const delta = e.deltaY > 0 ? -0.1 : 0.1;
-                    const newScale = Math.max(this.minScale, Math.min(this.maxScale, this.cropScale + delta * this.cropScale));
-                    this.cropScale = newScale;
                 },
 
                 closeCropModal() {
                     this.showCropModal = false;
                     this.cropImageSrc = null;
+                    if (window.cropper) {
+                        window.cropper.destroy();
+                        window.cropper = null;
+                    }
                 },
 
                 applyCrop() {
-                    const img = this.$refs.cropImg;
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
+                    if (!window.cropper) return;
 
-                    // Circle shape target size
-                    // For circle (team), we want square output. 
-                    // For rect (hero), we want 16:9 or similar? 
-                    // Let's stick to the visual aspect ratio.
-                    
-                    let targetWidth = 500;
-                    let targetHeight = 500;
-                    
-                    if (this.cropShape !== 'circle') {
-                        // Rect shape (Hero BG) - usually strict 16:9 is best for hero, or wide.
-                        // Our visual guide is 90% w, 70% h.
-                        // Let's measure the user's visual guide aspect ratio?
-                        // It's dynamic in css.
-                        // Let's just default to a standard high-res landscape for hero.
-                        targetWidth = 1920;
-                        targetHeight = 1080;
-                    }
+                    const canvas = window.cropper.getCroppedCanvas({
+                        maxWidth: 1920,
+                        maxHeight: 1080,
+                        fillColor: '#fff',
+                    });
 
-                    canvas.width = targetWidth;
-                    canvas.height = targetHeight;
+                    if (!canvas) return;
 
-                    // 1. Calculate the Visual Metrics
-                    const viewport = this.$refs.viewport;
-                    const vRect = viewport.getBoundingClientRect();
-                    const centerX = vRect.width / 2;
-                    const centerY = vRect.height / 2;
-
-                    // Locate the "Mask/Hole" in the viewport
-                    // Circle: w-64 h-64 (16rem = 256px) centered.
-                    // Rect: 90% w, 70% h centered.
-                    let maskW, maskH;
-
-                    if (this.cropShape === 'circle') {
-                        maskW = 256; 
-                        maskH = 256;
-                    } else {
-                        maskW = vRect.width * 0.9;
-                        maskH = vRect.height * 0.7;
-                    }
-
-                    // 2. Draw Logic
-                    // We want to draw the portion of the image that is visible under the Mask into the Canvas.
-                    // Mapping: Mask TopLeft in Viewport -> Canvas(0,0)
-                    //          Mask BottomRight in Viewport -> Canvas(W,H)
-                    
-                    // The image is at: ViewportCenter + (cropX, cropY)
-                    // Image Scale: cropScale (visual scale)
-                    
-                    // Calculate Image Position relative to Mask TopLeft
-                    // Mask TopLeft relative to Viewport = (Center - Mask/2)
-                    const maskX = centerX - maskW/2;
-                    const maskY = centerY - maskH/2;
-                    
-                    // Image Position (visual top-left of image element) relative to Viewport
-                    // The img is centered in the div, and div is translated.
-                    // Img Natural Width/Height * Scale
-                    const natW = img.naturalWidth;
-                    const natH = img.naturalHeight;
-                    
-                    // Visual Width/Height
-                    const visW = natW * this.cropScale;
-                    const visH = natH * this.cropScale;
-                    
-                    // Image Center relative to Viewport = Center + CropOffset
-                    const imgCenterX = centerX + this.cropX;
-                    const imgCenterY = centerY + this.cropY;
-                    
-                    // Image TopLeft relative to Viewport
-                    const imgX = imgCenterX - visW/2;
-                    const imgY = imgCenterY - visH/2;
-                    
-                    // 3. Offset into Image
-                    // Where does the Mask start relative to the Image?
-                    // deltaX = MaskX - ImgX
-                    const deltaX = maskX - imgX;
-                    const deltaY = maskY - imgY;
-                    
-                    // So we want to copy from (deltaX, deltaY) with width (maskW), height (maskH)
-                    // FROM the SCALED image.
-                    
-                    // Converting effectively to SOURCE coordinates (Unscaled Image):
-                    // sourceX = deltaX / scale
-                    // sourceY = deltaY / scale
-                    // sourceW = maskW / scale
-                    // sourceH = maskH / scale
-                    
-                    const sX = deltaX / this.cropScale;
-                    const sY = deltaY / this.cropScale;
-                    const sW = maskW / this.cropScale;
-                    const sH = maskH / this.cropScale;
-                    
-                    // Draw to Canvas
-                    // Canvas size is fixed (targetWidth, targetHeight).
-                    // We draw the source rect -> canvas rect.
-                    
-                    // Fill background (white/black?)
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(0,0, targetWidth, targetHeight);
-                    
-                    ctx.drawImage(
-                        img,
-                        sX, sY, sW, sH,    // Source
-                        0, 0, targetWidth, targetHeight // Dest
-                    );
-                    
-                    // Convert to blob
                     canvas.toBlob((blob) => {
                         const file = new File([blob], "cropped.jpg", { type: "image/jpeg" });
                         
-                        // Handle saving based on key
                         if (this.currentUploadKey === 'hero_bg') {
                             this.heroBgFile = file;
                             this.heroBgPreview = URL.createObjectURL(blob);
@@ -1159,6 +976,9 @@
                         }
                         
                         this.closeCropModal();
+                        
+                        // Auto save changes immediately!
+                        this.saveChanges();
                     }, 'image/jpeg', 0.9);
                 },
 
