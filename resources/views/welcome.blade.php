@@ -106,10 +106,21 @@
             .hero-text-in-delay {
                 animation-delay: 0.38s;
             }
+            .slide-in-right {
+                opacity: 0;
+                transform: translate3d(100px, 0, 0);
+                transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.8s ease-out;
+                will-change: transform, opacity;
+            }
+            .slide-in-right.visible {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
             @media (prefers-reduced-motion: reduce) {
                 .hero-text-in,
                 .hero-text-in-delay,
-                .fade-in-up {
+                .fade-in-up,
+                .slide-in-right {
                     animation: none;
                     opacity: 1;
                     transform: none;
@@ -335,12 +346,60 @@
         </section>
 
         <!-- About / Team Section -->
-        <section id="about" class="py-12 sm:py-24 overflow-hidden">
+        <section id="about" class="py-12 sm:py-24 overflow-hidden" x-data="{ openDemo: false }">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <!-- Project Info / Flowchart -->
-                <div class="text-center mb-16 fade-in-up">
-                    <h2 class="text-3xl sm:text-5xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['project_title']->value ?? 'About the Project' }}</h2>
-                    <p class="text-gray-500 text-lg max-w-3xl mx-auto">{{ $contents['project_desc']->value ?? 'AquaSense provides a robust and reliable platform for monitoring aquatic conditions by tracking physical and chemical data.' }}</p>
+                <!-- Project Info & Demo Button -->
+                <div class="flex flex-col md:flex-row items-center justify-between mb-16 relative w-full gap-8">
+                    <div class="text-center md:text-left flex-1 fade-in-up">
+                        <h2 class="text-3xl sm:text-5xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['project_title']->value ?? 'About the Project' }}</h2>
+                        <p class="text-gray-500 text-lg max-w-3xl">{{ $contents['project_desc']->value ?? 'AquaSense provides a robust and reliable platform for monitoring aquatic conditions by tracking physical and chemical data.' }}</p>
+                    </div>
+                    
+                    @php 
+                        $demoRow = $contents['project_video'] ?? null;
+                        $demoVid = $demoRow->image ?? $demoRow->value ?? null;
+                        $demoUrl = $demoVid ? (str_starts_with($demoVid, 'http') ? $demoVid : asset($demoVid)) : null;
+                    @endphp
+
+                    @if($demoUrl)
+                    <div class="slide-in-right shrink-0">
+                        <button @click="openDemo = true" class="group flex items-center gap-3 bg-[#0D1A63] hover:bg-blue-700 text-white px-6 py-3 rounded-full font-bold shadow-xl transition transform hover:-translate-y-1">
+                            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-white text-[#0D1A63] group-hover:scale-110 transition shrink-0">
+                                <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </span>
+                            Watch Demo
+                        </button>
+                    </div>
+
+                    <!-- Video Demo Modal -->
+                    <div x-show="openDemo" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm"
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0"
+                         x-transition:enter-end="opacity-100"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-start="opacity-100"
+                         x-transition:leave-end="opacity-0">
+                         
+                        <!-- Modal Content (Matches Carousel Size approx) -->
+                        <div x-show="openDemo" @click.outside="openDemo = false; $refs.demoVideo.pause()" class="relative w-full max-w-5xl mx-auto h-[300px] sm:h-[500px] rounded-3xl overflow-hidden shadow-2xl bg-black border border-gray-800"
+                             x-transition:enter="transition ease-out duration-300 delay-100 transform"
+                             x-transition:enter-start="opacity-0 scale-90"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-200 transform"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-90">
+                             
+                             <button @click="openDemo = false; $refs.demoVideo.pause()" class="absolute top-4 right-4 z-50 p-2 bg-black/50 hover:bg-red-600 text-white rounded-full backdrop-blur transition flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                             </button>
+                             
+                             <video x-ref="demoVideo" controls class="w-full h-full object-cover bg-black">
+                                 <source src="{{ $demoUrl }}" type="video/mp4">
+                                 Your browser does not support the video tag.
+                             </video>
+                        </div>
+                    </div>
+                    @endif
                 </div>
 
                 <!-- Step-by-Step Flowchart -->
@@ -663,7 +722,7 @@
                     });
                 }, observerOptions);
 
-                document.querySelectorAll('.fade-in-up').forEach((el) => {
+                document.querySelectorAll('.fade-in-up, .slide-in-right').forEach((el) => {
                     observer.observe(el);
                 });
 

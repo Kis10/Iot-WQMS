@@ -24,9 +24,9 @@ class LandingController extends Controller
     {
         Log::info("LandingController: update method hit.");
         
-        // 1. Define Image Keys
+        // 1. Define Image/Media Keys
         $imageKeys = [
-            'hero_bg', 
+            'hero_bg', 'project_video',
             'team1_img', 'team1_img_hover', 
             'team2_img', 'team2_img_hover', 
             'team3_img', 'team3_img_hover', 
@@ -131,7 +131,7 @@ class LandingController extends Controller
                 'folder' => $folder,
                 'public_id' => $publicId,
                 'overwrite' => true,
-                'resource_type' => 'image',
+                'resource_type' => 'auto',
             ]);
 
             $url = $result['secure_url'] ?? $result['url'] ?? null;
@@ -159,7 +159,7 @@ class LandingController extends Controller
                 'folder' => $folder,
                 'public_id' => $publicId,
                 'overwrite' => true,
-                'resource_type' => 'image',
+                'resource_type' => 'auto',
             ]);
 
             $cloudUrl = $result['secure_url'] ?? $result['url'] ?? null;
@@ -196,6 +196,8 @@ class LandingController extends Controller
 
     private function resolveImageSubfolder(string $key): string
     {
+        if ($key === 'project_video') return 'videos';
+        
         if (str_starts_with($key, 'team')) {
             if (str_ends_with($key, '_img_hover')) return 'members/hover';
             return 'members/display';

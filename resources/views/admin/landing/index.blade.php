@@ -321,14 +321,72 @@
         <!-- About / Team Section -->
         <section class="py-24 bg-gray-50 overflow-hidden border-t border-gray-100">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <!-- Project Info / Flowchart -->
-                <div class="text-center mb-16">
-                    <h2 @click="makeEditable($event)" @blur="stopEditing($event, 'project_title')"
-                        class="editable-hover text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;"
-                        x-html="data.project_title.value" :style="data.project_title.style || ''"></h2>
-                    <p @click="makeEditable($event)" @blur="stopEditing($event, 'project_desc')"
-                       class="editable-hover text-gray-500 text-lg max-w-3xl mx-auto"
-                       x-html="data.project_desc.value" :style="data.project_desc.style || ''"></p>
+                <div class="flex flex-col md:flex-row items-center justify-between mb-16 relative w-full gap-8">
+                    <div class="text-center md:text-left flex-1" style="max-width: 700px;">
+                        <h2 @click="makeEditable($event)" @blur="stopEditing($event, 'project_title')"
+                            class="editable-hover text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;"
+                            x-html="data.project_title.value" :style="data.project_title.style || ''"></h2>
+                        <p @click="makeEditable($event)" @blur="stopEditing($event, 'project_desc')"
+                           class="editable-hover text-gray-500 text-lg mx-auto md:mx-0"
+                           x-html="data.project_desc.value" :style="data.project_desc.style || ''"></p>
+                    </div>
+
+                    <div class="mt-6 md:mt-0 shrink-0 relative group/vid">
+                        @php 
+                            $demoRow = $contents['project_video'] ?? null;
+                            $demoVid = $demoRow->image ?? $demoRow->value ?? null;
+                            $demoUrl = $demoVid ? (str_starts_with($demoVid, 'http') ? $demoVid : asset($demoVid)) : null;
+                        @endphp
+                        
+                        <div x-data="{ openDemoPreview: false }">
+                            <button @click="openDemoPreview = true" class="group flex items-center gap-3 bg-[#0D1A63] hover:bg-blue-700 text-white px-6 py-3 rounded-full font-bold shadow-xl transition transform hover:-translate-y-1">
+                                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-white text-[#0D1A63] group-hover:scale-110 transition shrink-0">
+                                    <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </span>
+                                Watch Demo
+                            </button>
+
+                            <div class="absolute inset-0 bg-black/60 rounded-full flex flex-col items-center justify-center opacity-0 group-hover/vid:opacity-100 transition z-20">
+                                <button @click="openUploadModal('project_video')" class="text-white text-xs font-bold uppercase tracking-wider hover:text-blue-300">Change Video</button>
+                            </div>
+
+                            <!-- Video Demo Modal Preview -->
+                            <div x-show="openDemoPreview" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm"
+                                x-transition:enter="transition ease-out duration-300"
+                                x-transition:enter-start="opacity-0"
+                                x-transition:enter-end="opacity-100"
+                                x-transition:leave="transition ease-in duration-200"
+                                x-transition:leave-start="opacity-100"
+                                x-transition:leave-end="opacity-0">
+                                
+                                <div x-show="openDemoPreview" @click.outside="openDemoPreview = false; $refs.demoVideoPreview.pause()" class="relative w-full max-w-5xl mx-auto h-[300px] sm:h-[500px] rounded-3xl overflow-hidden shadow-2xl bg-black border border-gray-800"
+                                    x-transition:enter="transition ease-out duration-300 delay-100 transform"
+                                    x-transition:enter-start="opacity-0 scale-90"
+                                    x-transition:enter-end="opacity-100 scale-100"
+                                    x-transition:leave="transition ease-in duration-200 transform"
+                                    x-transition:leave-start="opacity-100 scale-100"
+                                    x-transition:leave-end="opacity-0 scale-90">
+                                    
+                                    <button @click="openDemoPreview = false; $refs.demoVideoPreview.pause()" class="absolute top-4 right-4 z-50 p-2 bg-black/50 hover:bg-red-600 text-white rounded-full backdrop-blur transition flex items-center justify-center">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    </button>
+                                    
+                                    <template x-if="previews['project_video'] || (data.project_video && (data.project_video.image || data.project_video.value))">
+                                        <video x-ref="demoVideoPreview" controls class="w-full h-full object-cover bg-black">
+                                            <source :src="previews['project_video'] || resolveUrl(data.project_video.image || data.project_video.value)" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    </template>
+                                    <template x-if="!previews['project_video'] && (!data.project_video || (!data.project_video.image && !data.project_video.value))">
+                                        <div class="w-full h-full flex flex-col items-center justify-center text-gray-500">
+                                            <svg class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                            <p>No video uploaded yet.</p>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Step-by-Step Flowchart -->
@@ -575,7 +633,7 @@
                 <button @click="showBgModal = false" class="mt-4 w-full text-center text-gray-400 hover:text-gray-600 text-sm font-medium transition">Cancel</button>
             </div>
         </div>
-        <input type="file" x-ref="bgFileInput" class="hidden" accept="image/*" @change="handleFileSelect">
+        <input type="file" x-ref="bgFileInput" class="hidden" accept="image/*,video/*" @change="handleFileSelect">
 
         <!-- URL Input Modal -->
         <div x-show="showUrlModal" x-cloak class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm" x-transition style="display: none;">
@@ -698,6 +756,7 @@
                 team4_desc: { value: "Provides expert guidance on system architecture and project direction." },
                 team4_img: { value: null },
                 team4_img_hover: { value: null },
+                project_video: { value: null },
                 slider1_img: { value: null },
                 slider2_img: { value: null },
                 slider3_img: { value: null },
@@ -904,6 +963,15 @@
                 handleFileSelect(e) {
                     const file = e.target.files[0];
                     if (file) {
+                        // Bypass cropper completely if uploading a video!
+                        if (file.type.startsWith('video/')) {
+                            this.files[this.currentUploadKey] = file;
+                            this.previews[this.currentUploadKey] = URL.createObjectURL(file);
+                            this.saveChanges();
+                            e.target.value = '';
+                            return;
+                        }
+
                         this.cropShape = this.currentUploadKey.includes('team') ? 'circle' : 'rect';
 
                         const reader = new FileReader();
@@ -1005,11 +1073,11 @@
                     const formData = new FormData();
 
                     for (const key in this.data) {
-                        // Check if key is related to images
-                        const isImageKey = key === 'hero_bg' || key.endsWith('_img') || key.endsWith('_img_hover');
+                        // Check if key is related to images or media
+                        const isMediaKey = key === 'hero_bg' || key === 'project_video' || key.endsWith('_img') || key.endsWith('_img_hover');
 
                         // Save text values (ALWAYS send text to keep them updated)
-                        if (!isImageKey) {
+                        if (!isMediaKey) {
                              formData.append(key, this.data[key].value);
                         }
                     }
