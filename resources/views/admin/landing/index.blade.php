@@ -372,8 +372,8 @@
                                     </button>
                                     
                                     <template x-if="previews['project_video'] || (data.project_video && (data.project_video.image || data.project_video.value))">
-                                        <video x-ref="demoVideoPreview" controls class="w-full h-full object-cover bg-black">
-                                            <source :src="previews['project_video'] || resolveUrl(data.project_video.image || data.project_video.value)" type="video/mp4">
+                                        <video x-ref="demoVideoPreview" controls class="w-full h-full object-contain bg-black">
+                                            <source :src="previews['project_video'] || resolveUrl(data.project_video.image || data.project_video.value)">
                                             Your browser does not support the video tag.
                                         </video>
                                     </template>

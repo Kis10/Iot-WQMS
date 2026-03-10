@@ -346,27 +346,32 @@
         </section>
 
         <!-- About / Team Section -->
-        <section id="about" class="py-12 sm:py-24 overflow-hidden" x-data="{ openDemo: false }">
+        <section id="about" class="py-12 sm:py-24 overflow-hidden relative" 
+                 x-data="{ openDemo: false, showFloatingDemo: false }"
+                 @scroll.window="showFloatingDemo = ($el.getBoundingClientRect().top < window.innerHeight && $el.getBoundingClientRect().bottom > 0)"
+                 x-init="showFloatingDemo = ($el.getBoundingClientRect().top < window.innerHeight && $el.getBoundingClientRect().bottom > 0)">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Project Info & Demo Button -->
-                <div class="flex flex-col md:flex-row items-center justify-between mb-16 relative w-full gap-8">
-                    <div class="text-center md:text-left flex-1 fade-in-up" style="max-width: 700px;">
-                        <h2 class="text-3xl sm:text-5xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['project_title']->value ?? 'About the Project' }}</h2>
-                        <p class="text-gray-500 text-lg mx-auto md:mx-0">{{ $contents['project_desc']->value ?? 'AquaSense provides a robust and reliable platform for monitoring aquatic conditions by tracking physical and chemical data.' }}</p>
-                    </div>
-                    
-                    @php 
-                        $demoRow = $contents['project_video'] ?? null;
-                        $demoVid = $demoRow->image ?? $demoRow->value ?? null;
-                        $demoUrl = $demoVid ? (str_starts_with($demoVid, 'http') ? $demoVid : asset($demoVid)) : null;
-                    @endphp
+                <div class="text-center mb-16 relative w-full max-w-3xl mx-auto fade-in-up">
+                    <h2 class="text-3xl sm:text-5xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['project_title']->value ?? 'About the Project' }}</h2>
+                    <p class="text-gray-500 text-lg mx-auto">{{ $contents['project_desc']->value ?? 'AquaSense provides a robust and reliable platform for monitoring aquatic conditions by tracking physical and chemical data.' }}</p>
+                </div>
+                
+                @php 
+                    $demoRow = $contents['project_video'] ?? null;
+                    $demoVid = $demoRow->image ?? $demoRow->value ?? null;
+                    $demoUrl = $demoVid ? (str_starts_with($demoVid, 'http') ? $demoVid : asset($demoVid)) : null;
+                @endphp
 
-                    <div class="slide-in-right shrink-0">
-                        <button @click="openDemo = true" class="group flex items-center gap-3 bg-[#0D1A63] hover:bg-blue-700 text-white px-6 py-3 rounded-full font-bold shadow-xl transition transform hover:-translate-y-1">
-                            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-white text-[#0D1A63] group-hover:scale-110 transition shrink-0">
+                <!-- Floating Watch Demo Button -->
+                    <div class="fixed bottom-8 right-6 sm:right-8 z-[90] transition-all duration-500 ease-in-out"
+                         :class="showFloatingDemo ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[150%]'"
+                         x-cloak>
+                        <button @click="openDemo = true" class="group flex items-center gap-3 bg-[#0D1A63] hover:bg-blue-700 text-white px-5 py-3 rounded-full font-bold shadow-[0_10px_40px_-10px_rgba(13,26,99,0.8)] transition transform hover:scale-105 border border-white/10">
+                            <span class="flex items-center justify-center w-8 h-8 rounded-full bg-white text-[#0D1A63] group-hover:scale-110 transition shrink-0 shadow-sm">
                                 <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                             </span>
-                            Watch Demo
+                            <span class="tracking-wide">Watch Demo</span>
                         </button>
                     </div>
 
@@ -393,8 +398,8 @@
                              </button>
                              
                              @if($demoUrl)
-                             <video x-ref="demoVideo" controls class="w-full h-full object-cover bg-black">
-                                 <source src="{{ $demoUrl }}" type="video/mp4">
+                             <video x-ref="demoVideo" controls class="w-full h-full object-contain bg-black">
+                                 <source src="{{ $demoUrl }}">
                                  Your browser does not support the video tag.
                              </video>
                              @else
