@@ -533,12 +533,6 @@ void performSingleReadingAndSend() {
         tdsVal = (133.42 * pow(compVolt, 3) - 255.86 * pow(compVolt, 2) + 857.39 * compVolt) * tdsFactor;
     }
 
-    // --- SEND DATA ---
-    sendToRailway(pHVal, clarity, tdsVal, waterTemp);
-    
-    // allow a brief moment before freezing LCD
-    delay(2000);
-
     // --- FREEZE RESULT ON LCD ---
     lcd.clear();
     lcd.setCursor(0,0);
@@ -550,7 +544,10 @@ void performSingleReadingAndSend() {
     lcd.setCursor(0,2);
     lcd.printf("Clarity:%d%%", clarity);
     lcd.setCursor(0,3);
-    lcd.print(" READING COMPLETE ");
+    lcd.print(" SENDING...");
+
+    // --- SEND DATA ---
+    sendToRailway(pHVal, clarity, tdsVal, waterTemp);
 }
 
 
@@ -600,9 +597,6 @@ void sendToRailway(float pH, int turbidity, float tds, float waterTemp) {
       // Quick LCD confirmation
       lcd.setCursor(12,3);
       lcd.print("SENT");
-      delay(100);
-      lcd.setCursor(12,3);
-      lcd.print("    ");
     } else if (httpResponseCode > 0) {
       Serial.print("[HTTP] SERVERSIDE REJECT ❌ Code: ");
       Serial.println(httpResponseCode);
@@ -612,6 +606,8 @@ void sendToRailway(float pH, int turbidity, float tds, float waterTemp) {
     } else {
       Serial.print("[HTTP] POST failed ❌");
       Serial.println(http.errorToString(httpResponseCode).c_str());
+      lcd.setCursor(11,3);
+      lcd.print("FAIL");
     }
     
     http.end();
