@@ -40,9 +40,8 @@ class WaterReadingController extends Controller
             ['species' => config('aquaculture.default_species', 'tilapia')]
         );
 
-        // Check last reading time to throttle DB saves (History/Alerts = 30s)
-        $lastReading = WaterReading::latest()->first();
-        $shouldSaveToDb = !$lastReading || $lastReading->created_at->diffInSeconds(now()) >= 30;
+        // Always save to database (removed 30s throttling for hardware testing)
+        $shouldSaveToDb = true;
 
         $reading = null;
         

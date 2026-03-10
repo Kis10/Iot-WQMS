@@ -530,20 +530,9 @@ void performSingleReadingAndSend() {
 
     // --- SEND DATA ---
     sendToRailway(pHVal, clarity, tdsVal, waterTemp);
-
-    lcd.clear();
-    lcd.setCursor(0,1);
-    lcd.print("    DATA SENT!    ");
     
-    // Custom 4 beeps
-    for(int i=0; i<4; i++) {
-        digitalWrite(buzzerPin, HIGH);
-        delay(200); // Beep ON
-        digitalWrite(buzzerPin, LOW);
-        delay(300); // Beep OFF
-    }
-    
-    delay(2000); // "Data sent!" 2s duration
+    // allow a brief moment before freezing LCD
+    delay(2000);
 
     // --- FREEZE RESULT ON LCD ---
     lcd.clear();
@@ -574,6 +563,11 @@ void sendToRailway(float pH, int turbidity, float tds, float waterTemp) {
     http.addHeader("Accept", "application/json");
     http.addHeader("X-Device-Token", deviceToken);
     
+    // Sanitize values to prevent JSON strictly failing on NaN/Inf
+    if (isnan(pH) || isinf(pH)) pH = 0.0;
+    if (isnan(tds) || isinf(tds)) tds = 0.0;
+    if (isnan(waterTemp) || isinf(waterTemp)) waterTemp = 0.0;
+
     String jsonPayload = "{";
     jsonPayload += "\"device_id\":\"" + String(deviceID) + "\",";
     jsonPayload += "\"turbidity\":" + String(turbidity) + ",";
@@ -585,7 +579,7 @@ void sendToRailway(float pH, int turbidity, float tds, float waterTemp) {
     
     int httpResponseCode = http.POST(jsonPayload);
     
-    if(httpResponseCode > 0) {
+    if(httpResponseCode == 200 || httpResponseCode == 201) {
       // 📤 DATA SENT - pip!
       startSound(SOUND_DATA_SENT);
       Serial.println("[HTTP] POST success ✅");
@@ -598,6 +592,12 @@ void sendToRailway(float pH, int turbidity, float tds, float waterTemp) {
       delay(100);
       lcd.setCursor(12,3);
       lcd.print("    ");
+    } else if (httpResponseCode > 0) {
+      Serial.print("[HTTP] SERVERSIDE REJECT ❌ Code: ");
+      Serial.println(httpResponseCode);
+      lcd.setCursor(8,3);
+      lcd.print("API ERR:");
+      lcd.print(httpResponseCode);
     } else {
       Serial.print("[HTTP] POST failed ❌");
       Serial.println(http.errorToString(httpResponseCode).c_str());
