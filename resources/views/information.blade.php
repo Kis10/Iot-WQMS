@@ -15,6 +15,11 @@
                                 Aquaculture Water Quality Standards
                             </h2>
                             <p class="text-sm text-gray-500 mt-1">Based on FAO (Food and Agriculture Organization) and Global Aquaculture Alliance standards.</p>
+                            <p class="text-sm text-gray-500 mt-3">
+                                Additionally, the four IoT sensors used to test the water quality are specifically supported by research from 
+                                <a href="https://iieta.org/journals/isi/paper/10.18280/isi.280403" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 hover:underline font-medium transition-colors">IIETA</a>. 
+                                While the FAO provides our general guidelines for aquaculture parameters, the IIETA study serves as a specific technical reference validating the capability and accuracy of our IoT hardware setup.
+                            </p>
                         </div>
                         <div class="p-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
