@@ -555,6 +555,8 @@ void performSingleReadingAndSend() {
 void sendToRailway(float pH, int turbidity, float tds, float waterTemp) {
   WiFiClientSecure client;
   client.setInsecure();
+  client.setBufferSizes(512, 512); // Save heap memory
+  client.setHandshakeTimeout(10000); // 10s handshake limit
   HTTPClient http;
   http.setTimeout(15000);
   
@@ -603,12 +605,12 @@ void sendToRailway(float pH, int turbidity, float tds, float waterTemp) {
       lcd.setCursor(8,3);
       lcd.print("API ERR:");
       lcd.print(httpResponseCode);
-    } else {
-      Serial.print("[HTTP] POST failed ❌");
+      Serial.print("[HTTP] POST failed ❌ ");
       Serial.println(http.errorToString(httpResponseCode).c_str());
-      lcd.setCursor(11,3);
-      lcd.print("FAIL");
-    }
+      lcd.setCursor(8,3);
+      lcd.print("F:");
+      lcd.print(httpResponseCode); // Shows negative error code like -1, -5, -11
+      lcd.print("      ");
     
     http.end();
   }
