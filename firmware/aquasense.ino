@@ -555,8 +555,6 @@ void performSingleReadingAndSend() {
 void sendToRailway(float pH, int turbidity, float tds, float waterTemp) {
   WiFiClientSecure client;
   client.setInsecure();
-  client.setBufferSizes(512, 512); // Save heap memory
-  client.setHandshakeTimeout(10000); // 10s handshake limit
   HTTPClient http;
   http.setTimeout(15000);
   
@@ -611,6 +609,7 @@ void sendToRailway(float pH, int turbidity, float tds, float waterTemp) {
       lcd.print("F:");
       lcd.print(httpResponseCode); // Shows negative error code like -1, -5, -11
       lcd.print("      ");
+    }
     
     http.end();
   }
