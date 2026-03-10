@@ -107,9 +107,9 @@
             </div>
         </div>
 
-        <!-- Scrollable container matching alerts page -->
+        <!-- Content container matching alerts page (without internal scroll lock) -->
         <div class="bg-white rounded-lg shadow overflow-hidden">
-        <div class="landing-editor overflow-y-auto" style="max-height: calc(100vh - 140px);">
+        <div class="landing-editor">
 
         <!-- ============================================== -->
         <!-- LIVE PREVIEW - EXACT REPLICA OF LANDING PAGE   -->
@@ -996,11 +996,11 @@
                         }
 
                         window.cropper = new Cropper(img, {
-                            aspectRatio: this.cropShape === 'circle' ? 1 : (this.cropShape === 'landscape' ? 1024/500 : NaN),
+                            aspectRatio: this.cropShape === 'circle' ? 1 : NaN,
                             viewMode: 1, 
                             background: false,
                             dragMode: 'move',
-                            autoCropArea: 1,
+                            autoCropArea: 0.8,
                             cropBoxResizable: true,
                             toggleDragModeOnDblclick: false,
                             ready: () => {
@@ -1126,6 +1126,7 @@
                     .then(async res => {
                         if (res.ok) {
                             this.showSuccess = true;
+                            this.clearedMedia = [];
                             setTimeout(() => { this.showSuccess = false; }, 3000);
                         } else {
                             const error = await res.json().catch(() => ({ message: 'Unknown Server Error' }));
