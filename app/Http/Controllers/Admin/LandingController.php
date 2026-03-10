@@ -143,11 +143,17 @@ class LandingController extends Controller
 
             $cloudinary = $this->getCloudinaryInstance();
             $path = is_string($file) ? $file : $file->getRealPath();
+
+            $resourceType = 'auto';
+            if ($key === 'project_video' || (!is_string($file) && str_starts_with($file->getMimeType(), 'video/'))) {
+                $resourceType = 'video';
+            }
+
             $result = $cloudinary->uploadApi()->upload($path, [
                 'folder' => $folder,
                 'public_id' => $publicId,
                 'overwrite' => true,
-                'resource_type' => 'auto',
+                'resource_type' => $resourceType,
             ]);
 
             $url = $result['secure_url'] ?? $result['url'] ?? null;
