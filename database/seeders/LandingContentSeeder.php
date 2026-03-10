@@ -144,6 +144,11 @@ class LandingContentSeeder extends Seeder
             [
                 'key' => 'team4_img', 'value' => null, 'image' => null, 'type' => 'image'
             ],
+            
+            // Default Slider
+            [
+                'key' => 'slider1_img', 'value' => 'img/slider1.png', 'image' => 'img/slider1.png', 'type' => 'image'
+            ],
 
             // Footer Additional
             [
