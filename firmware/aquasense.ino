@@ -229,8 +229,13 @@ void setup() {
   lcd.setCursor(0,0);
   lcd.print("Aquasense Booting");
   
-  // 🎵 SYSTEM READY SOUND
-  startSound(SOUND_READY);
+  // 🎵 SYSTEM READY SOUND (Explicit 4 Beeps)
+  for(int i=0; i<4; i++) {
+      digitalWrite(buzzerPin, HIGH);
+      delay(150); // Beep ON
+      digitalWrite(buzzerPin, LOW);
+      delay(150); // Beep OFF
+  }
   
   // DS18B20 Water Temperature Sensor Init
   waterTempSensor.begin();
@@ -580,8 +585,14 @@ void sendToRailway(float pH, int turbidity, float tds, float waterTemp) {
     int httpResponseCode = http.POST(jsonPayload);
     
     if(httpResponseCode == 200 || httpResponseCode == 201) {
-      // 📤 DATA SENT - pip!
-      startSound(SOUND_DATA_SENT);
+      // 📤 DATA SENT - 4 Beeps
+      for(int i=0; i<4; i++) {
+          digitalWrite(buzzerPin, HIGH);
+          delay(100); // Beep ON
+          digitalWrite(buzzerPin, LOW);
+          delay(100); // Beep OFF
+      }
+
       Serial.println("[HTTP] POST success ✅");
       Serial.print("[HTTP] Response: ");
       Serial.println(httpResponseCode);
