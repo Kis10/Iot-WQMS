@@ -350,9 +350,9 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Project Info & Demo Button -->
                 <div class="flex flex-col md:flex-row items-center justify-between mb-16 relative w-full gap-8">
-                    <div class="text-center md:text-left flex-1 fade-in-up">
+                    <div class="text-center md:text-left flex-1 fade-in-up" style="max-width: 700px;">
                         <h2 class="text-3xl sm:text-5xl font-bold mb-4 tracking-tight" style="color: #0D1A63;">{{ $contents['project_title']->value ?? 'About the Project' }}</h2>
-                        <p class="text-gray-500 text-lg max-w-3xl">{{ $contents['project_desc']->value ?? 'AquaSense provides a robust and reliable platform for monitoring aquatic conditions by tracking physical and chemical data.' }}</p>
+                        <p class="text-gray-500 text-lg mx-auto md:mx-0">{{ $contents['project_desc']->value ?? 'AquaSense provides a robust and reliable platform for monitoring aquatic conditions by tracking physical and chemical data.' }}</p>
                     </div>
                     
                     @php 
@@ -361,7 +361,6 @@
                         $demoUrl = $demoVid ? (str_starts_with($demoVid, 'http') ? $demoVid : asset($demoVid)) : null;
                     @endphp
 
-                    @if($demoUrl)
                     <div class="slide-in-right shrink-0">
                         <button @click="openDemo = true" class="group flex items-center gap-3 bg-[#0D1A63] hover:bg-blue-700 text-white px-6 py-3 rounded-full font-bold shadow-xl transition transform hover:-translate-y-1">
                             <span class="flex items-center justify-center w-8 h-8 rounded-full bg-white text-[#0D1A63] group-hover:scale-110 transition shrink-0">
@@ -381,7 +380,7 @@
                          x-transition:leave-end="opacity-0">
                          
                         <!-- Modal Content (Matches Carousel Size approx) -->
-                        <div x-show="openDemo" @click.outside="openDemo = false; $refs.demoVideo.pause()" class="relative w-full max-w-5xl mx-auto h-[300px] sm:h-[500px] rounded-3xl overflow-hidden shadow-2xl bg-black border border-gray-800"
+                        <div x-show="openDemo" @click.outside="openDemo = false; if($refs.demoVideo) $refs.demoVideo.pause()" class="relative w-full max-w-5xl mx-auto h-[300px] sm:h-[500px] rounded-3xl overflow-hidden shadow-2xl bg-black border border-gray-800"
                              x-transition:enter="transition ease-out duration-300 delay-100 transform"
                              x-transition:enter-start="opacity-0 scale-90"
                              x-transition:enter-end="opacity-100 scale-100"
@@ -389,17 +388,23 @@
                              x-transition:leave-start="opacity-100 scale-100"
                              x-transition:leave-end="opacity-0 scale-90">
                              
-                             <button @click="openDemo = false; $refs.demoVideo.pause()" class="absolute top-4 right-4 z-50 p-2 bg-black/50 hover:bg-red-600 text-white rounded-full backdrop-blur transition flex items-center justify-center">
+                             <button @click="openDemo = false; if($refs.demoVideo) $refs.demoVideo.pause()" class="absolute top-4 right-4 z-50 p-2 bg-black/50 hover:bg-red-600 text-white rounded-full backdrop-blur transition flex items-center justify-center">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                              </button>
                              
+                             @if($demoUrl)
                              <video x-ref="demoVideo" controls class="w-full h-full object-cover bg-black">
                                  <source src="{{ $demoUrl }}" type="video/mp4">
                                  Your browser does not support the video tag.
                              </video>
+                             @else
+                             <div class="w-full h-full flex flex-col items-center justify-center text-gray-500">
+                                 <svg class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                 <p>No video uploaded yet.</p>
+                             </div>
+                             @endif
                         </div>
                     </div>
-                    @endif
                 </div>
 
                 <!-- Step-by-Step Flowchart -->

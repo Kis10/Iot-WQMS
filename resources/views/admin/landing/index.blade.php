@@ -321,17 +321,16 @@
         <!-- About / Team Section -->
         <section class="py-24 bg-gray-50 overflow-hidden border-t border-gray-100">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex flex-col md:flex-row items-center justify-between mb-16 relative w-full gap-8">
-                    <div class="text-center md:text-left flex-1" style="max-width: 700px;">
-                        <h2 @click="makeEditable($event)" @blur="stopEditing($event, 'project_title')"
-                            class="editable-hover text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;"
-                            x-html="data.project_title.value" :style="data.project_title.style || ''"></h2>
-                        <p @click="makeEditable($event)" @blur="stopEditing($event, 'project_desc')"
-                           class="editable-hover text-gray-500 text-lg mx-auto md:mx-0"
-                           x-html="data.project_desc.value" :style="data.project_desc.style || ''"></p>
-                    </div>
+                <div class="text-center relative w-full max-w-3xl mx-auto mb-16">
+                    <h2 @click="makeEditable($event)" @blur="stopEditing($event, 'project_title')"
+                        class="editable-hover text-4xl font-bold mb-4 tracking-tight" style="color: #0D1A63;"
+                        x-html="data.project_title.value" :style="data.project_title.style || ''"></h2>
+                    <p @click="makeEditable($event)" @blur="stopEditing($event, 'project_desc')"
+                       class="editable-hover text-gray-500 text-lg mx-auto"
+                       x-html="data.project_desc.value" :style="data.project_desc.style || ''"></p>
+                </div>
 
-                    <div class="mt-6 md:mt-0 shrink-0 relative group/vid">
+                <div class="mt-6 md:mt-0 flex justify-center mb-16 relative">
                         @php 
                             $demoRow = $contents['project_video'] ?? null;
                             $demoVid = $demoRow->image ?? $demoRow->value ?? null;
