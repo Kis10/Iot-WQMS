@@ -16,7 +16,7 @@ class AdminUserSeeder extends Seeder
             ['email' => 'admin@admin.com'],
             [
                 'name' => 'Admin',
-                'password' => bcrypt('adminadmin'),
+                'password' => \Illuminate\Support\Facades\Hash::make('adminadmin'),
                 'email_verified_at' => now(),
                 'is_approved' => true,
                 'role' => 'admin',
