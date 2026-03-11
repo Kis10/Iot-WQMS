@@ -27,7 +27,7 @@
     <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js" defer></script>
 
     <div class="py-6" x-data="landingEditor(@js($contents))">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -498,12 +498,12 @@
 
                             <!-- Hover Image -->
                             <template x-if="previews['{{ $key }}_img_hover']">
-                                <img :src="previews['{{ $key }}_img_hover']" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 z-10 bg-white">
+                                <img :src="previews['{{ $key }}_img_hover']" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 z-10 bg-white" loading="lazy">
                             </template>
                             <template x-if="!previews['{{ $key }}_img_hover'] && data.{{ $key }}_img_hover && (data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value)">
                                 <img :src="resolveUrl(data.{{ $key }}_img_hover.image || data.{{ $key }}_img_hover.value)" 
                                      x-on:error="if (data.{{ $key }}_img_hover && data.{{ $key }}_img_hover.value && !data.{{ $key }}_img_hover.value.startsWith('http')) { $event.target.src = resolveUrl(data.{{ $key }}_img_hover.value); }"
-                                     class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 z-10 bg-white">
+                                     class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 z-10 bg-white" loading="lazy">
                             </template>
                             
                             <!-- Edit Overlay -->

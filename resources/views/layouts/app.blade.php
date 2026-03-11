@@ -20,7 +20,7 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-        <script src="https://cdn.ably.io/lib/ably.min-1.js"></script>
+        <script src="https://cdn.ably.io/lib/ably.min-1.js" defer></script>
     </head>
     <body class="font-sans antialiased">
         <div class="flex h-screen bg-gray-100 flex-col" x-data="{ sidebarOpen: false }" @toggle-sidebar.window="sidebarOpen = !sidebarOpen">
@@ -129,8 +129,8 @@
             @endif
         @endauth
 
-        <audio id="globalAiSound" src="{{ asset('sounds/ai.mp3') }}" preload="auto"></audio>
-        <audio id="globalAlertSound" src="{{ asset('sounds/error.mp3') }}" preload="auto"></audio>
+        <audio id="globalAiSound" src="{{ asset('sounds/ai.mp3') }}" preload="metadata"></audio>
+        <audio id="globalAlertSound" src="{{ asset('sounds/error.mp3') }}" preload="metadata"></audio>
         <script>
             (function() {
                 // Global Audio Elements
