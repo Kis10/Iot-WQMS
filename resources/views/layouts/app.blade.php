@@ -166,49 +166,51 @@
                 }
                 ['click', 'touchstart', 'keydown'].forEach(e => document.addEventListener(e, unlockAudio));
 
-                // Global Ably Listener for Sound
-                if (window.Ably) {
-                    const ably = new Ably.Realtime({
-                        authUrl: '{{ route("ably.auth") }}',
-                        authMethod: 'POST',
-                        authHeaders: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
-                    });
-                    const channel = ably.channels.get('{{ config('services.ably.channel', 'water-readings') }}');
-                    
-                    channel.subscribe('analysis', (message) => {
-                        const analysis = message.data;
-                        const riskLevel = (analysis.risk_level || '').toLowerCase();
-                        const settings = getSoundSettings();
-
-                        if (!settings.muted) {
-                            // Play AI notification sound
-                            if (audioEl && settings.aiEnabled) {
-                                audioEl.currentTime = 0;
-                                audioEl.volume = settings.volume;
-                                audioEl.play().catch(e => console.error('AI sound failed:', e));
-                            }
-
-                            // Play alert sound 0.5s after ai.mp3 for critical/high/medium risk
-                            // Increased clarity: alert sound is played if risk is not 'safe'
-                            if (alertEl && settings.alertEnabled && (riskLevel === 'critical' || riskLevel === 'high' || riskLevel === 'medium')) {
-                                setTimeout(() => {
-                                    alertEl.currentTime = 0;
-                                    alertEl.volume = settings.volume;
-                                    alertEl.play().catch(e => console.error('Alert sound failed:', e));
-                                }, 500);
-                            }
-                        }
+                // Global Ably Listener for Sound and Live Updates
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (window.Ably) {
+                        const ably = new Ably.Realtime({
+                            authUrl: '{{ route("ably.auth") }}',
+                            authMethod: 'POST',
+                            authHeaders: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+                        });
+                        const channel = ably.channels.get('{{ config('services.ably.channel', 'water-readings') }}');
                         
-                        // Dispatch Global Event for Dashboard Popup
-                        window.dispatchEvent(new CustomEvent('new-analysis', { detail: analysis }));
-                    });
+                        channel.subscribe('analysis', (message) => {
+                            const analysis = message.data;
+                            const riskLevel = (analysis.risk_level || '').toLowerCase();
+                            const settings = getSoundSettings();
 
-                    channel.subscribe('reading', (message) => {
-                         const reading = message.data;
-                         // Dispatch Global Event for Dashboard Chart/Gauges
-                         window.dispatchEvent(new CustomEvent('new-reading', { detail: reading }));
-                    });
-                }
+                            if (!settings.muted) {
+                                // Play AI notification sound
+                                if (audioEl && settings.aiEnabled) {
+                                    audioEl.currentTime = 0;
+                                    audioEl.volume = settings.volume;
+                                    audioEl.play().catch(e => console.error('AI sound failed:', e));
+                                }
+
+                                // Play alert sound 0.5s after ai.mp3 for critical/high/medium risk
+                                // Increased clarity: alert sound is played if risk is not 'safe'
+                                if (alertEl && settings.alertEnabled && (riskLevel === 'critical' || riskLevel === 'high' || riskLevel === 'medium')) {
+                                    setTimeout(() => {
+                                        alertEl.currentTime = 0;
+                                        alertEl.volume = settings.volume;
+                                        alertEl.play().catch(e => console.error('Alert sound failed:', e));
+                                    }, 500);
+                                }
+                            }
+                            
+                            // Dispatch Global Event for Dashboard Popup
+                            window.dispatchEvent(new CustomEvent('new-analysis', { detail: analysis }));
+                        });
+
+                        channel.subscribe('reading', (message) => {
+                             const reading = message.data;
+                             // Dispatch Global Event for Dashboard Chart/Gauges
+                             window.dispatchEvent(new CustomEvent('new-reading', { detail: reading }));
+                        });
+                    }
+                });
             })();
         </script>
     </body>
