@@ -22,12 +22,14 @@
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .cropper-container { width: 100% !important; height: 100% !important; }
+        #cropperImage { max-height: 400px; }
     </style>
 
     <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
     <div class="py-6" x-data="landingEditor(@js($contents))">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -634,6 +636,7 @@
                 <button @click="showBgModal = false" class="mt-4 w-full text-center text-gray-400 hover:text-gray-600 text-sm font-medium transition">Cancel</button>
             </div>
         </div>
+
         <input type="file" x-ref="bgFileInput" class="hidden" accept="image/*,video/*" @change="handleFileSelect">
 
         <!-- URL Input Modal -->
@@ -648,48 +651,46 @@
             </div>
         </div>
 
-        </div>
-        </div>
-        </div>
-
-    <!-- ================================ -->
-    <!-- Image Crop/Adjust Modal          -->
-    <!-- ================================ -->
-    <!-- ================================ -->
-    <!-- Image Crop/Adjust Modal          -->
-    <!-- ================================ -->
-    <div x-show="showCropModal" x-cloak class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-sm" x-transition style="display: none;">
-        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden w-[95%] max-w-4xl flex flex-col max-h-[90vh]">
-            
-            <!-- Header -->
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white z-10">
-                <div>
-                    <h3 class="text-xl font-bold text-gray-900">Adjust Image</h3>
-                    <p class="text-gray-500 text-sm">Drag to position • Scroll or set slider to zoom</p>
-                </div>
-                <button @click="closeCropModal" class="text-gray-400 hover:text-gray-600 transition p-2 rounded-full hover:bg-gray-100">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
-
-            <!-- Cropper Viewport -->
-            <div class="relative flex-1 bg-slate-900 min-h-[400px] h-[60vh]" x-ref="viewport">
-                <img :src="cropImageSrc" id="cropperImage" class="block max-w-full" style="opacity: 0;" @load="initCrop">
-            </div>
-
-            <!-- Controls -->
-            <div class="px-6 py-4 bg-white border-t border-gray-100 z-10">
-                <div class="flex justify-end gap-3">
-                    <button @click="closeCropModal" class="px-6 py-2.5 rounded-xl text-gray-600 font-bold hover:bg-gray-100 transition border border-gray-200 hover:border-gray-300">Cancel</button>
-                    <button @click="applyCrop" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-600/20 transition flex items-center gap-2 transform active:scale-95">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                        Apply Crop
+        <!-- ================================ -->
+        <!-- Image Crop/Adjust Modal          -->
+        <!-- ================================ -->
+        <div x-show="showCropModal" x-cloak class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-sm" x-transition style="display: none;">
+            <div class="bg-white rounded-2xl shadow-2xl overflow-hidden w-[95%] max-w-4xl flex flex-col max-h-[90vh]">
+                
+                <!-- Header -->
+                <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white z-10">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Adjust Image</h3>
+                        <p class="text-gray-500 text-sm">Drag to position • Scroll or set slider to zoom</p>
+                    </div>
+                    <button @click="closeCropModal" class="text-gray-400 hover:text-gray-600 transition p-2 rounded-full hover:bg-gray-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
+
+                <!-- Cropper Viewport -->
+                <div class="relative flex-1 bg-slate-900 min-h-[400px] h-full overflow-hidden" x-ref="viewport">
+                    <div class="w-full h-full flex items-center justify-center">
+                        <img :src="cropImageSrc" id="cropperImage" class="block max-w-full" style="opacity: 1;" @load="initCrop">
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="px-6 py-4 bg-white border-t border-gray-100 z-10">
+                    <div class="flex justify-end gap-3">
+                        <button @click="closeCropModal" class="px-6 py-2.5 rounded-xl text-gray-600 font-bold hover:bg-gray-100 transition border border-gray-200 hover:border-gray-300">Cancel</button>
+                        <button @click="applyCrop" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-600/20 transition flex items-center gap-2 transform active:scale-95">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            Apply Crop
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    </div>
+
+    </div> <!-- End max-w-6xl -->
+</div> <!-- End landingEditor -->
+
 
     <script>
         function landingEditor(initialData) {
@@ -1006,6 +1007,12 @@
                         }
 
                         console.log('Initializing Cropper for:', img.src);
+
+                        if (typeof Cropper === 'undefined') {
+                            console.error('Cropper.js library not loaded yet!');
+                            img.style.opacity = '1';
+                            return;
+                        }
 
                         window.cropper = new Cropper(img, {
                             aspectRatio: this.cropShape === 'circle' ? 1 : NaN,
