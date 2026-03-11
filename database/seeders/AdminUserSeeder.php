@@ -13,7 +13,7 @@ class AdminUserSeeder extends Seeder
     public function run(): void
     {
         \App\Models\User::updateOrCreate(
-            ['email' => 'admin@admin.com'],
+            ['email' => 'root@admin.com'],
             [
                 'name' => 'Admin',
                 'password' => \Illuminate\Support\Facades\Hash::make('adminadmin'),
