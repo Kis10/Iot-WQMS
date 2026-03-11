@@ -450,7 +450,7 @@
                             <template x-if="!previews['{{ $key }}_img'] && data.{{ $key }}_img && (data.{{ $key }}_img.image || data.{{ $key }}_img.value)">
                                 <img :src="resolveUrl(data.{{ $key }}_img.image || data.{{ $key }}_img.value)"
                                      x-on:error="if (data.{{ $key }}_img && data.{{ $key }}_img.value && !data.{{ $key }}_img.value.startsWith('http')) { $event.target.src = resolveUrl(data.{{ $key }}_img.value); }"
-                                     class="w-full h-full object-cover">
+                                     class="w-full h-full object-cover" loading="lazy">
                             </template>
                             <template x-if="!previews['{{ $key }}_img'] && (!data.{{ $key }}_img || (!data.{{ $key }}_img.image && !data.{{ $key }}_img.value))">
                                 <div class="w-full h-full flex flex-col items-center justify-center bg-gray-50 text-gray-400 group-hover/img:text-blue-500 group-hover/img:bg-blue-50 transition cursor-pointer" @click="openUploadModal('{{ $key }}_img')">
@@ -488,7 +488,7 @@
                             <template x-if="!previews['{{ $key }}_img'] && data.{{ $key }}_img && (data.{{ $key }}_img.image || data.{{ $key }}_img.value)">
                                 <img :src="resolveUrl(data.{{ $key }}_img.image || data.{{ $key }}_img.value)"
                                      x-on:error="if (data.{{ $key }}_img && data.{{ $key }}_img.value && !data.{{ $key }}_img.value.startsWith('http')) { $event.target.src = resolveUrl(data.{{ $key }}_img.value); }"
-                                     class="w-full h-full object-cover">
+                                     class="w-full h-full object-cover" loading="lazy">
                             </template>
                             <template x-if="!previews['{{ $key }}_img'] && (!data.{{ $key }}_img || (!data.{{ $key }}_img.image && !data.{{ $key }}_img.value))">
                                 <div class="w-full h-full flex items-center justify-center bg-blue-50 text-blue-200">
