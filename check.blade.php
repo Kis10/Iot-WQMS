@@ -1,4 +1,4 @@
-<x-app-layout>
+﻿<x-app-layout>
     <!-- Scoped Styles -->
     <style>
         .landing-editor { font-family: 'Outfit', sans-serif; }
@@ -107,9 +107,9 @@
             </div>
         </div>
 
-        <!-- Content container matching alerts page (without internal scroll lock) -->
+        <!-- Scrollable container matching alerts page -->
         <div class="bg-white rounded-lg shadow overflow-hidden">
-        <div class="landing-editor">
+        <div class="landing-editor overflow-y-auto" style="max-height: calc(100vh - 140px);">
 
         <!-- ============================================== -->
         <!-- LIVE PREVIEW - EXACT REPLICA OF LANDING PAGE   -->
@@ -617,8 +617,8 @@
                         </div>
                     </button>
 
-                    <!-- Hover Effect Upload (3rd Option: Only shows if a primary photo exists for Team Members) -->
-                    <button x-show="currentUploadKey && currentUploadKey.includes('team') && currentUploadKey.endsWith('_img') && (previews[currentUploadKey] || (data[currentUploadKey] && (data[currentUploadKey].image || data[currentUploadKey].value)))"
+                    <!-- Hover Effect Upload (3rd Option: Only shows if a primary photo exists) -->
+                    <button x-show="currentUploadKey && currentUploadKey.endsWith('_img') && (previews[currentUploadKey] || (data[currentUploadKey] && (data[currentUploadKey].image || data[currentUploadKey].value)))"
                             @click="currentUploadKey = currentUploadKey.replace('_img', '') + '_img_hover'; $refs.bgFileInput.click(); showBgModal = false;" 
                             class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition text-left group">
                         <div class="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center text-pink-600 shrink-0 group-hover:bg-pink-200 transition-colors">
@@ -665,7 +665,7 @@
             <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white z-10">
                 <div>
                     <h3 class="text-xl font-bold text-gray-900">Adjust Image</h3>
-                    <p class="text-gray-500 text-sm">Drag to position • Scroll or set slider to zoom</p>
+                    <p class="text-gray-500 text-sm">Drag to position ΓÇó Scroll or set slider to zoom</p>
                 </div>
                 <button @click="closeCropModal" class="text-gray-400 hover:text-gray-600 transition p-2 rounded-full hover:bg-gray-100">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -694,7 +694,7 @@
     <script>
         function landingEditor(initialData) {
             const defaults = {
-                hero_title: { value: "IoT-Based<br> Water Quality Monitoring System for<br><span class='gradient-text'>Aquaculture</span>" },
+                hero_title: { value: "IoT-Based Water Quality <br> <span class='gradient-text'>Monitoring System</span>" },
                 hero_subtitle: { value: "Ensuring a sustainable aquaculture environment through high-precision IoT sensors and real-time data analytics." },
                 hero_bg: { value: null },
 
@@ -752,7 +752,7 @@
                 team3_desc: { value: "Focuses on research, technical writing, and system validation." },
                 team3_img: { value: null },
                 team3_img_hover: { value: null },
-                team4_name: { value: "Jonas D. Parraño" },
+                team4_name: { value: "Jonas D. Parra├▒o" },
                 team4_role: { value: "System Analyst / Capstone Adviser" },
                 team4_desc: { value: "Provides expert guidance on system architecture and project direction." },
                 team4_img: { value: null },
@@ -819,7 +819,7 @@
                     console.log('Landing Editor Initialized');
                     // Ensure all data items have a style property
                     for (const key in this.data) {
-                        if (this.data[key] && typeof this.data[key] === 'object' && !this.data[key].style) {
+                        if (typeof this.data[key] === 'object' && !this.data[key].style) {
                             this.data[key].style = '';
                         }
                     }
@@ -966,8 +966,7 @@
                     const file = e.target.files[0];
                     if (file) {
                         // Bypass cropper completely if uploading a video!
-                        if (file.type && file.type.indexOf('video/') === 0) {
-                            alert("Videos cannot be cropped. The video will be uploaded in its original resolution and saved automatically.");
+                        if (file.type.startsWith('video/')) {
                             this.files[this.currentUploadKey] = file;
                             this.previews[this.currentUploadKey] = URL.createObjectURL(file);
                             this.saveChanges();
@@ -975,19 +974,14 @@
                             return;
                         }
 
-                        this.cropShape = (this.currentUploadKey && this.currentUploadKey.indexOf('team') !== -1) ? 'circle' : 'rect';
+                        this.cropShape = this.currentUploadKey.includes('team') ? 'circle' : 'rect';
 
-                        // Remove from clearedMedia if we're replacing it
-                        if (this.currentUploadKey) {
-                            this.clearedMedia = this.clearedMedia.filter(k => k !== this.currentUploadKey);
-                        }
-
-                        // Use createObjectURL for better performance and reliability with larger images
-                        if (this.cropImageSrc && this.cropImageSrc.startsWith('blob:')) {
-                            URL.revokeObjectURL(this.cropImageSrc);
-                        }
-                        this.cropImageSrc = URL.createObjectURL(file);
-                        this.showCropModal = true;
+                        const reader = new FileReader();
+                        reader.onload = (evt) => {
+                            this.cropImageSrc = evt.target.result;
+                            this.showCropModal = true;
+                        };
+                        reader.readAsDataURL(file);
                     }
                     e.target.value = '';
                 },
@@ -995,7 +989,7 @@
                 initCrop() {
                     this.$nextTick(() => {
                         const img = document.getElementById('cropperImage');
-                        if (!img) return;
+                        if (!img || img.naturalWidth === 0) return;
 
                         if (window.cropper) {
                             window.cropper.destroy();
@@ -1012,10 +1006,8 @@
                             ready: () => {
                                 img.style.opacity = '1';
                                 if (this.cropShape === 'circle') {
-                                    const viewBox = document.querySelector('.cropper-view-box');
-                                    const face = document.querySelector('.cropper-face');
-                                    if (viewBox) viewBox.style.borderRadius = '50%';
-                                    if (face) face.style.borderRadius = '50%';
+                                    document.querySelector('.cropper-view-box').style.borderRadius = '50%';
+                                    document.querySelector('.cropper-face').style.borderRadius = '50%';
                                 }
                             }
                         });
@@ -1134,7 +1126,6 @@
                     .then(async res => {
                         if (res.ok) {
                             this.showSuccess = true;
-                            this.clearedMedia = [];
                             setTimeout(() => { this.showSuccess = false; }, 3000);
                         } else {
                             const error = await res.json().catch(() => ({ message: 'Unknown Server Error' }));
