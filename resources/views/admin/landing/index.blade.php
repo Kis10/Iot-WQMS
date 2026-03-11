@@ -993,13 +993,19 @@
                 },
 
                 initCrop() {
-                    this.$nextTick(() => {
+                    // Give a small delay to ensure modal transition has started and width/height are calculated
+                    setTimeout(() => {
                         const img = document.getElementById('cropperImage');
                         if (!img) return;
+
+                        // Ensure image has a source and is not broken
+                        if (!img.src || img.src.includes('undefined')) return;
 
                         if (window.cropper) {
                             window.cropper.destroy();
                         }
+
+                        console.log('Initializing Cropper for:', img.src);
 
                         window.cropper = new Cropper(img, {
                             aspectRatio: this.cropShape === 'circle' ? 1 : NaN,
@@ -1011,15 +1017,16 @@
                             toggleDragModeOnDblclick: false,
                             ready: () => {
                                 img.style.opacity = '1';
+                                console.log('Cropper Ready');
                                 if (this.cropShape === 'circle') {
                                     const viewBox = document.querySelector('.cropper-view-box');
                                     const face = document.querySelector('.cropper-face');
                                     if (viewBox) viewBox.style.borderRadius = '50%';
                                     if (face) face.style.borderRadius = '50%';
                                 }
-                            }
+                            },
                         });
-                    });
+                    }, 100);
                 },
 
                 closeCropModal() {
@@ -1062,10 +1069,16 @@
 
                 applyUrl() {
                     if (this.tempUrl) {
+                        // Very basic check – if it doesn't look like a URL, alert
+                        if (!this.tempUrl.startsWith('http')) {
+                            alert("Please provide a valid image URL starting with http:// or https://");
+                            return;
+                        }
+
                         if (!this.data[this.currentUploadKey]) this.data[this.currentUploadKey] = {};
                         
                         this.data[this.currentUploadKey].value = this.tempUrl;
-                        this.data[this.currentUploadKey].image = this.tempUrl; // Set image prop explicitly for preview
+                        this.data[this.currentUploadKey].image = this.tempUrl;
                         
                         if (this.currentUploadKey === 'hero_bg') {
                             this.heroBgPreview = this.tempUrl;
@@ -1074,8 +1087,12 @@
                             this.previews[this.currentUploadKey] = this.tempUrl;
                             delete this.files[this.currentUploadKey];
                         }
+
+                        // Auto save changes for URL too!
+                        this.saveChanges();
                     }
                     this.showUrlModal = false;
+                    this.tempUrl = '';
                 },
 
                 saveChanges() {

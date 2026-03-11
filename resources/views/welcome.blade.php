@@ -60,9 +60,12 @@
                 box-shadow: 0 20px 30px -12px rgba(15, 23, 42, 0.2), 0 10px 16px -12px rgba(15, 23, 42, 0.2);
             }
             .gradient-text {
-                background: linear-gradient(135deg, #2563eb 0%, #0891b2 100%);
+                background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 50%, #2dd4bf 100%);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
+                background-clip: text;
+                display: inline-block;
+                filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.2));
             }
             @keyframes heroFloat {
                 0%, 100% {
@@ -217,7 +220,14 @@
                 <div class="fade-in-up visible">
                     <br><br>
                     <h1 class="hero-text-in text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white mb-6 sm:mb-8 leading-tight tracking-tight">
-                        {!! $contents['hero_title']->value ?? 'IoT-Based Water Quality <br> <span class="gradient-text">Monitoring System</span>' !!}
+                        @php
+                            $title = $contents['hero_title']->value ?? 'IoT-Based Water Quality <br> <span class="gradient-text">Monitoring System</span>';
+                            // Ensure the gradient span exists if it was accidentally removed via the editor
+                            if (!str_contains($title, 'gradient-text') && str_contains($title, 'Monitoring System')) {
+                                $title = str_replace('Monitoring System', '<span class="gradient-text">Monitoring System</span>', $title);
+                            }
+                        @endphp
+                        {!! $title !!}
                     </h1>
                     <p class="hero-text-in hero-text-in-delay text-base sm:text-xl md:text-2xl text-blue-100 mb-8 sm:mb-12 max-w-3xl mx-auto font-medium leading-relaxed opacity-90 px-2">
                         {{ $contents['hero_subtitle']->value ?? 'Ensuring a sustainable aquaculture environment through high-precision IoT sensors and real-time data analytics.' }}

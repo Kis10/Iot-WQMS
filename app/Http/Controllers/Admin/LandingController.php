@@ -102,14 +102,16 @@ class LandingController extends Controller
                 Log::info("LandingController: Found URL for key: {$urlInput}");
                 $url = $request->input($urlInput);
                 if (filter_var($url, FILTER_VALIDATE_URL) && !str_contains($url, request()->getHost())) {
-                    $cloudUrl = $this->uploadUrlToCloudinary($url, $key);
-                    if ($cloudUrl) {
-                        $updateData = [
-                            'image' => $cloudUrl,
-                            'value' => $url, // local URL is just the source URL
-                            'type' => 'image',
-                        ];
+                    $cloudUrl = null;
+                    if ($this->isCloudinaryActive()) {
+                        $cloudUrl = $this->uploadUrlToCloudinary($url, $key);
                     }
+                    
+                    $updateData = [
+                        'image' => $cloudUrl ?? $url,
+                        'value' => $url, // local URL is just the source URL
+                        'type' => 'image',
+                    ];
                 }
             }
 
