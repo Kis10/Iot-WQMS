@@ -263,7 +263,7 @@ void loop() {
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print("Error: WiFi Lost");
-    while(1); // Halt
+    ESP.restart(); // Automatically restart to try again
   }
 
   unsigned long currentMillis = millis();
@@ -273,7 +273,7 @@ void loop() {
       if (initStartTime == 0) initStartTime = currentMillis; // Latch start time
 
       unsigned long elapsedInit = currentMillis - initStartTime;
-      int remainingSeconds = 60 - (elapsedInit / 1000);
+      int remainingSeconds = 3 - (elapsedInit / 1000);
       
       if (remainingSeconds > 0) {
           lcd.setCursor(0,0);
@@ -438,8 +438,8 @@ void connectToWiFiWithUI() {
   
   startSound(SOUND_WIFI_CONNECT);
   
-  // 5s Countdown before startup
-  for(int i=5; i>0; i--) {
+  // 1s Countdown before startup
+  for(int i=1; i>0; i--) {
      lcd.setCursor(0,3);
      lcd.printf("Starting in %ds... ", i);
      delay(1000);
