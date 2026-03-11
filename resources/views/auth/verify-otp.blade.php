@@ -37,20 +37,41 @@
         </div>
     </form>
 
-    <div class="mt-8 pt-6 border-t border-gray-100 text-center">
+    <div class="mt-8 pt-6 border-t border-gray-100 text-center" x-data="{ 
+        timer: 120, 
+        canResend: false,
+        init() {
+            let interval = setInterval(() => {
+                if (this.timer > 0) {
+                    this.timer--;
+                } else {
+                    this.canResend = true;
+                    clearInterval(interval);
+                }
+            }, 1000);
+        }
+    }">
         <form method="POST" action="{{ route('verify-otp.resend') }}">
             @csrf
             <input type="hidden" name="email" value="{{ $email }}">
             <p class="text-sm text-gray-500">
                 Didn't receive the code? 
-                <button type="submit" class="font-bold text-blue-600 hover:text-blue-700 transition underline decoration-2 underline-offset-4">
+                <button type="submit" 
+                        x-bind:disabled="!canResend"
+                        x-bind:class="canResend ? 'text-blue-600 hover:text-blue-700 underline' : 'text-gray-400 cursor-not-allowed'"
+                        class="font-bold transition decoration-2 underline-offset-4">
                     Resend Code
                 </button>
             </p>
+            <p x-show="!canResend" class="text-xs text-gray-400 mt-2">
+                You can resend in <span class="font-bold" x-text="Math.floor(timer / 60) + ':' + (timer % 60).toString().padStart(2, '0')"></span>
+            </p>
         </form>
         
-        <a href="{{ route('register') }}" class="inline-block mt-4 text-xs font-bold text-gray-400 hover:text-gray-600 transition uppercase tracking-widest">
-            Back to Registration
-        </a>
+        <div class="mt-6">
+            <a href="{{ route('register') }}" class="text-xs font-bold text-gray-400 hover:text-gray-600 transition uppercase tracking-widest">
+                Back to Registration
+            </a>
+        </div>
     </div>
 </x-guest-layout>

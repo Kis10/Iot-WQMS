@@ -57,7 +57,7 @@ class LoginRequest extends FormRequest
             if (!$user->otp_code || ($user->otp_expires_at && $user->otp_expires_at < now())) {
                 $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
                 $user->otp_code = $otp;
-                $user->otp_expires_at = now()->addMinutes(10);
+                $user->otp_expires_at = now()->addMinutes(2);
                 $user->save();
                 \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\OTPMail($otp));
             }

@@ -45,7 +45,7 @@ class RegisteredUserController extends Controller
 
         $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         $user->otp_code = $otp;
-        $user->otp_expires_at = now()->addMinutes(10);
+        $user->otp_expires_at = now()->addMinutes(2);
         $user->save();
 
         Mail::to($user->email)->send(new OTPMail($otp));
