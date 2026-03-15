@@ -13,10 +13,27 @@
         
         <!-- Favicon -->
         <link rel="icon" type="image/png" href="{{ asset('img/logo/logo-wq.png') }}">
+        <link rel="manifest" href="/manifest.json">
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js');
+                });
+            }
+        </script>
 
         <!-- Scripts & Styles -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+        <!-- Global PWA Capture -->
+        <script>
+            window.deferredPwaPrompt = null;
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                window.deferredPwaPrompt = e;
+            });
+        </script>
 
         <style>
             body {
@@ -242,7 +259,7 @@
             <div class="relative z-10">
 
         <!-- General Caption Section -->
-        <section class="py-12 sm:py-24 overflow-hidden">
+        <section id="mission" class="py-12 sm:py-24 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <div class="max-w-3xl mx-auto fade-in-up">
                     <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 text-blue-600 text-sm font-bold mb-6">
@@ -372,6 +389,7 @@
                     $demoVid = $demoRow->image ?? $demoRow->value ?? null;
                     $demoUrl = $demoVid ? (str_starts_with($demoVid, 'http') ? $demoVid : asset($demoVid)) : null;
                 @endphp
+
 
                 <!-- Floating Watch Demo Button -->
                     <div class="fixed bottom-8 right-6 sm:right-8 z-[90] transition-all duration-500 ease-in-out"
@@ -709,6 +727,27 @@
             </div>
         </div>
 
+        <!-- Floating Install App Button (Overlay) -->
+        <div x-data="installPrompt()"
+             @scroll.window="checkScroll()"
+             class="fixed bottom-6 left-6 sm:left-8 z-[9999] transition-all duration-500 ease-in-out bg-white p-4 rounded-2xl shadow-[0_10px_40px_-10px_rgba(13,26,99,0.6)] border border-gray-100 flex items-center gap-4 w-[280px]"
+             :class="showInstall && !installed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[150%] pointer-events-none'"
+             x-cloak>
+            <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center shrink-0 border border-blue-100 p-2 shadow-inner">
+                <img src="{{ asset('img/logo/logo-wq.png') }}" class="w-full h-full object-contain" alt="App Icon">
+            </div>
+            <div class="flex-1">
+                <h4 class="font-bold text-sm text-gray-900 leading-tight">Install AquaSense</h4>
+                <p class="text-xs text-gray-500 mt-0.5">Add to Home Screen</p>
+            </div>
+            <button @click="install()" class="bg-[#0D1A63] hover:bg-blue-700 text-white text-xs font-bold py-2.5 px-4 rounded-lg shadow-sm transition transform hover:scale-105 shrink-0">
+                Install
+            </button>
+            <button @click="installed = true" class="absolute -top-2 -right-2 bg-white text-gray-400 hover:text-red-500 rounded-full p-1 shadow-sm border border-gray-100 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
         <!-- Improved Footer -->
         <footer class="bg-white py-12 border-t border-gray-100 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -724,6 +763,78 @@
                 </div>
             </div>
         </footer>
+
+        <!-- PWA Install Script -->
+        <script>
+            document.addEventListener('alpine:init', () => {
+                Alpine.data('installPrompt', () => ({
+                    showInstall: false,
+                    installed: false,
+                    deferredPrompt: null,
+                    
+                    init() {
+                        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+                            this.installed = true;
+                        }
+                        
+                        // Check if the global variable already caught it
+                        if (window.deferredPwaPrompt) {
+                            this.deferredPrompt = window.deferredPwaPrompt;
+                        }
+                        
+                        window.addEventListener('beforeinstallprompt', (e) => {
+                            e.preventDefault();
+                            this.deferredPrompt = e;
+                            window.deferredPwaPrompt = e;
+                        });
+                        
+                        window.addEventListener('appinstalled', (evt) => {
+                            this.installed = true;
+                            this.showInstall = false;
+                        });
+                    },
+                    
+                    checkScroll() {
+                        const missionSection = document.getElementById('mission');
+                        const footer = document.querySelector('footer');
+                        
+                        if (missionSection && footer) {
+                            const scrollPos = window.scrollY + window.innerHeight;
+                            const footerTop = footer.offsetTop;
+                            
+                            if (window.scrollY > (missionSection.offsetTop - window.innerHeight/2) && scrollPos < footerTop + 100) {
+                                this.showInstall = true;
+                            } else {
+                                this.showInstall = false;
+                            }
+                        }
+                    },
+                    
+                    async install() {
+                        if (this.deferredPrompt || window.deferredPwaPrompt) {
+                            const promptEvent = this.deferredPrompt || window.deferredPwaPrompt;
+                            promptEvent.prompt();
+                            const { outcome } = await promptEvent.userChoice;
+                            if (outcome === 'accepted') {
+                                this.installed = true;
+                            }
+                            this.deferredPrompt = null;
+                            window.deferredPwaPrompt = null;
+                        } else {
+                            // Fallback: Automatically download an Internet Shortcut (.url) file without any alert
+                            const shortcutContent = `[InternetShortcut]\nURL=https://aquasense.blog/\nIconFile=https://aquasense.blog/img/logo/logo-wq.png\nIconIndex=0`;
+                            const blob = new Blob([shortcutContent], { type: 'application/octet-stream' });
+                            const link = document.createElement('a');
+                            link.href = URL.createObjectURL(blob);
+                            link.download = 'AquaSense.url';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                        }
+                    }
+                }));
+            });
+        </script>
 
         <!-- Scroll Animation Script -->
         <script>
