@@ -730,22 +730,34 @@
         <!-- Floating Install App Button (Overlay) -->
         <div x-data="installPrompt()"
              @scroll.window="checkScroll()"
-             class="fixed bottom-6 left-6 sm:left-8 z-[9999] transition-all duration-500 ease-in-out bg-white p-4 rounded-2xl shadow-[0_10px_40px_-10px_rgba(13,26,99,0.6)] border border-gray-100 flex items-center gap-4 w-[280px]"
+             class="fixed bottom-6 left-6 sm:left-8 z-[9999] transition-all duration-500 ease-in-out bg-white p-5 rounded-2xl shadow-[0_10px_40px_-10px_rgba(13,26,99,0.5)] border border-gray-100 flex flex-col gap-3 w-[340px]"
              :class="showInstall && !installed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-[150%] pointer-events-none'"
              x-cloak>
-            <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center shrink-0 border border-blue-100 p-2 shadow-inner">
-                <img src="{{ asset('img/logo/logo-wq.png') }}" class="w-full h-full object-contain" alt="App Icon">
+             
+            <div class="flex items-start justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-[#0D1A63] rounded-xl flex items-center justify-center shrink-0 p-2 shadow-sm">
+                        <img src="{{ asset('img/logo/logo-wq.png') }}" class="w-full h-full object-contain brightness-0 invert" alt="App Icon">
+                    </div>
+                    <h4 class="font-bold text-lg text-gray-900 tracking-tight">Install AquaSense</h4>
+                </div>
+                <button @click="installed = true" class="text-gray-400 hover:text-gray-600 transition p-1 -mr-1 -mt-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
             </div>
-            <div class="flex-1">
-                <h4 class="font-bold text-sm text-gray-900 leading-tight">Install AquaSense</h4>
-                <p class="text-xs text-gray-500 mt-0.5">Add to Home Screen</p>
+            
+            <p class="text-[15px] text-gray-600 leading-relaxed pr-2">
+                Install our app for a better experience. Quick access and a full-screen experience.
+            </p>
+
+            <div class="flex gap-3 mt-1">
+                <button @click="install()" class="flex-1 bg-[#0D1A63] hover:bg-blue-800 text-white font-bold py-2.5 rounded-xl shadow-sm transition text-[15px]">
+                    Install
+                </button>
+                <button @click="installed = true" class="flex-1 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 font-bold py-2.5 rounded-xl shadow-sm transition text-[15px]">
+                    Later
+                </button>
             </div>
-            <button @click="install()" class="bg-[#0D1A63] hover:bg-blue-700 text-white text-xs font-bold py-2.5 px-4 rounded-lg shadow-sm transition transform hover:scale-105 shrink-0">
-                Install
-            </button>
-            <button @click="installed = true" class="absolute -top-2 -right-2 bg-white text-gray-400 hover:text-red-500 rounded-full p-1 shadow-sm border border-gray-100 transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
         </div>
 
         <!-- Improved Footer -->
@@ -822,7 +834,7 @@
                             window.deferredPwaPrompt = null;
                         } else {
                             // Fallback: Automatically download an Internet Shortcut (.url) file without any alert
-                            const shortcutContent = `[InternetShortcut]\nURL=https://aquasense.blog/\nIconFile=https://aquasense.blog/img/logo/logo-wq.png\nIconIndex=0`;
+                            const shortcutContent = `[InternetShortcut]\nURL=https://aquasense.blog/\nIconFile=https://aquasense.blog/img/logo/logo-wq.png\nIconIndex=0\nHotKey=0\nIDList=`;
                             const blob = new Blob([shortcutContent], { type: 'application/octet-stream' });
                             const link = document.createElement('a');
                             link.href = URL.createObjectURL(blob);
