@@ -834,7 +834,7 @@
                             window.deferredPwaPrompt = null;
                         } else {
                             // Fallback: Automatically download an Internet Shortcut (.url) file without any alert
-                            const shortcutContent = `[InternetShortcut]\nURL=https://aquasense.blog/\nIconFile=https://aquasense.blog/img/logo/app-icon.png\nIconIndex=0\nHotKey=0\nIDList=`;
+                            const shortcutContent = `[InternetShortcut]\nURL=https://aquasense.blog/\nIconFile=https://aquasense.blog/img/logo/logo-wq.png\nIconIndex=0`;
                             const blob = new Blob([shortcutContent], { type: 'application/octet-stream' });
                             const link = document.createElement('a');
                             link.href = URL.createObjectURL(blob);
