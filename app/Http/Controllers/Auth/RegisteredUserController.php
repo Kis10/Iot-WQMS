@@ -40,9 +40,14 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        event(new UserRegisteredForOtp($user));
+        $registrationEvent = new UserRegisteredForOtp($user);
+        event($registrationEvent);
+
+        $status = $registrationEvent->otpSent
+            ? 'A verification code has been sent to your email. Please enter it below to activate your account.'
+            : 'Your account was created, but email delivery is delayed. Please tap "Resend Code" on the verification page.';
 
         return redirect()->route('verify-otp', ['email' => $user->email])
-            ->with('status', 'A verification code has been sent to your email. Please enter it below to activate your account.');
+            ->with('status', $status);
     }
 }

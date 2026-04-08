@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Services\OtpService;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -54,16 +55,17 @@ class LoginRequest extends FormRequest
             Auth::logout();
             
             // Generate new OTP if expired
+            $otpSent = true;
             if (!$user->otp_code || ($user->otp_expires_at && $user->otp_expires_at < now())) {
-                $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-                $user->otp_code = $otp;
-                $user->otp_expires_at = now()->addMinutes(2);
-                $user->save();
-                \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\OTPMail($otp));
+                $otpSent = app(OtpService::class)->issueAndSend($user, 2);
             }
 
+            $message = $otpSent
+                ? 'Your email address is not verified. A verification code has been sent/is active. <a href="'.route('verify-otp', ['email' => $user->email]).'" class="font-bold underline">Click here to verify</a>'
+                : 'Your email address is not verified. A code was generated but email delivery is delayed. <a href="'.route('verify-otp', ['email' => $user->email]).'" class="font-bold underline">Click here to verify/resend</a>';
+
             throw ValidationException::withMessages([
-                'email' => 'Your email address is not verified. A verification code has been sent/is active. <a href="'.route('verify-otp', ['email' => $user->email]).'" class="font-bold underline">Click here to verify</a>',
+                'email' => $message,
             ]);
         }
 

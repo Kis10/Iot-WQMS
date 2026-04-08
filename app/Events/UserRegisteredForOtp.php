@@ -10,6 +10,8 @@ class UserRegisteredForOtp
 {
     use Dispatchable, SerializesModels;
 
+    public bool $otpSent = false;
+
     public function __construct(public User $user)
     {
     }
