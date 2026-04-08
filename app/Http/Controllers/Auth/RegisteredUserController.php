@@ -2,17 +2,14 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\UserRegisteredForOtp;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\OTPMail;
 
 class RegisteredUserController extends Controller
 {
@@ -43,14 +40,7 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        $user->otp_code = $otp;
-        $user->otp_expires_at = now()->addMinutes(2);
-        $user->save();
-
-        Mail::to($user->email)->send(new OTPMail($otp));
-
-        event(new Registered($user));
+        event(new UserRegisteredForOtp($user));
 
         return redirect()->route('verify-otp', ['email' => $user->email])
             ->with('status', 'A verification code has been sent to your email. Please enter it below to activate your account.');

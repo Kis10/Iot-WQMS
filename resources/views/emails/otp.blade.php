@@ -20,7 +20,7 @@
             {{ $otp }}
         </div>
         
-        <p>This code will expire in 10 minutes. If you did not request this, please ignore this email.</p>
+        <p>This code will expire in 2 minutes. If you did not request this, please ignore this email.</p>
         
         <div class="footer">
             &copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
