@@ -694,7 +694,11 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                         </div>
                         <h4 class="text-xl font-bold mb-2" style="color: #0D1A63;">{{ $contents['contact_email_label']->value ?? 'Email Address' }}</h4>
-                        @php $email = $contents['contact_email']->value ?? 'kirstinesanchez9@gmail.com'; @endphp
+                        @php
+                            $rawEmail = html_entity_decode($contents['contact_email']->value ?? 'kirstinesanchez9@gmail.com', ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                            preg_match('/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}/i', $rawEmail, $emailMatch);
+                            $email = $emailMatch[0] ?? trim(strip_tags($rawEmail));
+                        @endphp
                         <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ $email }}" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-[#0D1A63] transition font-medium block">
                             {{ $email }}
                         </a>
@@ -705,7 +709,11 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
                         </div>
                         <h4 class="text-xl font-bold mb-2" style="color: #0D1A63;">{{ $contents['contact_phone_label']->value ?? 'Mobile Number' }}</h4>
-                        @php $phones = explode("\n", $contents['contact_phone']->value ?? "09207327946\n09151003714"); @endphp
+                        @php
+                            $rawPhone = html_entity_decode($contents['contact_phone']->value ?? "09207327946\n09151003714", ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                            $phoneText = trim(strip_tags(preg_replace('/<br\s*\/?>/i', "\n", $rawPhone) ?? $rawPhone));
+                            $phones = preg_split('/\r\n|\r|\n/', $phoneText) ?: [];
+                        @endphp
                         @foreach($phones as $phone)
                             <a href="tel:{{ trim($phone) }}" class="text-gray-500 hover:text-[#0D1A63] transition font-medium block">{{ trim($phone) }}</a>
                         @endforeach
@@ -716,7 +724,10 @@
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         </div>
                         <h4 class="text-xl font-bold mb-2" style="color: #0D1A63;">{{ $contents['contact_location_label']->value ?? 'Our Location' }}</h4>
-                        @php $location = $contents['contact_location']->value ?? 'Po-Ok, Hinoba-an, Negros Occidental'; @endphp
+                        @php
+                            $rawLocation = html_entity_decode($contents['contact_location']->value ?? 'Po-Ok, Hinoba-an, Negros Occidental', ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                            $location = trim(strip_tags($rawLocation));
+                        @endphp
                         <a id="dynamic-location" href="https://www.google.com/maps/search/?api=1&query={{ urlencode($location) }}" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-[#0D1A63] transition font-medium block">
                             {{ $location }}
                         </a>
@@ -917,4 +928,3 @@
         <script>initNetworkBg('networkBgHero');</script>
     </body>
 </html>
-

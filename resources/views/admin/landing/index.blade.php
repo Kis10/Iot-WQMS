@@ -908,6 +908,16 @@
                     const el = e.target;
                     el.setAttribute('contenteditable', 'true');
                     el.focus();
+
+                    // Force plain-text paste for regular fields to avoid saving rich HTML.
+                    if (!el.dataset.plainPasteBound) {
+                        el.addEventListener('paste', (event) => {
+                            event.preventDefault();
+                            const text = (event.clipboardData || window.clipboardData).getData('text/plain');
+                            document.execCommand('insertText', false, text);
+                        });
+                        el.dataset.plainPasteBound = '1';
+                    }
                     
                     // Toolbar Support
                     this.setActive(el);
@@ -922,7 +932,7 @@
                     el.removeAttribute('contenteditable');
                     el.style.outline = 'none'; // Clear outline
                     
-                    // Save innerHTML to preserve formatting (Bold, Italic, etc.)
+                    // Keep existing behavior: preserve editable HTML/formatting output.
                     this.data[key].value = el.innerHTML;
                     
                     // Save Block Styles (Font Size, Alignment)

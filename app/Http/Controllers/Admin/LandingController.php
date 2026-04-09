@@ -47,6 +47,8 @@ class LandingController extends Controller
         foreach ($textInputs as $key => $value) {
             if (in_array($key, $imageKeys)) continue;
 
+            $value = $this->normalizeTextContent($key, $value);
+
             LandingContent::updateOrCreate(
                 ['key' => $key],
                 ['value' => $value]
@@ -132,6 +134,40 @@ class LandingController extends Controller
         }
 
         return redirect()->route('admin.landing.index')->with('status', 'Landing Page Updated Successfully!');
+    }
+
+    /**
+     * Normalize editable text fields before storing them.
+     * Keep existing rich-text behavior for most fields.
+     * Contact destination fields are normalized as plain text to prevent pasted markup.
+     */
+    private function normalizeTextContent(string $key, mixed $value): string
+    {
+        if (is_array($value)) {
+            $value = implode("\n", $value);
+        }
+
+        $value = str_replace(["\r\n", "\r"], "\n", (string) $value);
+        $contactPlainKeys = ['contact_email', 'contact_phone', 'contact_location'];
+
+        if (!in_array($key, $contactPlainKeys, true)) {
+            return trim($value);
+        }
+
+        $plainValue = preg_replace('/<br\s*\/?>/i', "\n", $value) ?? $value;
+        $plainValue = html_entity_decode($plainValue, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $plainValue = strip_tags($plainValue);
+
+        if ($key === 'contact_email' && preg_match('/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}/i', $plainValue, $match)) {
+            return strtolower($match[0]);
+        }
+
+        if ($key === 'contact_phone') {
+            $phones = array_values(array_filter(array_map('trim', preg_split('/\n+/', $plainValue) ?: [])));
+            return implode("\n", $phones);
+        }
+
+        return trim($plainValue);
     }
 
     /**
