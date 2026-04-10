@@ -768,7 +768,7 @@
                 contact_title: { value: "Contact Us" },
                 contact_subtitle: { value: "Have questions? We're here to help you optimize your aquaculture operations." },
                 contact_email_label: { value: "Email Address" },
-                contact_email: { value: "kirstinesanchez9@gmail.com" },
+                contact_email: { value: "aquasense@gmail.com" },
                 contact_phone_label: { value: "Mobile Number" },
                 contact_phone: { value: "09207327946\n09151003714" },
                 contact_location_label: { value: "Our Location" },

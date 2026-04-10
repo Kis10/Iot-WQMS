@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AquaSense – Dataset Relationship & Data Flow</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    :root {
+      --bg: #0a0e1a;
+      --card: #111827;
+      --card2: #161d2e;
+      --border: #1e293b;
+      --accent: #38bdf8;
+      --accent2: #818cf8;
+      --accent3: #34d399;
+      --accent4: #fb923c;
+      --accent5: #f472b6;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --danger: #f87171;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden
+    }
+
+    .hero {
+      text-align: center;
+      padding: 60px 20px 30px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(56, 189, 248, .12) 0%, transparent 70%)
+    }
+
+    .hero h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent
+    }
+
+    .hero p {
+      color: var(--muted);
+      margin-top: 8px;
+      font-size: .95rem
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 20px;
+      flex-wrap: wrap
+    }
+
+    .tab {
+      padding: 10px 24px;
+      border-radius: 50px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: .85rem;
+      font-weight: 500;
+      transition: .2s
+    }
+
+    .tab.active,
+    .tab:hover {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent)
+    }
+
+    .view {
+      display: none;
+      padding: 20px 30px 60px
+    }
+
+    .view.active {
+      display: block
+    }
+
+    /* ---- ERD ---- */
+    .erd-wrap {
+      overflow-x: auto;
+      padding-bottom: 20px
+    }
+
+    .erd-canvas {
+      position: relative;
+      min-width: 1100px;
+      height: 780px
+    }
+
+    svg.lines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible
+    }
+
+    .table-card {
+      position: absolute;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      min-width: 200px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .4);
+      transition: .2s;
+      cursor: pointer
+    }
+
+    .table-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, .25), 0 8px 32px rgba(0, 0, 0, .5)
+    }
+
+    .table-card .th {
+      padding: 10px 14px;
+      border-radius: 14px 14px 0 0;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .5px;
+      text-transform: uppercase
+    }
+
+    .table-card .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 14px;
+      border-top: 1px solid rgba(255, 255, 255, .04);
+      font-size: .75rem;
+      gap: 10px
+    }
+
+    .table-card .row:last-child {
+      border-radius: 0 0 14px 14px
+    }
+
+    .table-card .row:hover {
+      background: rgba(255, 255, 255, .04)
+    }
+
+    .col-name {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text)
+    }
+
+    .col-type {
+      color: var(--muted);
+      font-size: .68rem
+    }
+
+    .badge {
+      font-size: .6rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600
+    }
+
+    .pk {
+      background: rgba(251, 146, 60, .2);
+      color: #fb923c
+    }
+
+    .fk {
+      background: rgba(56, 189, 248, .2);
+      color: #38bdf8
+    }
+
+    .uq {
+      background: rgba(52, 211, 153, .2);
+      color: #34d399
+    }
+
+    /* colour themes */
+    .t-users .th {
+      background: linear-gradient(90deg, #4f46e5, #7c3aed);
+      color: #fff
+    }
+
+    .t-sessions .th {
+      background: linear-gradient(90deg, #374151, #4b5563);
+      color: #9ca3af
+    }
+
+    .t-pwreset .th {
+      background: linear-gradient(90deg, #374151, #4b5563);
+      color: #9ca3af
+    }
+
+    .t-devices .th {
+      background: linear-gradient(90deg, #0369a1, #0ea5e9);
+      color: #fff
+    }
+
+    .t-wreadings .th {
+      background: linear-gradient(90deg, #065f46, #10b981);
+      color: #fff
+    }
+
+    .t-wanalyses .th {
+      background: linear-gradient(90deg, #6d28d9, #8b5cf6);
+      color: #fff
+    }
+
+    .t-alerts .th {
+      background: linear-gradient(90deg, #991b1b, #ef4444);
+      color: #fff
+    }
+
+    .t-lreadings .th {
+      background: linear-gradient(90deg, #1e3a5f, #3b82f6);
+      color: #fff
+    }
+
+    .t-chat .th {
+      background: linear-gradient(90deg, #7c3a1b, #f97316);
+      color: #fff
+    }
+
+    .t-loginact .th {
+      background: linear-gradient(90deg, #14532d, #16a34a);
+      color: #fff
+    }
+
+    .t-useract .th {
+      background: linear-gradient(90deg, #1e1b4b, #6366f1);
+      color: #fff
+    }
+
+    .t-landing .th {
+      background: linear-gradient(90deg, #4a1942, #ec4899);
+      color: #fff
+    }
+
+    /* ---- FLOW ---- */
+    .flow-wrap {
+      max-width: 900px;
+      margin: 0 auto
+    }
+
+    .flow-step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 6px
+    }
+
+    .flow-step .connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center
+    }
+
+    .flow-step .icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0
+    }
+
+    .flow-step .arrow-line {
+      width: 2px;
+      height: 32px;
+      background: linear-gradient(to bottom, var(--border), transparent);
+      margin: 4px auto 0
+    }
+
+    .flow-step .body {
+      flex: 1;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 6px
+    }
+
+    .flow-step .body h3 {
+      font-size: .9rem;
+      font-weight: 700;
+      margin-bottom: 4px
+    }
+
+    .flow-step .body p {
+      color: var(--muted);
+      font-size: .8rem;
+      line-height: 1.5
+    }
+
+    .flow-step .body .tables {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px
+    }
+
+    .flow-step .body .tables span {
+      background: rgba(56, 189, 248, .1);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, .25);
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: .72rem;
+      font-family: 'JetBrains Mono', monospace
+    }
+
+    /* ---- LEGEND ---- */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      padding: 0 30px 30px
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .75rem;
+      color: var(--muted)
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%
+    }
+
+    /* line colors */
+    .line-rel {
+      stroke: rgba(56, 189, 248, .6);
+      stroke-width: 1.8;
+      fill: none;
+      stroke-dasharray: none
+    }
+
+    .line-soft {
+      stroke: rgba(129, 140, 248, .4);
+      stroke-width: 1.4;
+      fill: none;
+      stroke-dasharray: 5, 4
+    }
+  </style>
+</head>
+
+<body>
+  <div class="hero">
+    <h1>🌊 AquaSense WQMS</h1>
+    <p>Dataset Relationship &amp; System Data Flow — IoT Water Quality Monitoring System</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('erd')">🗂 Entity Relationship Diagram</div>
+    <div class="tab" onclick="switchTab('flow')">🔄 Data Flow</div>
+    <div class="tab" onclick="switchTab('summary')">📋 Table Summary</div>
+  </div>
+
+  <!-- ============ ERD ============ -->
+  <div class="view active" id="tab-erd">
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#38bdf8"></div> Foreign Key (FK)
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#fb923c"></div> Primary Key (PK)
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#34d399"></div> Unique
+      </div>
+      <div class="legend-item"><svg width="32" height="10">
+          <line x1="0" y1="5" x2="32" y2="5" stroke="rgba(56,189,248,.7)" stroke-width="1.8" />
+        </svg> HasMany / BelongsTo</div>
+      <div class="legend-item"><svg width="32" height="10">
+          <line x1="0" y1="5" x2="32" y2="5" stroke="rgba(129,140,248,.5)" stroke-width="1.4" stroke-dasharray="5,4" />
+        </svg> Soft Ref</div>
+    </div>
+    <div class="erd-wrap">
+      <div class="erd-canvas" id="erdCanvas">
+        <svg class="lines" id="svgLines"></svg>
+        <!-- tables injected by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ FLOW ============ -->
+  <div class="view" id="tab-flow">
+    <div class="flow-wrap">
+
+      <div class="flow-step">
+        <div class="connector">
+          <div class="icon" style="background:linear-gradient(135deg,#0ea5e9,#0369a1)">📡</div>
+          <div class="arrow-line"></div>
+        </div>
+        <div class="body">
+          <h3>1 · ESP32 IoT Device (Firmware)</h3>
+          <p>The AquaSense sensor reads pH, TDS, Turbidity, Temperature every cycle and POSTs JSON payload to the
+            Laravel API via HTTP.</p>
+          <div class="tables"><span>aquasense.ino</span></div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="connector">
+          <div class="icon" style="background:linear-gradient(135deg,#6366f1,#4f46e5)">🖥</div>
+          <div class="arrow-line"></div>
+        </div>
+        <div class="body">
+          <h3>2 · API Ingestion (Laravel Controller)</h3>
+          <p>The POST /api/data endpoint validates the payload, identifies the device by <code>device_id</code>, saves
+            raw sensor data and upserts a snapshot into <code>latest_readings</code>.</p>
+          <div class="tables"><span>devices</span><span>water_readings</span><span>latest_readings</span></div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="connector">
+          <div class="icon" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9)">🤖</div>
+          <div class="arrow-line"></div>
+        </div>
+        <div class="body">
+          <h3>3 · AI Analysis Job (Scheduled / Queued)</h3>
+          <p>Every 5 minutes, <code>AnalyzeWaterQuality</code> job runs via the job queue. It reads the latest water
+            reading, calls the Gemini AI API, and persists safety/quality insights, risk level, recommendations and
+            confidence score.</p>
+          <div class="tables"><span>water_readings</span><span>water_analyses</span><span>jobs</span></div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="connector">
+          <div class="icon" style="background:linear-gradient(135deg,#ef4444,#991b1b)">🚨</div>
+          <div class="arrow-line"></div>
+        </div>
+        <div class="body">
+          <h3>4 · Alert Generation</h3>
+          <p>When sensor values breach thresholds (pH critical, TDS > 1500, Turbidity < 20, Temp outside 15–35 °C),
+              alert records are written and broadcast via SSE to the dashboard in real-time.</p>
+              <div class="tables"><span>alerts</span></div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="connector">
+          <div class="icon" style="background:linear-gradient(135deg,#10b981,#065f46)">👤</div>
+          <div class="arrow-line"></div>
+        </div>
+        <div class="body">
+          <h3>5 · User Authentication &amp; Access</h3>
+          <p>Users register, verify email (OTP), and await admin approval. On login, a <code>login_activities</code>
+            record is created. Every page action is logged to <code>user_activities</code>. Session state persists in
+            <code>sessions</code>.</p>
+          <div class="tables">
+            <span>users</span><span>sessions</span><span>login_activities</span><span>user_activities</span><span>password_reset_tokens</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="connector">
+          <div class="icon" style="background:linear-gradient(135deg,#f97316,#7c3a1b)">💬</div>
+          <div class="arrow-line"></div>
+        </div>
+        <div class="body">
+          <h3>6 · AI Chat Assistant</h3>
+          <p>Authenticated users interact with an AI chatbot. Each prompt and AI reply is stored linked to the user,
+            building a conversation history.</p>
+          <div class="tables"><span>chat_messages</span><span>users</span></div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="connector">
+          <div class="icon" style="background:linear-gradient(135deg,#ec4899,#4a1942)">🎨</div>
+        </div>
+        <div class="body">
+          <h3>7 · Landing Page CMS</h3>
+          <p>Admins edit landing page content (text, images, HTML blocks) through an inline editor. Changes are
+            persisted as key-value pairs in <code>landing_contents</code>.</p>
+          <div class="tables"><span>landing_contents</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ SUMMARY ============ -->
+  <div class="view" id="tab-summary">
+    <div style="max-width:900px;margin:0 auto;display:grid;gap:16px">
+      <div id="summaryCards"></div>
+    </div>
+  </div>
+
+  <script>
+    // ===================== DATA =====================
+    const TABLES = [
+      {
+        id: 'users', label: 'users', cls: 't-users',
+        pos: { x: 20, y: 20 },
+        cols: [
+          { name: 'id', type: 'bigint UNSIGNED', tags: ['PK'] },
+          { name: 'name', type: 'varchar' },
+          { name: 'email', type: 'varchar', tags: ['UQ'] },
+          { name: 'email_verified_at', type: 'timestamp?' },
+          { name: 'otp_code', type: 'varchar?' },
+          { name: 'otp_expires_at', type: 'timestamp?' },
+          { name: 'password', type: 'varchar' },
+          { name: 'remember_token', type: 'varchar?' },
+          { name: 'role', type: "varchar default:'user'" },
+          { name: 'is_approved', type: 'boolean' },
+          { name: 'is_blocked', type: 'boolean' },
+          { name: 'removed_at', type: 'timestamp?' },
+          { name: 'created_at / updated_at', type: 'timestamps' },
+        ]
+      },
+      {
+        id: 'sessions', label: 'sessions', cls: 't-sessions',
+        pos: { x: 20, y: 420 },
+        cols: [
+          { name: 'id', type: 'varchar', tags: ['PK'] },
+          { name: 'user_id', type: 'bigint?', tags: ['FK→users'] },
+          { name: 'ip_address', type: 'varchar?' },
+          { name: 'user_agent', type: 'text?' },
+          { name: 'payload', type: 'longText' },
+          { name: 'last_activity', type: 'int' },
+        ]
+      },
+      {
+        id: 'password_reset_tokens', label: 'password_reset_tokens', cls: 't-pwreset',
+        pos: { x: 20, y: 590 },
+        cols: [
+          { name: 'email', type: 'varchar', tags: ['PK'] },
+          { name: 'token', type: 'varchar' },
+          { name: 'created_at', type: 'timestamp?' },
+        ]
+      },
+      {
+        id: 'devices', label: 'devices', cls: 't-devices',
+        pos: { x: 310, y: 20 },
+        cols: [
+          { name: 'id', type: 'bigint UNSIGNED', tags: ['PK'] },
+          { name: 'device_id', type: 'varchar', tags: ['UQ'] },
+          { name: 'species', type: 'varchar?' },
+          { name: 'location', type: 'varchar?' },
+          { name: 'created_at / updated_at', type: 'timestamps' },
+        ]
+      },
+      {
+        id: 'water_readings', label: 'water_readings', cls: 't-wreadings',
+        pos: { x: 310, y: 220 },
+        cols: [
+          { name: 'id', type: 'bigint UNSIGNED', tags: ['PK'] },
+          { name: 'device_id', type: 'varchar', tags: ['FK→devices'] },
+          { name: 'turbidity', type: 'float' },
+          { name: 'tds', type: 'float' },
+          { name: 'ph', type: 'float' },
+          { name: 'temperature', type: 'float?' },
+          { name: 'no_water_detected', type: 'boolean' },
+          { name: 'created_at / updated_at', type: 'timestamps' },
+        ]
+      },
+      {
+        id: 'water_analyses', label: 'water_analyses', cls: 't-wanalyses',
+        pos: { x: 310, y: 490 },
+        cols: [
+          { name: 'id', type: 'bigint UNSIGNED', tags: ['PK'] },
+          { name: 'water_reading_id', type: 'bigint UNSIGNED', tags: ['FK→water_readings'] },
+          { name: 'analysis_type', type: 'varchar' },
+          { name: 'ai_insight', type: 'text' },
+          { name: 'risk_level', type: 'varchar' },
+          { name: 'recommendations', type: 'json' },
+          { name: 'confidence_score', type: 'decimal(5,2)' },
+          { name: 'analyzed_at', type: 'timestamp' },
+          { name: 'created_at / updated_at', type: 'timestamps' },
+        ]
+      },
+      {
+        id: 'alerts', label: 'alerts', cls: 't-alerts',
+        pos: { x: 620, y: 20 },
+        cols: [
+          { name: 'id', type: 'bigint UNSIGNED', tags: ['PK'] },
+          { name: 'message', type: 'varchar' },
+          { name: 'created_at / updated_at', type: 'timestamps' },
+        ]
+      },
+      {
+        id: 'latest_readings', label: 'latest_readings', cls: 't-lreadings',
+        pos: { x: 620, y: 180 },
+        cols: [
+          { name: 'id', type: 'bigint UNSIGNED', tags: ['PK'] },
+          { name: 'created_at / updated_at', type: 'timestamps' },
+        ]
+      },
+      {
+        id: 'chat_messages', label: 'chat_messages', cls: 't-chat',
+        pos: { x: 620, y: 310 },
+        cols: [
+          { name: 'id', type: 'bigint UNSIGNED', tags: ['PK'] },
+          { name: 'user_id', type: 'bigint UNSIGNED', tags: ['FK→users'] },
+          { name: 'prompt', type: 'text' },
+          { name: 'reply', type: 'longText' },
+          { name: 'created_at / updated_at', type: 'timestamps' },
+        ]
+      },
+      {
+        id: 'login_activities', label: 'login_activities', cls: 't-loginact',
+        pos: { x: 620, y: 490 },
+        cols: [
+          { name: 'id', type: 'bigint UNSIGNED', tags: ['PK'] },
+          { name: 'user_id', type: 'bigint UNSIGNED', tags: ['FK→users'] },
+          { name: 'ip_address', type: 'varchar?' },
+          { name: 'user_agent', type: 'varchar?' },
+          { name: 'login_at', type: 'timestamp' },
+          { name: 'logout_at', type: 'timestamp?' },
+          { name: 'duration_minutes', type: 'int?' },
+          { name: 'created_at / updated_at', type: 'timestamps' },
+        ]
+      },
+      {
+        id: 'user_activities', label: 'user_activities', cls: 't-useract',
+        pos: { x: 620, y: 640 },
+        cols: [
+          { name: 'id', type: 'bigint UNSIGNED', tags: ['PK'] },
+          { name: 'user_id', type: 'bigint UNSIGNED', tags: ['FK→users'] },
+          { name: 'activity', type: 'varchar' },
+          { name: 'url', type: 'varchar?' },
+          { name: 'method', type: "varchar default:'GET'" },
+          { name: 'ip_address', type: 'varchar?' },
+          { name: 'user_agent', type: 'varchar?' },
+          { name: 'created_at / updated_at', type: 'timestamps' },
+        ]
+      },
+      {
+        id: 'landing_contents', label: 'landing_contents', cls: 't-landing',
+        pos: { x: 310, y: 680 },
+        cols: [
+          { name: 'id', type: 'bigint UNSIGNED', tags: ['PK'] },
+          { name: 'key', type: 'varchar', tags: ['UQ'] },
+          { name: 'value', type: 'text?' },
+          { name: 'image', type: 'varchar?' },
+          { name: 'type', type: "varchar default:'text'" },
+          { name: 'created_at / updated_at', type: 'timestamps' },
+        ]
+      },
+    ];
+
+    const RELATIONS = [
+      // device → water_readings
+      { from: 'devices', fromCol: 'device_id', to: 'water_readings', toCol: 'device_id', type: 'solid' },
+      // water_readings → water_analyses
+      { from: 'water_readings', fromCol: 'id', to: 'water_analyses', toCol: 'water_reading_id', type: 'solid' },
+      // users → sessions (soft)
+      { from: 'users', fromCol: 'id', to: 'sessions', toCol: 'user_id', type: 'dash' },
+      // users → chat_messages
+      { from: 'users', fromCol: 'id', to: 'chat_messages', toCol: 'user_id', type: 'solid' },
+      // users → login_activities
+      { from: 'users', fromCol: 'id', to: 'login_activities', toCol: 'user_id', type: 'solid' },
+      // users → user_activities
+      { from: 'users', fromCol: 'id', to: 'user_activities', toCol: 'user_id', type: 'solid' },
+    ];
+
+    // ===================== BUILD ERD =====================
+    const canvas = document.getElementById('erdCanvas');
+    const svg = document.getElementById('svgLines');
+
+    function tagBadge(tag) {
+      if (tag.startsWith('FK')) return `<span class="badge fk">FK</span>`;
+      if (tag === 'PK') return `<span class="badge pk">PK</span>`;
+      if (tag === 'UQ') return `<span class="badge uq">UQ</span>`;
+      return '';
+    }
+
+    const cardEls = {};
+    TABLES.forEach(t => {
+      const el = document.createElement('div');
+      el.className = `table-card ${t.cls}`;
+      el.id = 'tbl_' + t.id;
+      el.style.left = t.pos.x + 'px';
+      el.style.top = t.pos.y + 'px';
+      let html = `<div class="th">${t.label}</div>`;
+      t.cols.forEach(c => {
+        const badges = (c.tags || []).map(tagBadge).join(' ');
+        html += `<div class="row"><span class="col-name">${c.name}</span><span style="display:flex;align-items:center;gap:4px">${badges}<span class="col-type">${c.type}</span></span></div>`;
+      });
+      el.innerHTML = html;
+      canvas.appendChild(el);
+      cardEls[t.id] = el;
+    });
+
+    function getCenter(el) {
+      const l = parseInt(el.style.left);
+      const t = parseInt(el.style.top);
+      const w = el.offsetWidth || 200;
+      const h = el.offsetHeight || 100;
+      return { cx: l + w / 2, cy: t + h / 2, x: l, y: t, w, h };
+    }
+
+    function drawLines() {
+      svg.innerHTML = '';
+      RELATIONS.forEach(r => {
+        const a = cardEls[r.from];
+        const b = cardEls[r.to];
+        if (!a || !b) return;
+        const ac = getCenter(a);
+        const bc = getCenter(b);
+        // pick edge midpoints for cleaner lines
+        let x1, y1, x2, y2;
+        const dx = bc.cx - ac.cx;
+        if (Math.abs(dx) > 80) {
+          x1 = dx > 0 ? ac.x + ac.w : ac.x;
+          y1 = ac.cy;
+          x2 = dx > 0 ? bc.x : bc.x + bc.w;
+          y2 = bc.cy;
+        } else {
+          x1 = ac.cx;
+          y1 = bc.cy > ac.cy ? ac.y + ac.h : ac.y;
+          x2 = bc.cx;
+          y2 = bc.cy > ac.cy ? bc.y : bc.y + bc.h;
+        }
+        const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+        const cls = r.type === 'solid' ? 'line-rel' : 'line-soft';
+        const path = `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`;
+        // arrow marker
+        const markId = 'arr_' + Math.random().toString(36).slice(2);
+        const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+        marker.setAttribute('id', markId);
+        marker.setAttribute('markerWidth', '8'); marker.setAttribute('markerHeight', '8');
+        marker.setAttribute('refX', '6'); marker.setAttribute('refY', '3');
+        marker.setAttribute('orient', 'auto');
+        const tri = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        tri.setAttribute('d', 'M0,0 L0,6 L8,3 z');
+        tri.setAttribute('fill', r.type === 'solid' ? 'rgba(56,189,248,.7)' : 'rgba(129,140,248,.5)');
+        marker.appendChild(tri);
+        const defs = svg.querySelector('defs') || svg.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'defs'));
+        defs.appendChild(marker);
+        const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        pathEl.setAttribute('d', path);
+        pathEl.setAttribute('class', cls);
+        pathEl.setAttribute('marker-end', `url(#${markId})`);
+        svg.appendChild(pathEl);
+      });
+    }
+
+    // Allow dragging
+    let dragging = null, ox = 0, oy = 0;
+    Object.values(cardEls).forEach(el => {
+      el.addEventListener('mousedown', e => {
+        dragging = el; ox = e.clientX - parseInt(el.style.left); oy = e.clientY - parseInt(el.style.top); el.style.zIndex = 99;
+      });
+    });
+    document.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      dragging.style.left = (e.clientX - ox) + 'px';
+      dragging.style.top = (e.clientY - oy) + 'px';
+      drawLines();
+    });
+    document.addEventListener('mouseup', () => { if (dragging) { dragging.style.zIndex = ''; dragging = null; } });
+
+    setTimeout(drawLines, 100);
+
+    // ===================== SUMMARY =====================
+    const sc = document.getElementById('summaryCards');
+    const defs2 = {
+      users: 'Core authentication & user management table. Tracks role, approval, block/remove status and OTP for 2-factor login.',
+      sessions: 'Laravel session storage. Loosely linked to users for online detection.',
+      password_reset_tokens: 'Stores tokenised password-reset links keyed by email.',
+      devices: 'Registered ESP32 AquaSense devices. Each has a unique device_id, species context and location.',
+      water_readings: 'Raw sensor payload from the ESP32: pH, TDS, Turbidity, Temperature. Central data table.',
+      water_analyses: 'AI-generated safety/quality analysis tied to each water reading. Stores insight, risk level, recommendations & confidence.',
+      alerts: 'System-wide alert messages broadcast when sensor thresholds are breached.',
+      latest_readings: 'Snapshot table holding only the most recent reading per device for fast dashboard queries.',
+      chat_messages: 'AI assistant conversation log: user prompts and Gemini AI replies.',
+      login_activities: 'Per-session login/logout timestamps and duration for audit and online-status detection.',
+      user_activities: 'Fine-grained page/action audit trail per user (URL, method, IP).',
+      landing_contents: 'CMS store for editable landing page content blocks (text, images, HTML).',
+    };
+
+    let shtml = '<div style="display:grid;gap:14px">';
+    TABLES.forEach(t => {
+      const fks = t.cols.filter(c => (c.tags || []).some(g => g.startsWith('FK')));
+      shtml += `<div style="background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:18px 22px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--accent)">${t.label}</span>
+      <span style="font-size:.72rem;color:var(--muted)">${t.cols.length} columns</span>
+    </div>
+    <p style="color:var(--muted);font-size:.82rem;margin-bottom:10px">${defs2[t.id] || ''}</p>
+    ${fks.length ? `<div style="display:flex;gap:6px;flex-wrap:wrap">${fks.map(f => `<span style="background:rgba(56,189,248,.1);color:var(--accent);border:1px solid rgba(56,189,248,.2);padding:2px 10px;border-radius:20px;font-size:.7rem;font-family:'JetBrains Mono',monospace">${f.name} → ${f.tags[0].replace('FK→', '')}</span>`).join('')}</div>` : ''}
+  </div>`;
+    });
+    shtml += '</div>';
+    sc.innerHTML = shtml;
+
+    // ===================== TABS =====================
+    function switchTab(name) {
+      document.querySelectorAll('.tab').forEach((el, i) => { el.classList.remove('active') });
+      document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+      const tabs = ['erd', 'flow', 'summary'];
+      document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
+      document.getElementById('tab-' + name).classList.add('active');
+      if (name === 'erd') setTimeout(drawLines, 50);
+    }
+  </script>
+</body>
+
+</html>

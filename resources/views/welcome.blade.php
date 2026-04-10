@@ -695,7 +695,7 @@
                         </div>
                         <h4 class="text-xl font-bold mb-2" style="color: #0D1A63;">{{ $contents['contact_email_label']->value ?? 'Email Address' }}</h4>
                         @php
-                            $rawEmail = html_entity_decode($contents['contact_email']->value ?? 'kirstinesanchez9@gmail.com', ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                            $rawEmail = html_entity_decode($contents['contact_email']->value ?? 'aquasense@gmail.com', ENT_QUOTES | ENT_HTML5, 'UTF-8');
                             preg_match('/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+\.[A-Z]{2,}/i', $rawEmail, $emailMatch);
                             $email = $emailMatch[0] ?? trim(strip_tags($rawEmail));
                         @endphp
